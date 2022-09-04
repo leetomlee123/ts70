@@ -1,7 +1,48 @@
-import 'package:common_utils/common_utils.dart';
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
+import 'package:ts70/pages/chapter_list.dart';
+import 'package:ts70/services/listen.dart';
+
 class Chapter {
-  String? cover;
-  String? bookMeta;
+  String? name;
+  String? index;
+
+  Chapter({this.name, this.index});
+}
+
+class ChapterProvider extends ChangeNotifier {
+  List<Chapter>? chapters;
+  Search? search;
+  late ScrollController refreshController =
+      ScrollController(initialScrollOffset: (max(search!.idx!-8, 0)) * 30);
+
+  ChapterProvider({this.chapters = const [], required this.search}) {
+    refreshController.addListener(() {
+      if (refreshController.position.pixels ==
+          refreshController.position.maxScrollExtent) {
+        /// 触发上拉加载更多机制
+        onLoading();
+      }
+    });
+  }
+
+  onRefresh() {}
+
+  onLoading() async {
+    pageProvider.updateShouldNotify(false, true);
+    search!.idx = (search!.idx)! + 30;
+    final result = await ListenApi().getChapters(search);
+    chapters=result;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    refreshController.dispose();
+  }
 }
 
 class Search {
@@ -16,13 +57,14 @@ class Search {
   int? count;
   Duration? position;
   Duration? duration;
+
   Search({
     this.id,
     this.desc,
     this.url = '',
     this.bookMeta,
     this.cover,
-    this.lastTime=0,
+    this.lastTime = 0,
     this.title,
     this.idx = 0,
     this.count = 0,
@@ -35,7 +77,7 @@ class Search {
     title = json['title'];
     url = json['url'];
     bookMeta = json['book_meta'];
-    lastTime=json['last_time'];
+    lastTime = json['last_time'];
     idx = json['idx'];
     position = Duration(milliseconds: json['position'] ?? 0);
     duration = Duration(seconds: json['duration'] ?? 1);
@@ -49,7 +91,7 @@ class Search {
     data['book_meta'] = bookMeta;
     data['url'] = url;
     data['idx'] = idx ?? 0;
-    data['last_time']=lastTime??0;
+    data['last_time'] = lastTime ?? 0;
     data['cover'] = cover;
     data['position'] = position!.inMilliseconds;
     data['duration'] = duration?.inSeconds ?? 1;
@@ -58,8 +100,6 @@ class Search {
     return data;
   }
 }
-
-
 
 class Item {
   String? title;

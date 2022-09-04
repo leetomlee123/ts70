@@ -6,51 +6,76 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:ts70/pages/history_list.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
+
+// initResource(BuildContext context) async {
+//   final loadState =
+//   ProviderScope.containerOf(context).read(loadProvider.state);
+//   Search? search =
+//       ProviderScope.containerOf(context).read(playProvider).value;
+//
+//   String url = "";
+//   loadState.state = true;
+//   try {
+//     url = "";
+//     url = await ListenApi().chapterUrl(search);
+//   } catch (e) {
+//     loadState.state = false;
+//   }
+//   if (url.isEmpty) {
+//     BotToast.showText(text: "获取资源链接失败,请重试...");
+//     loadState.state = false;
+//     return;
+//   }
+//   await audioPlayer.pause();
+//   try {
+//     audioSource = AudioSource.uri(
+//       Uri.parse(url),
+//       tag: MediaItem(
+//         id: '1',
+//         album: search!.title,
+//         title: "${search.title}-第${search.idx ?? 0 + 1}回",
+//         artUri: Uri.parse(search.cover ?? ""),
+//       ),
+//     );
+//     await audioPlayer.setAudioSource(audioSource);
+//     var duration = (await audioPlayer.load())!;
+//     search.duration = duration;
+//     // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
+//     // final state = ref.read(refreshProvider.state);
+//     // state.state = state.state ? false : true;
+//     loadState.state = false;
+//     await audioPlayer.seek(search.position);
+//     await audioPlayer.play();
+//   } on PlayerException catch (e) {
+//     loadState.state = false;
+//     // playerState.value = ProcessingState.idle;
+//     // playing.value = false;
+//     BotToast.showText(text: "加载音频资源失败,请重试....");
+//   } on PlayerInterruptedException catch (e) {
+//     print("Connection aborted: ${e.message}");
+//     await audioPlayer.pause();
+//   } catch (e) {}
+//   return 1;
+// }
 initResource(Search? search, var ref) async {
-  audioPlayer.playerStateStream.listen((state) {
-    switch (state.processingState) {
-      case ProcessingState.idle:
-        break;
-      case ProcessingState.loading:
-        break;
-      case ProcessingState.buffering:
-        break;
-      case ProcessingState.ready:
-        break;
-      case ProcessingState.completed:
-        next();
-        break;
-    }
-  });
-  audioPlayer.positionStream.listen((Duration p) {
-    // if (!moving.value) {
-    //   if (audioPlayer.playing &&
-    //       playerState.value != ProcessingState.completed) {
-    //     // Get.log(playerState.value.name);
-    //
-    //     model.update((val) {
-    //       val!.position = p;
-    //     });
-    //   }
-    // }
-  });
   String url = "";
-  ref.read(loadProvider.state).state=true;
+  ref.read(loadProvider.state).state = true;
   try {
     url = "";
     url = await ListenApi().chapterUrl(search);
   } catch (e) {
-    ref.read(loadProvider.state).state=false;
+    ref.read(loadProvider.state).state = false;
   }
   if (url.isEmpty) {
     BotToast.showText(text: "获取资源链接失败,请重试...");
-    ref.read(loadProvider.state).state=false;
+    ref.read(loadProvider.state).state = false;
     return;
   }
   await audioPlayer.pause();
@@ -70,46 +95,42 @@ initResource(Search? search, var ref) async {
     // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
     // final state = ref.read(refreshProvider.state);
     // state.state = state.state ? false : true;
-    ref.read(loadProvider.state).state=false;
+    ref.read(loadProvider.state).state = false;
 
     await audioPlayer.seek(search.position);
     await audioPlayer.play();
+    print("plau");
   } on PlayerException catch (e) {
-    ref.read(loadProvider.state).state=false;
+    ref.read(loadProvider.state).state = false;
     // playerState.value = ProcessingState.idle;
     // playing.value = false;
     BotToast.showText(text: "加载音频资源失败,请重试....");
   } on PlayerInterruptedException catch (e) {
     print("Connection aborted: ${e.message}");
     await audioPlayer.pause();
-  } catch (e) {
-  }
+  } catch (e) {}
   return 1;
 }
-final processProvider=Provider((ref) => "");
-final playProvider = FutureProvider.autoDispose<Search?>((ref) {
-  final keyword = ref.watch(historyProvider);
-  Search? search=keyword.value![0];
-  return search;
-});
-next(){}
+
+next() {}
+
 class PlayBar extends ConsumerWidget {
   const PlayBar({super.key});
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(playProvider);
     return f.when(
         data: (data) {
-          initResource(data, ref);
           return GestureDetector(
             // onTap: () => Get.toNamed(AppRoutes.detail),
             child: Container(
               height: 70,
               width: Screen.width,
               decoration: const BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(10)),
+                color: Colors.white
               ),
               child: Row(
                 children: [
@@ -160,23 +181,33 @@ class PlayBar extends ConsumerWidget {
                     width: 5,
                   ),
                   IconButton(
-                    onPressed: () => {
-                      // if (model.value.count! > 0)
-                      //   {
-                      //     Get.bottomSheet(
-                      //       ListenChapters(),
-                      //       elevation: 2,
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.only(
-                      //           topLeft: Radius.circular(20.0),
-                      //           topRight: Radius.circular(20.0),
-                      //         ),
-                      //       ),
-                      //     )
-                      //   }
-                    },
+                    onPressed: () =>
+                        // if (model.value.count! > 0)
+                        //   {
+                        //     Get.bottomSheet(
+                        //       ListenChapters(),
+                        //       elevation: 2,
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.only(
+                        //           topLeft: Radius.circular(20.0),
+                        //           topRight: Radius.circular(20.0),
+                        //         ),
+                        //       ),
+                        //     )
+                        //   }
+                        // BotToast.showAttachedWidget(
+                        //     targetContext: context,
+                        //     attachedBuilder: (context) {
+                        //       return const ChapterList();
+                        //     }),
+                        // Scaffold.of(context).showBottomSheet<void>(
+                        //     (BuildContext context) => const ChapterList()),
+                    showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (context) => const ChapterList(),
+                    ),
                     icon: const Icon(Icons.playlist_play_outlined),
-                    iconSize: 30,
+                    iconSize: 50,
                   ),
                   const SizedBox(
                     width: 5,

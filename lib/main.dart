@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       builder: BotToastInit(),
+      navigatorObservers: [BotToastNavigatorObserver()],
       home: const Home(),
     );
   }

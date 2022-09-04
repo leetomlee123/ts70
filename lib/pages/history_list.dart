@@ -1,20 +1,12 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/pages/model.dart';
-import 'package:ts70/pages/play_status.dart';
+import 'package:ts70/pages/home.dart';
 import 'package:ts70/utils/database_provider.dart';
-final playingProvider = StateProvider.autoDispose((_) => false);
-final refreshProvider = StateProvider.autoDispose((ref) => false);
-final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
-  final refresh = ref.watch(refreshProvider);
-  if (kDebugMode) {
-    print('refresh');
-  }
-  return await DataBaseProvider.dbProvider.voices();
-});
+
 class HistoryList extends ConsumerWidget {
   const HistoryList({super.key});
 
@@ -29,25 +21,46 @@ class HistoryList extends ConsumerWidget {
               final item = data[i];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                // onTap: () => toDetail(i, item),
-                onLongPress: () => {
-                  AlertDialog(
-                    title:
-                        const Text('确定删除此项?', style: TextStyle(fontSize: 17.0)),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('取消'),
-                        onPressed: () {
-                          // Get.back();
-                        },
-                      ),
-                      TextButton(
-                        child: const Text('确定'),
-                        onPressed: () {},
-                        // onPressed: () => controller.delete(i),
-                      )
-                    ],
-                  )
+                onTap: () async {
+                  int result =
+                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
+                  if (kDebugMode) {
+                    print('dddd $result');
+                  }
+                  final state = ref.read(refreshProvider.state);
+                  state.state = state.state ? false : true;
+                },
+                onLongPress: () {
+                  BotToast.showWidget(
+                      toastBuilder: (void Function() cancelFunc) {
+                    return AlertDialog(
+                      title: const Text('确定删除此项?',
+                          style: TextStyle(fontSize: 17.0)),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('取消'),
+                          onPressed: () {
+                            // Get.back();
+                            cancelFunc();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('确定'),
+                          onPressed: () async {
+                            int result = await DataBaseProvider.dbProvider
+                                .delById(item.id);
+                            if (kDebugMode) {
+                              print('dddd $result');
+                            }
+                            final state = ref.read(refreshProvider.state);
+                            state.state = state.state ? false : true;
+                            cancelFunc();
+                          },
+                          // onPressed: () => controller.delete(i),
+                        )
+                      ],
+                    );
+                  });
                 },
                 child: Padding(
                   padding:
@@ -56,7 +69,9 @@ class HistoryList extends ConsumerWidget {
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: Colors.deepPurpleAccent,
-                      boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
+                      boxShadow: [
+                        BoxShadow(color: Colors.grey, blurRadius: 2)
+                      ],
                     ),
                     height: 100,
                     child: Row(
@@ -77,7 +92,7 @@ class HistoryList extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 250,
+                              width: 220,
                               child: Text(
                                 item.title ?? "",
                                 style: const TextStyle(
@@ -141,9 +156,7 @@ class HistoryList extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
+                        const SizedBox(width: 10,)
                       ],
                     ),
                   ),

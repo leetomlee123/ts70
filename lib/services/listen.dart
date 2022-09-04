@@ -49,28 +49,31 @@ class ListenApi {
     return result;
   }
 
-  Future<int> getChapters(String bookId) async {
-    var res = await Request().get("$host/book/$bookId.html",
-        options: Options(headers: {"User-Agent": random.nextInt(36)}));
-    Document document = parse(res);
-
-    return document.querySelector("#playlist>ul")!.children.length;
-  }
-
-  int calc_ranks(ranks) {
-    double multiplier = .5;
-    return (multiplier * ranks).round();
-  }
-
-  Future<String> chapterUrl(Search? search) async {
+  Future<List<Chapter>?> getChapters(Search? search) async {
     int idx = search!.idx ?? 0;
-    int page = idx % 30;
+    int page = idx ~/ 30;
+    if (kDebugMode) {
+      print("load more page $page");
+    }
     var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
-    int index = idx ~/ 30;
-    print(index);
+    return list.map((e) {
+      String s = e.text;
+      String ss = e.querySelector("span")!.text;
+      return Chapter(name: s.replaceAll(ss, "").replaceAll("\n", "").trim());
+    }).toList();
+  }
+
+  Future<String> chapterUrl(Search? search) async {
+    int idx = search!.idx ?? 0;
+    int page = idx ~/ 30;
+    var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
+    var res = await Request().get(link);
+    Document document = parse(res);
+    List<Element> list = document.querySelector("#playlist>ul")!.children;
+    int index = idx % 30;
     String chapterUrl =
         host + list[index].querySelector("a")!.attributes['href']!;
     res = await Request().get(chapterUrl);
@@ -79,7 +82,7 @@ class ListenApi {
     res = await Request().get(chapterUrl);
     document = parse(res);
     Element e = document.querySelectorAll('script').last;
-    print(e.text);
+    // print(e.text);
     List<String> split = e.text.split('\n');
     var split4 = split[7];
     var split5 = split[8];
@@ -89,6 +92,8 @@ class ListenApi {
     var s = e.text
         .substring(e.text.indexOf("mp3:") + 4, e.text.indexOf("}).jPlayer"));
     s = s.replaceAll("+", "");
+    s = s.replaceAll(
+        split7[0].trim(), split4.substring(split4.indexOf("=") + 1));
     s = s.replaceAll(
         split8[0].trim(), split5.substring(split5.indexOf("=") + 1));
     s = s.replaceAll(

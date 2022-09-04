@@ -40,13 +40,13 @@ class DataBaseProvider {
   }
 
   addVoiceOrUpdate(Search listenSearchModel) async {
-    listenSearchModel.lastTime=DateUtil.getNowDateMs();
+    listenSearchModel.lastTime = DateUtil.getNowDateMs();
     var client = await databaseVoice;
 
     int result = await client!.update(_dbVoice, listenSearchModel.toMap(),
         where: "id=?", whereArgs: [listenSearchModel.id]);
     if (result < 1) {
-     result= await client.insert(
+      result = await client.insert(
         _dbVoice,
         listenSearchModel.toMap(),
       );
@@ -70,9 +70,9 @@ class DataBaseProvider {
     return result.map((e) => Search.fromJson(e)).first;
   }
 
-  delById(int? id) async {
+  delById(String? id) async {
     var client = await databaseVoice;
-    await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
+    return await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
   }
 
   clear() async {

@@ -39,6 +39,8 @@ dependencies:
   flutter_riverpod: ^1.0.4
   bot_toast: ^4.0.2
   loading_animation_widget: ^1.2.0+2
+  modal_bottom_sheet: ^2.1.0
+
 
   # getx
 

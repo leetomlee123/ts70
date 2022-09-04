@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/pages/history_list.dart';
-import 'package:ts70/pages/play_status.dart';
-
+import 'package:just_audio/just_audio.dart';
+import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/play_bar.dart';
+import 'package:ts70/utils/database_provider.dart';
 
 class PlayButton extends ConsumerWidget {
   const PlayButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final f = ref.watch(playingProvider);
+    final f = ref.watch(stateProvider);
     return IconButton(
         key: ValueKey(f),
         iconSize: 50,
-        onPressed: () {
-          final state=ref.read(playingProvider.state);
-          state.state=state.state?false:true;
+        onPressed: () async {
+          if(f.playing){
+            await audioPlayer.pause();
+            final p = ref.read(playProvider);
+            p.whenData((value) =>  DataBaseProvider.dbProvider.addVoiceOrUpdate(value!));
+          }else{
+            if (f.processingState== ProcessingState.ready) {
+              await audioPlayer.play();
+            } else {
+              final p = ref.read(playProvider);
+              p.whenData((value) => initResource(value, ref));
+            }
+          }
         },
-        icon: Icon(f ? Icons.pause : Icons.play_arrow_outlined));
+        icon: Icon(f.playing ? Icons.pause : Icons.play_arrow_outlined));
   }
 }
