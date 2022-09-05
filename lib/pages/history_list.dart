@@ -2,9 +2,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 class HistoryList extends ConsumerWidget {
@@ -22,6 +22,8 @@ class HistoryList extends ConsumerWidget {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
+                  await audioPlayer.pause();
+
                   int result =
                       await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
                   if (kDebugMode) {
@@ -29,6 +31,7 @@ class HistoryList extends ConsumerWidget {
                   }
                   final state = ref.read(refreshProvider.state);
                   state.state = state.state ? false : true;
+                  await initResource(item, ref);
                 },
                 onLongPress: () {
                   BotToast.showWidget(
@@ -69,9 +72,7 @@ class HistoryList extends ConsumerWidget {
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: Colors.deepPurpleAccent,
-                      boxShadow: [
-                        BoxShadow(color: Colors.grey, blurRadius: 2)
-                      ],
+                      boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
                     ),
                     height: 100,
                     child: Row(
@@ -156,7 +157,9 @@ class HistoryList extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(width: 10,)
+                        const SizedBox(
+                          width: 10,
+                        )
                       ],
                     ),
                   ),
