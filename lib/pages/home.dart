@@ -2,7 +2,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -21,35 +20,19 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   }
   return await DataBaseProvider.dbProvider.voices();
 });
-final processProvider = Provider((ref) => "");
-final stateProvider = StateProvider.autoDispose<PlayerState>(
-    (ref) => PlayerState(false, ProcessingState.idle));
-final watchProvider = Provider.autoDispose((ref) {
-  final p = ref.watch(stateProvider);
-  switch (ref.read(stateProvider.state).state.processingState) {
-    case ProcessingState.idle:
-      print('idle');
-      break;
-    case ProcessingState.loading:
-      print('loading');
-      break;
-    case ProcessingState.buffering:
-      print('buffering');
-      break;
-    case ProcessingState.ready:
-      print('ready');
-      break;
-    case ProcessingState.completed:
-      print('completed');
-      next();
-      break;
-  }
-});
+
 final playProvider = FutureProvider.autoDispose<Search?>((ref) {
   final keyword = ref.watch(historyProvider);
   Search? search = keyword.value![0];
   return search;
 });
+final processProvider = StateProvider.autoDispose((ref) =>0);
+final stateProvider = StateProvider.autoDispose<PlayerState>(
+    (ref) => PlayerState(false, ProcessingState.idle));
+final watchProvider = Provider.autoDispose((ref) {
+  final p = ref.watch(stateProvider);
+});
+
 final save = Provider.autoDispose((ref) {
   final f = ref.watch(stateProvider.select((value) => value.playing));
   final play = ref.read(playProvider);
@@ -72,21 +55,59 @@ class HomeState extends State<Home> {
   void initState() {
     audioPlayer = AudioPlayer();
     audioPlayer.playerStateStream.listen((event) {
-      ProviderScope.containerOf(context).read(stateProvider.state).state =
-          event;
+      final s = ProviderScope.containerOf(context).read(stateProvider.state);
+      if (s.state.playing && !event.playing) {
+        int po = ProviderScope.containerOf(context)
+            .read(processProvider.state)
+            .state;
+        ProviderScope.containerOf(context).read(playProvider).whenData(
+          (value) {
+            value!.position = Duration(milliseconds: po);
+            DataBaseProvider.dbProvider.addVoiceOrUpdate(value);
+          },
+        );
+      }
+      s.state = event;
+      if (kDebugMode) {
+        print(event.processingState);
+      }
+      switch (event.processingState) {
+        case ProcessingState.idle:
+          break;
+        case ProcessingState.loading:
+          break;
+        case ProcessingState.buffering:
+          break;
+        case ProcessingState.ready:
+          break;
+        case ProcessingState.completed:
+          next();
+          break;
+      }
     });
-    audioPlayer.positionStream.listen((Duration p) {
-      // if (!moving.value) {
-      //   if (audioPlayer.playing &&
-      //       playerState.value != ProcessingState.completed) {
-      //     // Get.log(playerState.value.name);
-      //
-      //     model.update((val) {
-      //       val!.position = p;
-      //     });
-      //   }
-      // }
+
+    audioPlayer.positionStream.listen((event) {
+      ProviderScope.containerOf(context).read(processProvider.state).state =
+          event.inMilliseconds;
+      if (kDebugMode) {
+        // print(event.inSeconds);
+      }
     });
+    // audioPlayer.positionStream.listen((Duration p) {
+    // ProviderScope.containerOf(context).read(processProvider.state).state =
+    //     p.inSeconds;
+    //   print(p.inSeconds);
+    //   // if (!moving.value) {
+    //   //   if (audioPlayer.playing &&
+    //   //       playerState.value != ProcessingState.completed) {
+    //   //     // Get.log(playerState.value.name);
+    //   //
+    //   //     model.update((val) {
+    //   //       val!.position = p;
+    //   //     });
+    //   //   }
+    //   // }
+    // });
 
     super.initState();
   }
@@ -94,6 +115,11 @@ class HomeState extends State<Home> {
   @override
   dispose() {
     super.dispose();
+    ProviderScope.containerOf(context).read(playProvider).whenData(
+      (value) {
+        DataBaseProvider.dbProvider.addVoiceOrUpdate(value!);
+      },
+    );
     audioPlayer.dispose();
   }
 

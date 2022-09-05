@@ -47,7 +47,7 @@ class ListenApi {
   }
 
   Future<List<Chapter>?> getChapters(String page,String id) async {
-      var link = "$host/tingshu/$id${page == "0" ? "" : "/p$page.html"}";
+      var link = "$host/tingshu/$id/p$page.html";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
@@ -60,9 +60,7 @@ class ListenApi {
   }
 
   Future<List<Chapter>?> getOptions(Search? search) async {
-    int idx = search!.idx ?? 0;
-    int page = idx ~/ 30;
-    var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
+    var link = "$host/tingshu/${search!.id}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelectorAll("select")[0].children;
@@ -71,9 +69,8 @@ class ListenApi {
     List<Chapter>? result = [];
     for (int i = 0; i < len; i++) {
       Element e = list[i];
-      result.add(Chapter(name: e.text, index: i.toString()));
+      result.add(Chapter(name: e.text, index: (i+1).toString()));
     }
-
     return result;
   }
 

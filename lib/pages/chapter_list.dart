@@ -4,12 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
+import 'package:ts70/pages/search.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 final v = StateProvider(((ref) => ""));
-ScrollController _refreshController = ScrollController();
+ScrollController scrollController = ScrollController();
 final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final vs = ref.watch(v);
   final play = ref.read(playProvider);
@@ -17,6 +18,7 @@ final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   return result;
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
+  print("load options");
   final play = ref.watch(playProvider);
   final result = await ListenApi().getOptions(play.value);
   final s = result![play.value!.idx! ~/ 30].index!;
@@ -38,6 +40,11 @@ class ChapterList extends ConsumerWidget {
               child: Column(
                 children: [
                   DropdownButton(
+                      // isExpanded: true,
+                      // 图标大小
+                      iconSize: 30,
+                      // 下拉文本样式
+                      style: const TextStyle(color: Colors.blue),
                       value: vp.state,
                       items: data!
                           .map((e) => DropdownMenuItem(
@@ -65,17 +72,21 @@ class ChapterList extends ConsumerWidget {
 
 class MyCustomClass {
   WidgetRef ref;
-  Search model;
-  MyCustomClass(this.model, this.ref);
-
+  int index;
+  MyCustomClass(this.ref, this.index);
   Future<void> myAsyncMethod(
       BuildContext context, VoidCallback onSuccess) async {
-    int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+    final play = ref.read(playProvider).value;
+    final vs = ref.read(v.state).state;
+    play!.idx = index + (int.parse(vs) - 1) * 30;
+    int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
+    final state = ref.read(refreshProvider.state);
     if (kDebugMode) {
       print('dddd $result');
     }
-    final state = ref.read(refreshProvider.state);
     state.state = state.state ? false : true;
+    //资源释放
+    await audioPlayer.stop();
     onSuccess.call();
   }
 }
@@ -85,12 +96,13 @@ class ListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final play = ref.read(playProvider).value;
     final f = ref.watch(chapterProvider);
+    final play = ref.read(playProvider).value;
+
     return f.when(
         data: (data) {
           return SingleChildScrollView(
-            controller: _refreshController,
+            controller: scrollController,
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -98,20 +110,11 @@ class ListPage extends ConsumerWidget {
                 final model = data[index];
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () async {
+                  onTap: () => MyCustomClass(ref, index).myAsyncMethod(context,
+                      () async {
                     Navigator.pop(context);
-                    await audioPlayer.pause();
-                    play.idx = index;
-                    int result = await DataBaseProvider.dbProvider
-                        .addVoiceOrUpdate(play);
-                    if (kDebugMode) {
-                      print('dddd $result');
-                    }
                     await initResource(play, ref);
-                    // print("ok");
-                    // final state = ref.read(refreshProvider.state);
-                    // state.state = state.state ? false : true;
-                  },
+                  }),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(

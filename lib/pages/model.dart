@@ -10,13 +10,6 @@ class Chapter {
 
   Chapter({this.name, this.index});
 }
-
-
-
-
-
-
-
 class Search {
   String? id;
   String? cover;

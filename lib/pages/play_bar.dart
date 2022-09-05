@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,15 +100,16 @@ initResource(Search? search, var ref) async {
     state.state = false;
 
     await audioPlayer.seek(search.position);
-    await audioPlayer.play();
-    print("plau");
+    audioPlayer.play();
   } on PlayerException catch (e) {
     state.state = false;
     // playerState.value = ProcessingState.idle;
     // playing.value = false;
     BotToast.showText(text: "加载音频资源失败,请重试....");
   } on PlayerInterruptedException catch (e) {
-    print("Connection aborted: ${e.message}");
+    if (kDebugMode) {
+      print("Connection aborted: ${e.message}");
+    }
     // await audioPlayer.pause();
   } catch (e) {}
   return 1;
@@ -163,10 +165,7 @@ class PlayBar extends ConsumerWidget {
                       const SizedBox(
                         height: 5,
                       ),
-                      Text(
-                        "${DateUtil.formatDateMs(data.position!.inMilliseconds, format: 'mm:ss')}/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-                        style: const TextStyle(fontSize: 12),
-                      )
+                      const PositionWidget()
                     ],
                   ),
                   const Spacer(),
@@ -180,36 +179,15 @@ class PlayBar extends ConsumerWidget {
                     width: 5,
                   ),
                   IconButton(
-                    onPressed: () =>
-                        // if (model.value.count! > 0)
-                        //   {
-                        //     Get.bottomSheet(
-                        //       ListenChapters(),
-                        //       elevation: 2,
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.only(
-                        //           topLeft: Radius.circular(20.0),
-                        //           topRight: Radius.circular(20.0),
-                        //         ),
-                        //       ),
-                        //     )
-                        //   }
-                        // BotToast.showAttachedWidget(
-                        //     targetContext: context,
-                        //     attachedBuilder: (context) {
-                        //       return const ChapterList();
-                        //     }),
-                        // Scaffold.of(context).showBottomSheet<void>(
-                        //     (BuildContext context) => const ChapterList()),
-                        showMaterialModalBottomSheet(
+                    onPressed: () => showMaterialModalBottomSheet(
                       context: context,
-                      builder: (context) => ChapterList(),
+                      builder: (context) => const ChapterList(),
                     ),
                     icon: const Icon(Icons.playlist_play_outlined),
                     iconSize: 50,
                   ),
                   const SizedBox(
-                    width: 5,
+                    width: 10,
                   ),
                 ],
               ),
@@ -222,5 +200,22 @@ class PlayBar extends ConsumerWidget {
         loading: () => const Center(
               child: Text('loading...'),
             ));
+  }
+}
+
+class PositionWidget extends ConsumerWidget {
+  const PositionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.read(playProvider).value;
+    final data1 = ref.watch(processProvider);
+
+    return Text(
+      "${DateUtil.formatDateMs(data1, format: 'mm:ss')}/${DateUtil.formatDateMs(data!.duration!.inMilliseconds, format: 'mm:ss')}",
+      style: const TextStyle(fontSize: 12),
+    );
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }
