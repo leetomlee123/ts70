@@ -22,8 +22,8 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   return await DataBaseProvider.dbProvider.voices();
 });
 final processProvider = Provider((ref) => "");
-final stateProvider =
-    StateProvider.autoDispose<PlayerState>((ref) => PlayerState(false,ProcessingState.idle));
+final stateProvider = StateProvider.autoDispose<PlayerState>(
+    (ref) => PlayerState(false, ProcessingState.idle));
 final watchProvider = Provider.autoDispose((ref) {
   final p = ref.watch(stateProvider);
   switch (ref.read(stateProvider.state).state.processingState) {
@@ -50,9 +50,15 @@ final playProvider = FutureProvider.autoDispose<Search?>((ref) {
   Search? search = keyword.value![0];
   return search;
 });
+final save = Provider.autoDispose((ref) {
+  final f = ref.watch(stateProvider.select((value) => value.playing));
+  final play = ref.read(playProvider);
+  DataBaseProvider.dbProvider.addVoiceOrUpdate(play.value!);
+});
 final loadProvider = StateProvider.autoDispose((ref) => false);
 late AudioPlayer audioPlayer;
 late AudioSource audioSource;
+
 class Home extends StatefulWidget {
   const Home({super.key});
   @override
@@ -60,6 +66,7 @@ class Home extends StatefulWidget {
     return HomeState();
   }
 }
+
 class HomeState extends State<Home> {
   @override
   void initState() {
@@ -93,50 +100,48 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 2.2,
-          title: Row(
-            children: const [
-              SizedBox(
-                width: 4,
-              ),
-              Text(
-                '听书楼',
-                style: TextStyle(fontSize: 20),
-              ),
-              Padding(
-                  padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0),
-                  child: WebState()),
-              SizedBox(
-                width: 14,
-              ),
-              LoadingWidget()
-            ],
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => const SearchPage()),
-                );
-              },
-              icon: const Icon(
-                Icons.search_outlined,
-                size: 25,
-              ),
-            )
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 2.2,
+        title: Row(
+          children: const [
+            SizedBox(
+              width: 4,
+            ),
+            Text(
+              '听书楼',
+              style: TextStyle(fontSize: 20),
+            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0), child: WebState()),
+            SizedBox(
+              width: 14,
+            ),
+            LoadingWidget()
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.only(bottom: 70, top: 10),
-          color: Colors.white10,
-          child: const HistoryList(),
-        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => const SearchPage()),
+              );
+            },
+            icon: const Icon(
+              Icons.search_outlined,
+              size: 25,
+            ),
+          )
+        ],
+      ),
+      body: Container(
+        padding: const EdgeInsets.only(bottom: 70, top: 10),
+        color: Colors.white10,
+        child: const HistoryList(),
+      ),
       bottomSheet: const PlayBar(),
-        // bottomSheet: const PlayBar()
+      // bottomSheet: const PlayBar()
     );
   }
 }

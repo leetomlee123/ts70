@@ -11,39 +11,11 @@ class Chapter {
   Chapter({this.name, this.index});
 }
 
-class ChapterProvider extends ChangeNotifier {
-  List<Chapter>? chapters;
-  Search? search;
-  late ScrollController refreshController =
-      ScrollController(initialScrollOffset: (max(search!.idx!-8, 0)) * 30);
 
-  ChapterProvider({this.chapters = const [], required this.search}) {
-    refreshController.addListener(() {
-      if (refreshController.position.pixels ==
-          refreshController.position.maxScrollExtent) {
-        /// 触发上拉加载更多机制
-        onLoading();
-      }
-    });
-  }
 
-  onRefresh() {}
 
-  onLoading() async {
-    pageProvider.updateShouldNotify(false, true);
-    search!.idx = (search!.idx)! + 30;
-    final result = await ListenApi().getChapters(search);
-    chapters=result;
-    notifyListeners();
-  }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    refreshController.dispose();
-  }
-}
+
 
 class Search {
   String? id;

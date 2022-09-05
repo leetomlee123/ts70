@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
-import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -10,8 +9,7 @@ import 'package:ts70/utils/request.dart';
 
 class ListenApi {
   static String host = "https://m.70ts.cc";
-
-  static var random = new Random();
+  static var random = Random();
 
   Future<int?> checkSite(String sk) async {
     var res = await Request().getBase(host);
@@ -21,8 +19,7 @@ class ListenApi {
   Future<List<Search>?> search(String keyword, CancelToken cancelToken) async {
     if (keyword.isEmpty) return const [];
     var res = await Request().postForm1("$host/novelsearch/search/result.html",
-        params:
-            "searchword=${Uri.encodeQueryComponent(keyword, encoding: gbk)}",
+        params: "searchword=${Uri.encodeQueryComponent(keyword)}",
         cancelToken: cancelToken);
     Document document = parse(res);
 
@@ -49,21 +46,35 @@ class ListenApi {
     return result;
   }
 
-  Future<List<Chapter>?> getChapters(Search? search) async {
-    int idx = search!.idx ?? 0;
-    int page = idx ~/ 30;
-    if (kDebugMode) {
-      print("load more page $page");
-    }
-    var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
+  Future<List<Chapter>?> getChapters(String page,String id) async {
+      var link = "$host/tingshu/$id${page == "0" ? "" : "/p$page.html"}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
-    return list.map((e) {
+    var result = list.map((e) {
       String s = e.text;
       String ss = e.querySelector("span")!.text;
       return Chapter(name: s.replaceAll(ss, "").replaceAll("\n", "").trim());
     }).toList();
+    return result;
+  }
+
+  Future<List<Chapter>?> getOptions(Search? search) async {
+    int idx = search!.idx ?? 0;
+    int page = idx ~/ 30;
+    var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
+    var res = await Request().get(link);
+    Document document = parse(res);
+    List<Element> list = document.querySelectorAll("select")[0].children;
+
+    int len = list.length;
+    List<Chapter>? result = [];
+    for (int i = 0; i < len; i++) {
+      Element e = list[i];
+      result.add(Chapter(name: e.text, index: i.toString()));
+    }
+
+    return result;
   }
 
   Future<String> chapterUrl(Search? search) async {

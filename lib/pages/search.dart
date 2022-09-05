@@ -33,7 +33,6 @@ class SearchViewState extends State<SearchPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     scrollController!.addListener(() {
       focusNode.unfocus();
@@ -42,7 +41,6 @@ class SearchViewState extends State<SearchPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     scrollController!.dispose();
   }
@@ -91,10 +89,30 @@ class Input extends ConsumerWidget {
             icon: const Icon(
               Icons.close_outlined,
             ),
-            onPressed: () {},
+            onPressed: () {
+              _textEditingController.text = "";
+              ref.read(keyProvider.state).state = '';
+            },
           ),
           border: InputBorder.none),
     );
+  }
+}
+
+class MyCustomClass {
+  WidgetRef ref;
+  Search model;
+  MyCustomClass(this.model, this.ref);
+
+  Future<void> myAsyncMethod(
+      BuildContext context, VoidCallback onSuccess) async {
+    int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+    if (kDebugMode) {
+      print('dddd $result');
+    }
+    final state = ref.read(refreshProvider.state);
+    state.state = state.state ? false : true;
+    onSuccess.call();
   }
 }
 
@@ -113,15 +131,10 @@ class Result extends ConsumerWidget {
               final model = data[index];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  int result =
-                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-                  if (kDebugMode) {
-                    print('dddd $result');
-                  }
-                  final state = ref.read(refreshProvider.state);
-                  state.state = state.state ? false : true;
-                },
+                onTap: () =>
+                    MyCustomClass(model, ref).myAsyncMethod(context, () {
+                  Navigator.of(context).pop();
+                }),
                 child: Container(
                   height: 130,
                   padding: const EdgeInsets.symmetric(

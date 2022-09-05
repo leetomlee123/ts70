@@ -65,20 +65,21 @@ import 'package:ts70/utils/Screen.dart';
 //   return 1;
 // }
 initResource(Search? search, var ref) async {
+  final state = ref.read(loadProvider.state);
   String url = "";
-  ref.read(loadProvider.state).state = true;
+  state.state = true;
   try {
     url = "";
     url = await ListenApi().chapterUrl(search);
   } catch (e) {
-    ref.read(loadProvider.state).state = false;
+    state.state = false;
   }
   if (url.isEmpty) {
     BotToast.showText(text: "获取资源链接失败,请重试...");
-    ref.read(loadProvider.state).state = false;
+    state.state = false;
     return;
   }
-  await audioPlayer.pause();
+  // await audioPlayer.pause();
   try {
     audioSource = AudioSource.uri(
       Uri.parse(url),
@@ -95,19 +96,19 @@ initResource(Search? search, var ref) async {
     // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
     // final state = ref.read(refreshProvider.state);
     // state.state = state.state ? false : true;
-    ref.read(loadProvider.state).state = false;
+    state.state = false;
 
     await audioPlayer.seek(search.position);
     await audioPlayer.play();
     print("plau");
   } on PlayerException catch (e) {
-    ref.read(loadProvider.state).state = false;
+    state.state = false;
     // playerState.value = ProcessingState.idle;
     // playing.value = false;
     BotToast.showText(text: "加载音频资源失败,请重试....");
   } on PlayerInterruptedException catch (e) {
     print("Connection aborted: ${e.message}");
-    await audioPlayer.pause();
+    // await audioPlayer.pause();
   } catch (e) {}
   return 1;
 }
@@ -128,10 +129,8 @@ class PlayBar extends ConsumerWidget {
               height: 70,
               width: Screen.width,
               decoration: const BoxDecoration(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(10)),
-                color: Colors.white
-              ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                  color: Colors.white),
               child: Row(
                 children: [
                   const SizedBox(
@@ -202,9 +201,9 @@ class PlayBar extends ConsumerWidget {
                         //     }),
                         // Scaffold.of(context).showBottomSheet<void>(
                         //     (BuildContext context) => const ChapterList()),
-                    showMaterialModalBottomSheet(
+                        showMaterialModalBottomSheet(
                       context: context,
-                      builder: (context) => const ChapterList(),
+                      builder: (context) => ChapterList(),
                     ),
                     icon: const Icon(Icons.playlist_play_outlined),
                     iconSize: 50,
