@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 
+void main() =>
+    Global.init().then((e) => runApp(const ProviderScope(child: MyApp())));
 
-void main() => Global.init().then((e) => runApp(const ProviderScope(child: MyApp()) ));
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -22,4 +23,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

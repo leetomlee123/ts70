@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
@@ -9,7 +7,6 @@ import 'package:ts70/utils/request.dart';
 
 class ListenApi {
   static String host = "https://m.70ts.cc";
-  static var random = Random();
 
   Future<int?> checkSite(String sk) async {
     var res = await Request().getBase(host);
@@ -47,7 +44,7 @@ class ListenApi {
   }
 
   Future<List<Chapter>?> getChapters(String page, String id) async {
-    var link = "$host/tingshu/$id/p$page.html";
+    var link = "$host/tingshu/$id/${int.parse(page)==1?"":'/p$page.html'}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
@@ -76,8 +73,8 @@ class ListenApi {
 
   Future<String> chapterUrl(Search? search) async {
     int idx = search!.idx ?? 0;
-    int page = idx ~/ 30;
-    var link = "$host/tingshu/${search.id}${page == 0 ? "" : "/p$page.html"}";
+    int page = (idx ~/ 30) + 1;
+    var link = "$host/tingshu/${search.id}${page==1?"":'/p$page.html'}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
@@ -113,7 +110,7 @@ class ListenApi {
         .replaceAll(" ", "")
         .trim();
     if (kDebugMode) {
-      print(link);
+      print("link: $link");
     }
     return link;
   }

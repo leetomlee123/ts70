@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_new
 
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,60 +13,55 @@ import 'package:ts70/pages/search.dart';
 import 'package:ts70/pages/web_state.dart';
 import 'package:ts70/utils/database_provider.dart';
 
-final refreshProvider = StateProvider.autoDispose((ref) => false);
+AudioPlayer audioPlayer = AudioPlayer();
+late AudioSource audioSource;
+final refreshProvider =
+    StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
+final playProvider = StateProvider.autoDispose<Search?>((ref) => Search());
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   final refresh = ref.watch(refreshProvider);
   if (kDebugMode) {
     print('refresh');
   }
-  return await DataBaseProvider.dbProvider.voices();
+  ref.onDispose(() {
+    // DataBaseProvider.dbProvider.addVoiceOrUpdate(value!);
+    audioPlayer.dispose();
+  });
+  List<Search> voices = await DataBaseProvider.dbProvider.voices();
+  ref.read(playProvider.state).state = voices.first;
+  return voices;
 });
 
-final playProvider = FutureProvider.autoDispose<Search?>((ref) {
-  final keyword = ref.watch(historyProvider);
-  Search? search = keyword.value![0];
-  return search;
-});
-final processProvider = StateProvider.autoDispose((ref) =>0);
+// final processProvider = StateProvider.autoDispose((ref) {
+//   final keyword = ref.watch(playProvider);
+//   return keyword.whenOrNull(data:(data){
+//     return data!.position!.inMilliseconds;
+//   });
+// });
 final stateProvider = StateProvider.autoDispose<PlayerState>(
     (ref) => PlayerState(false, ProcessingState.idle));
-final watchProvider = Provider.autoDispose((ref) {
-  final p = ref.watch(stateProvider);
-});
 
 final save = Provider.autoDispose((ref) {
   final f = ref.watch(stateProvider.select((value) => value.playing));
   final play = ref.read(playProvider);
-  DataBaseProvider.dbProvider.addVoiceOrUpdate(play.value!);
+  DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
-late AudioPlayer audioPlayer;
-late AudioSource audioSource;
 
-class Home extends StatefulWidget {
+class Home extends ConsumerWidget {
   const Home({super.key});
-  @override
-  State<StatefulWidget> createState() {
-    return HomeState();
-  }
-}
 
-class HomeState extends State<Home> {
   @override
-  void initState() {
-    audioPlayer = AudioPlayer();
+  Widget build(BuildContext context, WidgetRef ref) {
     audioPlayer.playerStateStream.listen((event) {
-      final s = ProviderScope.containerOf(context).read(stateProvider.state);
+      final s = ref.read(stateProvider.state);
+      final search = ref.read(playProvider);
       if (s.state.playing && !event.playing) {
-        int po = ProviderScope.containerOf(context)
-            .read(processProvider.state)
-            .state;
-        ProviderScope.containerOf(context).read(playProvider).whenData(
-          (value) {
-            value!.position = Duration(milliseconds: po);
-            DataBaseProvider.dbProvider.addVoiceOrUpdate(value);
-          },
-        );
+// int po = ProviderScope.containerOf(context)
+//     .read(processProvider.state)
+//     .state;
+// value!.position = Duration(milliseconds: po);
+        DataBaseProvider.dbProvider.addVoiceOrUpdate(search!);
       }
       s.state = event;
       if (kDebugMode) {
@@ -81,50 +77,21 @@ class HomeState extends State<Home> {
         case ProcessingState.ready:
           break;
         case ProcessingState.completed:
-          next();
+          search!.position = Duration.zero;
+          search.duration = Duration.zero;
+          search.idx = search.idx! + 1;
+          initResource(search, ref);
           break;
       }
     });
-
     audioPlayer.positionStream.listen((event) {
-      ProviderScope.containerOf(context).read(processProvider.state).state =
-          event.inMilliseconds;
+      if(ref.read(stateProvider.state).state.playing){
+      final f=ref.read(playProvider.state);
+      f.state=f.state!.copyWith(position: event);
       if (kDebugMode) {
-        // print(event.inSeconds);
-      }
+      }}
     });
-    // audioPlayer.positionStream.listen((Duration p) {
-    // ProviderScope.containerOf(context).read(processProvider.state).state =
-    //     p.inSeconds;
-    //   print(p.inSeconds);
-    //   // if (!moving.value) {
-    //   //   if (audioPlayer.playing &&
-    //   //       playerState.value != ProcessingState.completed) {
-    //   //     // Get.log(playerState.value.name);
-    //   //
-    //   //     model.update((val) {
-    //   //       val!.position = p;
-    //   //     });
-    //   //   }
-    //   // }
-    // });
 
-    super.initState();
-  }
-
-  @override
-  dispose() {
-    super.dispose();
-    ProviderScope.containerOf(context).read(playProvider).whenData(
-      (value) {
-        DataBaseProvider.dbProvider.addVoiceOrUpdate(value!);
-      },
-    );
-    audioPlayer.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,

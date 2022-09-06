@@ -1,8 +1,4 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
-import 'package:ts70/pages/chapter_list.dart';
-import 'package:ts70/services/listen.dart';
+import 'package:equatable/equatable.dart';
 
 class Chapter {
   String? name;
@@ -10,7 +6,8 @@ class Chapter {
 
   Chapter({this.name, this.index});
 }
-class Search {
+
+class Search extends Equatable {
   String? id;
   String? cover;
   String? bookMeta;
@@ -22,6 +19,33 @@ class Search {
   int? count;
   Duration? position;
   Duration? duration;
+
+  Search copyWith({
+    String? id,
+    String? cover,
+    String? bookMeta,
+    String? title,
+    String? desc,
+    String? url,
+    int? lastTime,
+    int? idx,
+    int? count,
+    Duration? position,
+    Duration? duration,
+  }) =>
+      Search(
+        id: id ?? this.id,
+        cover: cover ?? this.cover,
+        bookMeta: bookMeta ?? this.bookMeta,
+        title: title ?? this.title,
+        desc: desc ?? this.desc,
+        url: url ?? this.url,
+        lastTime: lastTime ?? this.lastTime,
+        idx: idx ?? this.idx,
+        count: count ?? this.count,
+        position: position ?? this.position,
+        duration: duration ?? this.duration,
+      );
 
   Search({
     this.id,
@@ -64,6 +88,21 @@ class Search {
     data['title'] = title;
     return data;
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        cover,
+        bookMeta,
+        title,
+        desc,
+        url,
+        lastTime,
+        idx,
+        count,
+        position,
+        duration,
+      ];
 }
 
 class Item {

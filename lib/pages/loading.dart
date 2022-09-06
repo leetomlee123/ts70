@@ -8,9 +8,9 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LoadingAnimationWidget.bouncingBall(
+      child: LoadingAnimationWidget.threeArchedCircle(
         size: 40,
-        color: Colors.lightBlueAccent,
+        color: Colors.blue,
       ),
     );
   }

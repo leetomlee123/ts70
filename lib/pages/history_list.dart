@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,21 +17,19 @@ class HistoryList extends ConsumerWidget {
     return f.when(
         data: (data) {
           return ListView.builder(
-            itemExtent: 100,
+            itemExtent: 90,
             itemBuilder: (ctx, i) {
               final item = data[i];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
                   await audioPlayer.pause();
-
                   int result =
                       await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
                   if (kDebugMode) {
                     print('dddd $result');
                   }
-                  final state = ref.read(refreshProvider.state);
-                  state.state = state.state ? false : true;
+                ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
                   await initResource(item, ref);
                 },
                 onLongPress: () {
@@ -55,8 +54,7 @@ class HistoryList extends ConsumerWidget {
                             if (kDebugMode) {
                               print('dddd $result');
                             }
-                            final state = ref.read(refreshProvider.state);
-                            state.state = state.state ? false : true;
+                       ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
                             cancelFunc();
                           },
                           // onPressed: () => controller.delete(i),
@@ -67,14 +65,14 @@ class HistoryList extends ConsumerWidget {
                 },
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: Colors.deepPurpleAccent,
                       boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
                     ),
-                    height: 100,
+                    height: 90,
                     child: Row(
                       children: [
                         const SizedBox(
@@ -93,7 +91,7 @@ class HistoryList extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 220,
+                              width: 200,
                               child: Text(
                                 item.title ?? "",
                                 style: const TextStyle(
@@ -104,7 +102,7 @@ class HistoryList extends ConsumerWidget {
                               height: 5,
                             ),
                             Text(
-                              "第${item.idx! + 1}回",
+                              item.bookMeta ?? "",
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.white70),
                             ),
@@ -139,26 +137,17 @@ class HistoryList extends ConsumerWidget {
                                   //     ? Icons.music_note_outlined
                                   //     :
                                   Icons.play_arrow_rounded,
-                                  size: 35,
+                                  size: 40,
                                   color: Colors.white,
                                 )),
-                            RichText(
-                              text: TextSpan(children: [
-                                const TextSpan(
-                                  text: '已听',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                                TextSpan(
-                                  text:
-                                      '${((item.idx! + 1) / ((item.count ?? 1) == 0 ? 100 : (item.count ?? 1)) * 100).toStringAsFixed(1)}%',
-                                  style: const TextStyle(fontSize: 10),
-                                ),
-                              ]),
+                            Text(
+                              '第${item.idx! + 1}回',
+                              style: const TextStyle(fontSize: 12,color: Colors.white70),
                             ),
                           ],
                         ),
                         const SizedBox(
-                          width: 10,
+                          width: 20,
                         )
                       ],
                     ),

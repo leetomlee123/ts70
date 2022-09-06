@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
+import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 final keyProvider = StateProvider.autoDispose((ref) => '');
@@ -56,7 +58,7 @@ class SearchViewState extends State<SearchPage> {
       ),
       body: SingleChildScrollView(
         controller: scrollController,
-        child: const Padding(
+        child:  const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Result(),
         ),
@@ -111,8 +113,7 @@ class MyCustomClass {
     if (kDebugMode) {
       print('dddd $result');
     }
-    final state = ref.read(refreshProvider.state);
-    state.state = state.state ? false : true;
+    ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
     onSuccess.call();
   }
 }
@@ -200,6 +201,6 @@ class Result extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Loading());
+        loading: () => const Center(child: Text('loading...')));
   }
 }

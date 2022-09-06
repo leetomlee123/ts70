@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
@@ -19,37 +20,44 @@ class Request {
   static Request _instance = Request._internal();
 
   factory Request() => _instance;
+  static List<String> uas = [
+    "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/527 (KHTML, like Gecko, Safari/419.3) Arora/0.6 (Change: )",
+    "Avant Browser/1.2.789rel1 (http://www.avantbrowser.com)",
+    "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.0 Safari/532.5",
+  ];
+  static var random = Random();
 
   late Dio dio;
   late CookieJar cookieJar;
-  CancelToken cancelToken = new CancelToken();
+  CancelToken cancelToken = CancelToken();
 
   Request._internal() {
-    // BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
-    BaseOptions options = new BaseOptions(
-      // 请求基地址,可以包含子路径
+    BaseOptions options = BaseOptions(
       baseUrl: "",
-
-      //连接服务器超时时间，单位是毫秒.
       connectTimeout: 20000,
-
-      // 响应流上前后两次接受到数据的间隔，单位为毫秒。
       receiveTimeout: 5000,
+      // headers: {
+      //   "User-Agent":
+      //       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
 
-      // Http请求头.
-      headers: {
-        "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
-        // "referer": "https://ting55.com/"
-      },
-      contentType: 'application/json; charset=utf-8',
-      responseType: ResponseType.json,
+      // },
+      // contentType: 'application/json; charset=utf-8',
+      // responseType: ResponseType.json,
     );
 
-    dio = new Dio(options);
+    dio = Dio(options);
     // cookieJar = CookieJar();
     // dio.interceptors.add(CookieManager(cookieJar));
-
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (client) {
+      // config the http client
+      client.findProxy = (uri) {
+        //proxy all request to localhost:8888
+        return 'PROXY localhost:7891';
+      };
+      // you can also create a new HttpClient to dio
+      // return HttpClient();
+    };
     dio.interceptors.add(RetryInterceptor(
       dio: dio,
       logPrint: print, // specify log function (optional)
@@ -132,6 +140,8 @@ class Request {
     }
     var response = await dio.get(path,
         queryParameters: params,
+        options:
+            Options(headers: {"User-Agent": uas[random.nextInt(uas.length)]}),
         // options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
     return response.data;
@@ -252,7 +262,10 @@ class Request {
   }
 
   Future postForm1(String path,
-      {String? params, Options? options,CancelToken? cancelToken, bool? useToken = true}) async {
+      {String? params,
+      Options? options,
+      CancelToken? cancelToken,
+      bool? useToken = true}) async {
     dio.options.contentType = 'application/x-www-form-urlencoded';
     var response = await dio.post(path,
         data: params,
