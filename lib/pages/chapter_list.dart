@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
-import 'package:ts70/pages/search.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -42,7 +42,7 @@ class ChapterList extends ConsumerWidget {
                   DropdownButton(
                       // isExpanded: true,
                       // 图标大小
-                      iconSize: 30,
+                      iconSize: 40,
                       // 下拉文本样式
                       style: const TextStyle(color: Colors.blue),
                       value: vp.state,
@@ -77,8 +77,11 @@ class MyCustomClass {
   Future<void> myAsyncMethod(
       BuildContext context, VoidCallback onSuccess) async {
     final play = ref.read(playProvider).value;
+    if (index == play!.idx) return;
+    play.position = Duration.zero;
+    play.duration = Duration.zero;
     final vs = ref.read(v.state).state;
-    play!.idx = index + (int.parse(vs) - 1) * 30;
+    play.idx = index + (int.parse(vs) - 1) * 30;
     int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
     final state = ref.read(refreshProvider.state);
     if (kDebugMode) {
@@ -87,6 +90,7 @@ class MyCustomClass {
     state.state = state.state ? false : true;
     //资源释放
     await audioPlayer.stop();
+
     onSuccess.call();
   }
 }
@@ -101,6 +105,7 @@ class ListPage extends ConsumerWidget {
 
     return f.when(
         data: (data) {
+          // scrollController=ScrollController(initialScrollOffset:(play!.idx! % 30)*40 );
           return SingleChildScrollView(
             controller: scrollController,
             child: ListView.builder(
@@ -108,6 +113,7 @@ class ListPage extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: ((context, index) {
                 final model = data[index];
+                final b = index == (play!.idx! % 30);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => MyCustomClass(ref, index).myAsyncMethod(context,
@@ -125,13 +131,11 @@ class ListPage extends ConsumerWidget {
                         Text(
                           "${model.name}",
                           style: TextStyle(
-                              color:
-                                  index == play!.idx ? Colors.lightBlue : null,
-                              fontSize: 22),
+                              color: b ? Colors.lightBlue : null, fontSize: 22),
                         ),
                         const Spacer(),
                         Offstage(
-                          offstage: index != play.idx,
+                          offstage: !b,
                           child: const Icon(
                             Icons.check,
                             color: Colors.lightBlue,
@@ -153,8 +157,6 @@ class ListPage extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Center(
-              child: Text('loading...'),
-            ));
+        loading: () => const Loading());
   }
 }

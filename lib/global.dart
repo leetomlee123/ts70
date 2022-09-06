@@ -22,13 +22,20 @@ class Global {
   /// init
   static Future init() async {
     // 运行初始
-    WidgetsFlutterBinding.ensureInitialized();
     // if (Platform.isIOS || Platform.isAndroid) {
     //   if (!await Permission.storage.request().isGranted) {
     //     return;
     //   }
     // }
     // Ruquest 模块初始化
+    // PowerImageBinding();
+
+    // ///添加全局power_image的加载方式
+    // PowerImageLoader.instance.setup(PowerImageSetupOptions(renderingTypeTexture,
+    //     errorCallbackSamplingRate: null,
+    //     errorCallback: (PowerImageLoadException exception) {}));
+    WidgetsFlutterBinding.ensureInitialized();
+
     Request();
     // 本地存储初始化
     await SpUtil.getInstance();
@@ -40,11 +47,10 @@ class Global {
       androidNotificationOngoing: true,
     );
     if (Platform.isAndroid) {
-    SystemUiOverlayStyle style = const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, 
-      statusBarIconBrightness: Brightness.light 
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
+      SystemUiOverlayStyle style = const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light);
+      SystemChrome.setSystemUIOverlayStyle(style);
     }
   }
 }

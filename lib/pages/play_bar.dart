@@ -14,6 +14,7 @@ import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
+import 'package:ts70/utils/database_provider.dart';
 
 // initResource(BuildContext context) async {
 //   final loadState =
@@ -94,9 +95,9 @@ initResource(Search? search, var ref) async {
     await audioPlayer.setAudioSource(audioSource);
     var duration = (await audioPlayer.load())!;
     search.duration = duration;
-    // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
-    // final state = ref.read(refreshProvider.state);
-    // state.state = state.state ? false : true;
+    await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
+    final state1 = ref.read(refreshProvider.state);
+    state1.state = state1.state ? false : true;
     state.state = false;
 
     await audioPlayer.seek(search.position);

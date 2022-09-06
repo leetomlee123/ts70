@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -142,6 +143,10 @@ class Result extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
+                      // PowerImage.network(    model.cover ?? "",
+                      //   fit: BoxFit.cover,
+                      //   width: 80,
+                      //   height: 120),
                       CachedNetworkImage(
                         imageUrl: model.cover ?? "",
                         fit: BoxFit.cover,
@@ -195,8 +200,6 @@ class Result extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Center(
-              child: Text('loading...'),
-            ));
+        loading: () => const Loading());
   }
 }
