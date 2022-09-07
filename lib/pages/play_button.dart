@@ -12,20 +12,19 @@ class PlayButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(stateProvider);
-    final p = ref.read(playProvider);
+    final p = ref.read(playProvider.state);
     return IconButton(
         key: ValueKey(f),
         iconSize: 50,
         onPressed: () async {
           if(f.playing){
             await audioPlayer.pause();
-
-            await DataBaseProvider.dbProvider.addVoiceOrUpdate(p!);
+            await DataBaseProvider.dbProvider.addVoiceOrUpdate(p.state!);
           }else{
             if (f.processingState== ProcessingState.ready) {
               audioPlayer.play();
             } else {
-             initResource(p, ref);
+             initResource(p.state, ref);
             }
           }
         },
