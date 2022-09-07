@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
@@ -20,15 +18,8 @@ class Request {
   static Request _instance = Request._internal();
 
   factory Request() => _instance;
-  static List<String> uas = [
-    "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/527 (KHTML, like Gecko, Safari/419.3) Arora/0.6 (Change: )",
-    "Avant Browser/1.2.789rel1 (http://www.avantbrowser.com)",
-    "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.0 Safari/532.5",
-  ];
-  static var random = Random();
 
   late Dio dio;
-  late CookieJar cookieJar;
   CancelToken cancelToken = CancelToken();
 
   Request._internal() {
@@ -36,28 +27,19 @@ class Request {
       baseUrl: "",
       connectTimeout: 20000,
       receiveTimeout: 5000,
-      // headers: {
-      //   "User-Agent":
-      //       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
+      headers: {
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
 
-      // },
-      // contentType: 'application/json; charset=utf-8',
-      // responseType: ResponseType.json,
+      },
+      contentType: 'application/json; charset=utf-8',
+      responseType: ResponseType.json,
     );
 
     dio = Dio(options);
     // cookieJar = CookieJar();
     // dio.interceptors.add(CookieManager(cookieJar));
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (client) {
-      // config the http client
-      client.findProxy = (uri) {
-        //proxy all request to localhost:8888
-        return 'PROXY localhost:7891';
-      };
-      // you can also create a new HttpClient to dio
-      // return HttpClient();
-    };
+
     dio.interceptors.add(RetryInterceptor(
       dio: dio,
       logPrint: print, // specify log function (optional)
@@ -69,17 +51,6 @@ class Request {
         Duration(seconds: 3), // wait 3 sec before third retry
       ],
     ));
-    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-    //     (client) {
-    //   print("dddd");
-    //   // config the http client
-    //   client.findProxy = (uri) {
-    //     //proxy all request to localhost:8888
-    //     return 'PROXY 120.35.40.86:16790';
-    //   };
-    //   // you can also create a HttpClient to dio
-    //   // return HttpClient();
-    // };
     // 添加拦截器
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
       // 在请求被发送之前做一些预处理
@@ -140,8 +111,6 @@ class Request {
     }
     var response = await dio.get(path,
         queryParameters: params,
-        options:
-            Options(headers: {"User-Agent": uas[random.nextInt(uas.length)]}),
         // options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
     return response.data;
