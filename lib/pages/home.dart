@@ -55,13 +55,13 @@ class Home extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     audioPlayer.playerStateStream.listen((event) {
       final s = ref.read(stateProvider.state);
-      final search = ref.read(playProvider);
+      final search = ref.read(playProvider.state);
       if (s.state.playing && !event.playing) {
 // int po = ProviderScope.containerOf(context)
 //     .read(processProvider.state)
 //     .state;
 // value!.position = Duration(milliseconds: po);
-        DataBaseProvider.dbProvider.addVoiceOrUpdate(search!);
+        DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
       }
       s.state = event;
       if (kDebugMode) {
@@ -77,19 +77,18 @@ class Home extends ConsumerWidget {
         case ProcessingState.ready:
           break;
         case ProcessingState.completed:
-          search!.position = Duration.zero;
-          search.duration = Duration.zero;
-          search.idx = search.idx! + 1;
-          initResource(search, ref);
+          search.state = search.state!
+              .copyWith(position: Duration.zero, idx: search.state!.idx! + 1);
+          initResource(search.state, ref);
           break;
       }
     });
     audioPlayer.positionStream.listen((event) {
-      if(ref.read(stateProvider.state).state.playing){
-      final f=ref.read(playProvider.state);
-      f.state=f.state!.copyWith(position: event);
-      if (kDebugMode) {
-      }}
+      if (ref.read(stateProvider.state).state.playing) {
+        final f = ref.read(playProvider.state);
+        f.state = f.state!.copyWith(position: event);
+        if (kDebugMode) {}
+      }
     });
 
     return Scaffold(
