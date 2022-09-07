@@ -23,10 +23,7 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   if (kDebugMode) {
     print('refresh');
   }
-  ref.onDispose(() {
-    // DataBaseProvider.dbProvider.addVoiceOrUpdate(value!);
-    audioPlayer.dispose();
-  });
+
   List<Search> voices = await DataBaseProvider.dbProvider.voices();
   ref.read(playProvider.state).state = voices.first;
   return voices;

@@ -22,7 +22,7 @@ class PlayButton extends ConsumerWidget {
             await DataBaseProvider.dbProvider.addVoiceOrUpdate(p.state!);
           }else{
             if (f.processingState== ProcessingState.ready) {
-              audioPlayer.play();
+             await audioPlayer.play();
             } else {
              initResource(p.state, ref);
             }

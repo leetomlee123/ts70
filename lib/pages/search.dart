@@ -5,9 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
+import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/services.dart';
 import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -133,10 +135,13 @@ class Result extends ConsumerWidget {
               final model = data[index];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () =>
-                    MyCustomClass(model, ref).myAsyncMethod(context, () {
+                onTap: ()  async {
                   Navigator.of(context).pop();
-                }),
+                  await audioPlayer.pause();
+                  int result = await DataBaseProvider.dbProvider
+                      .addVoiceOrUpdate(model);
+                  ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+                },
                 child: Container(
                   height: 130,
                   padding: const EdgeInsets.symmetric(

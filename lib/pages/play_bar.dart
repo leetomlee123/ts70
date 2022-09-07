@@ -14,9 +14,8 @@ import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
-import 'package:ts70/utils/database_provider.dart';
 
-initResource(Search? search, var ref) async {
+initResource(Search? search, WidgetRef ref) async {
   final state = ref.read(loadProvider.state);
   String url = "";
   state.state = true;
@@ -31,6 +30,8 @@ initResource(Search? search, var ref) async {
     state.state = false;
     return;
   }
+  state.state = false;
+
   // await audioPlayer.pause();
   try {
     audioSource = AudioSource.uri(
@@ -42,30 +43,30 @@ initResource(Search? search, var ref) async {
         artUri: Uri.parse(search.cover ?? ""),
       ),
     );
-    await audioPlayer.setAudioSource(audioSource);
-    var duration = (await audioPlayer.load())!;
-    search.duration = duration;
-    await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
-    // ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
-    state.state = false;
-
-    await audioPlayer.seek(search.position);
-    await audioPlayer.play();
-  } on PlayerException catch (e) {
-    state.state = false;
-    // playerState.value = ProcessingState.idle;
-    // playing.value = false;
-    BotToast.showText(text: "加载音频资源失败,请重试....");
-  } on PlayerInterruptedException catch (e) {
     if (kDebugMode) {
-      print("Connection aborted: ${e.message}");
+      print("loading network resource");
     }
-    // await audioPlayer.pause();
-  } catch (e) {}
-  return 1;
-}
+    await audioPlayer.setAudioSource(audioSource,initialPosition: search.position,preload: true);
 
-next() {}
+    // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
+    // ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
+    audioPlayer.load().then((value){
+      final play = ref.read(playProvider.state);
+      play.state = play.state!.copyWith(duration: value);
+    });
+
+    if (kDebugMode) {
+      print("play ${audioPlayer.processingState}");
+    }
+    await audioPlayer.play();
+  }
+   catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
+  }
+
+}
 
 class PlayBar extends ConsumerWidget {
   const PlayBar({super.key});

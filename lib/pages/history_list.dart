@@ -23,14 +23,16 @@ class HistoryList extends ConsumerWidget {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
-                  await audioPlayer.pause();
+                  await audioPlayer.stop();
                   int result =
                       await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
                   if (kDebugMode) {
                     print('dddd $result');
                   }
-                ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
+                  ref.read(refreshProvider.state).state =
+                      DateUtil.getNowDateMs();
                   await initResource(item, ref);
+
                 },
                 onLongPress: () {
                   BotToast.showWidget(
@@ -54,7 +56,8 @@ class HistoryList extends ConsumerWidget {
                             if (kDebugMode) {
                               print('dddd $result');
                             }
-                       ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
+                            ref.read(refreshProvider.state).state =
+                                DateUtil.getNowDateMs();
                             cancelFunc();
                           },
                           // onPressed: () => controller.delete(i),
@@ -111,7 +114,7 @@ class HistoryList extends ConsumerWidget {
                         const Spacer(),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
                                 onPressed: () async {
@@ -142,7 +145,8 @@ class HistoryList extends ConsumerWidget {
                                 )),
                             Text(
                               '第${item.idx! + 1}回',
-                              style: const TextStyle(fontSize: 12,color: Colors.white70),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.white70),
                             ),
                           ],
                         ),

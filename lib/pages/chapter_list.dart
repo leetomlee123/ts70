@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -86,10 +84,8 @@ class MyCustomClass {
     if (kDebugMode) {
       print('dddd $result');
     }
-
     //资源释放
-    await audioPlayer.stop();
-
+    await audioPlayer.pause();
     onSuccess.call();
   }
 }
@@ -105,20 +101,33 @@ class ListPage extends ConsumerWidget {
     return f.when(
         data: (data) {
           return SingleChildScrollView(
-            controller: ScrollController(initialScrollOffset: max(0,play!.idx! % 30-5)*40 ),
+            // controller: ScrollController(initialScrollOffset: max(0,play!.idx! % 30+1)*40 ),
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: ((context, index) {
                 final model = data[index];
-                final b = index == (play!.idx! % 30);
+                final vp = ref.read(v.state).state;
+                final b = (index == (play!.idx! % 30) &&
+                    int.parse(vp) == (play.idx! ~/ 30 + 1));
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => MyCustomClass(ref, index).myAsyncMethod(context,
-                      () async {
+                  onTap: () async {
                     Navigator.pop(context);
+                    final play = ref.read(playProvider);
+                    int result = await DataBaseProvider.dbProvider
+                        .addVoiceOrUpdate(play!);
+                    play.position = Duration.zero;
+                    final vs = ref.read(v.state).state;
+                    play.idx = index + (int.parse(vs) - 1) * 30;
+                    // ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+                    if (kDebugMode) {
+                      print('dddd $result');
+                    }
+                    //资源释放
+                    await audioPlayer.stop();
                     await initResource(play, ref);
-                  }),
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(

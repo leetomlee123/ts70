@@ -11,7 +11,7 @@ import 'package:html/parser.dart';
 import 'package:ts70/utils/request.dart';
 
 Future<void> main() async {
-  print(1356 ~/ 30);
+  print(1356 % 30);
 
   // String host = "https://m.70ts.cc";
   // var link = "$host/tingshu/777";
