@@ -44,6 +44,7 @@ final save = Provider.autoDispose((ref) {
   DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
+int completed=0;
 
 class Home extends ConsumerWidget {
   const Home({super.key});
@@ -54,43 +55,38 @@ class Home extends ConsumerWidget {
       final s = ref.read(stateProvider.state);
       final search = ref.read(playProvider.state);
       if (s.state.playing && !event.playing) {
-// int po = ProviderScope.containerOf(context)
-//     .read(processProvider.state)
-//     .state;
-// value!.position = Duration(milliseconds: po);
         DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
       }
-      s.state = event;
       if (kDebugMode) {
         print(event.processingState);
       }
       switch (event.processingState) {
-        case ProcessingState.idle:
-          break;
-        case ProcessingState.loading:
-          break;
-        case ProcessingState.buffering:
-          break;
-        case ProcessingState.ready:
-          break;
         case ProcessingState.completed:
-          await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!
-              .copyWith(
-                  position: Duration.zero,
-                  duration: const Duration(seconds: 1),
-                  idx: search.state!.idx! + 1));
-
-          ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
-          initResource(search.state, ref);
+          completed+=1;
           break;
+        default:
+          completed=0;
       }
+      if(completed==1){
+        print("ccccc");
+        await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!
+            .copyWith(
+            position: Duration.zero,
+            duration: const Duration(seconds: 1),
+            idx: search.state!.idx! + 1));
+        ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+        initResource(ref);
+      }
+      s.state = event;
     });
     audioPlayer.positionStream.listen((event) {
-    final kk = ref.read(stateProvider.state).state;
+      final kk = ref.read(stateProvider.state).state;
       if (kk.playing && kk.processingState != ProcessingState.completed) {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
-        if (kDebugMode) {}
+        if (kDebugMode) {
+          // print(event);
+        }
       }
     });
 

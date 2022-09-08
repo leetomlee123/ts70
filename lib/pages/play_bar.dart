@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -11,50 +10,40 @@ import 'package:nil/nil.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
-import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
 
-initResource(Search? search, WidgetRef ref) async {
+initResource(WidgetRef ref) async {
   final state = ref.read(loadProvider.state);
+  final play = ref.read(playProvider.state);
   String url = "";
   state.state = true;
   try {
     url = "";
-    url = await ListenApi().chapterUrl(search);
-  } catch (e) {
+    url = await ListenApi().chapterUrl(play.state);
+    if (url.isEmpty) {
+      // BotToast.showText(text: "fetch resource failed,please try it again");
+      state.state = false;
+      return;
+    }
     state.state = false;
-  }
-  if (url.isEmpty) {
-    BotToast.showText(text: "获取资源链接失败,请重试...");
-    state.state = false;
-    return;
-  }
-  state.state = false;
-
-  // await audioPlayer.pause();
-  try {
     audioSource = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
         id: '1',
-        album: search!.title,
-        title: "${search.title}-第${search.idx ?? 0 + 1}回",
-        artUri: Uri.parse(search.cover ?? ""),
+        album: play.state!.title,
+        title: "${play.state!.title}-第${(play.state!.idx ?? 0) + 1}回",
+        artUri: Uri.parse(play.state!.cover ?? ""),
       ),
     );
     if (kDebugMode) {
       print("loading network resource");
     }
     await audioPlayer.setAudioSource(audioSource);
-    // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
-    // ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
     final duration = await audioPlayer.load();
-    final play = ref.read(playProvider.state);
     play.state = play.state!.copyWith(duration: duration);
-    await audioPlayer.seek(search.position);
-
+    await audioPlayer.seek(play.state!.position);
     if (kDebugMode) {
       print("play ${audioPlayer.processingState}");
     }

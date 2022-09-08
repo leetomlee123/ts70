@@ -114,7 +114,7 @@ class ListenDetail extends ConsumerWidget {
                         p.idx = p.idx! - 1;
                         ps.state =
                             p.copyWith(position: Duration.zero, idx: p.idx);
-                        initResource(p, ref);
+                        initResource(ref);
                       },
                       icon: const Icon(Icons.skip_previous_outlined)),
                   const PlayButton(),
@@ -126,7 +126,7 @@ class ListenDetail extends ConsumerWidget {
                         p.idx = p.idx! + 1;
                         ps.state =
                             p.copyWith(position: Duration.zero, idx: p.idx);
-                        initResource(p, ref);
+                        initResource(ref);
                       },
                       icon: const Icon(Icons.skip_next_outlined)),
                   IconButton(
@@ -186,6 +186,7 @@ class VoiceSlider extends ConsumerWidget {
                   format: 'mm:ss'),
               divisions: p.duration!.inSeconds,
               max: p.duration!.inSeconds.toDouble(),
+              min: -1,
             ),
           ),
         ),

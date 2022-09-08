@@ -72,6 +72,7 @@ class ListenApi {
   }
 
   Future<String> chapterUrl(Search? search) async {
+    print(search);
     int idx = search!.idx ?? 0;
     int page = (idx ~/ 30) + 1;
     var link = "$host/tingshu/${search.id}${page==1?"":'/p$page.html'}";

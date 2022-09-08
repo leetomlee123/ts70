@@ -123,13 +123,12 @@ class ListPage extends ConsumerWidget {
                     play.duration = const Duration(seconds: 1);
                     int result = await DataBaseProvider.dbProvider
                         .addVoiceOrUpdate(play);
-
                     ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
                     if (kDebugMode) {
                       print('dddd $result');
                     }
                     //资源释放
-                    await initResource(play, ref);
+                    await initResource(ref);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),

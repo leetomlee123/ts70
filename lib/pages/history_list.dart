@@ -31,7 +31,8 @@ class HistoryList extends ConsumerWidget {
                   }
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
-                  await initResource(item, ref);
+                  ref.read(playProvider.state).state =item;
+                  await initResource(ref);
 
                 },
                 onLongPress: () {

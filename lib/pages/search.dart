@@ -141,6 +141,7 @@ class Result extends ConsumerWidget {
                   int result = await DataBaseProvider.dbProvider
                       .addVoiceOrUpdate(model);
                   ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+                  await audioPlayer.stop();
                 },
                 child: Container(
                   height: 130,
