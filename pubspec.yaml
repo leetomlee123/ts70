@@ -42,6 +42,7 @@ dependencies:
   modal_bottom_sheet: ^2.1.0
   pull_to_refresh_flutter3: ^2.0.1
   equatable: ^2.0.5
+  nil: ^1.1.1
   # power_image: 0.1.0-pre.2
 
 

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:nil/nil.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
@@ -46,26 +47,23 @@ initResource(Search? search, WidgetRef ref) async {
     if (kDebugMode) {
       print("loading network resource");
     }
-    await audioPlayer.setAudioSource(audioSource,initialPosition: search.position,preload: true);
-
+    await audioPlayer.setAudioSource(audioSource);
     // await DataBaseProvider.dbProvider.addVoiceOrUpdate(search);
     // ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
-    audioPlayer.load().then((value){
-      final play = ref.read(playProvider.state);
-      play.state = play.state!.copyWith(duration: value);
-    });
+    final duration = await audioPlayer.load();
+    final play = ref.read(playProvider.state);
+    play.state = play.state!.copyWith(duration: duration);
+    await audioPlayer.seek(search.position);
 
     if (kDebugMode) {
       print("play ${audioPlayer.processingState}");
     }
     await audioPlayer.play();
-  }
-   catch (e) {
+  } catch (e) {
     if (kDebugMode) {
       print(e);
     }
   }
-
 }
 
 class PlayBar extends ConsumerWidget {
@@ -74,6 +72,7 @@ class PlayBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final data = ref.watch(playProvider);
+    if (data!.title == null) return nil;
     return GestureDetector(
       onTap: () => Navigator.push(
         context,

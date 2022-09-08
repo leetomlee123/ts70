@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -160,6 +159,7 @@ class VoiceSlider extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(playProvider);
+    final p1 = ref.read(playProvider.state);
     return Row(
       children: [
         Text(
@@ -169,14 +169,22 @@ class VoiceSlider extends ConsumerWidget {
           child: SizedBox(
             height: 40,
             child: Slider(
-              onChangeStart: (value) {},
-              onChanged: (double value) {},
-              onChangeEnd: (double value) {},
+              onChangeStart: (value) async {
+                await audioPlayer.pause();
+              },
+              onChanged: (double value) async {
+                p1.state = p1.state!
+                    .copyWith(position: Duration(seconds: value.toInt()));
+              },
+              onChangeEnd: (double value) async {
+                await audioPlayer.seek(Duration(seconds: value.toInt()));
+                await audioPlayer.play();
+
+              },
               value: p.position!.inSeconds.toDouble(),
-              label: DateUtil.formatDateMs(p.position!.inMilliseconds, format: 'mm:ss'),
-              min: .0,
-              divisions: p
-              .duration!.inSeconds,
+              label: DateUtil.formatDateMs(p.position!.inMilliseconds,
+                  format: 'mm:ss'),
+              divisions: p.duration!.inSeconds,
               max: p.duration!.inSeconds.toDouble(),
             ),
           ),

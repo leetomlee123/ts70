@@ -50,7 +50,7 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    audioPlayer.playerStateStream.listen((event) {
+    audioPlayer.playerStateStream.listen((event) async {
       final s = ref.read(stateProvider.state);
       final search = ref.read(playProvider.state);
       if (s.state.playing && !event.playing) {
@@ -74,14 +74,20 @@ class Home extends ConsumerWidget {
         case ProcessingState.ready:
           break;
         case ProcessingState.completed:
-          search.state = search.state!
-              .copyWith(position: Duration.zero, idx: search.state!.idx! + 1);
+          await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!
+              .copyWith(
+                  position: Duration.zero,
+                  duration: const Duration(seconds: 1),
+                  idx: search.state!.idx! + 1));
+
+          ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
           initResource(search.state, ref);
           break;
       }
     });
     audioPlayer.positionStream.listen((event) {
-      if (ref.read(stateProvider.state).state.playing) {
+    final kk = ref.read(stateProvider.state).state;
+      if (kk.playing && kk.processingState != ProcessingState.completed) {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
         if (kDebugMode) {}

@@ -114,18 +114,21 @@ class ListPage extends ConsumerWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     Navigator.pop(context);
+                    await audioPlayer.stop();
+
                     final play = ref.read(playProvider);
-                    int result = await DataBaseProvider.dbProvider
-                        .addVoiceOrUpdate(play!);
-                    play.position = Duration.zero;
                     final vs = ref.read(v.state).state;
-                    play.idx = index + (int.parse(vs) - 1) * 30;
-                    // ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+                    play!.idx = index + (int.parse(vs) - 1) * 30;
+                    play.position = Duration.zero;
+                    play.duration = const Duration(seconds: 1);
+                    int result = await DataBaseProvider.dbProvider
+                        .addVoiceOrUpdate(play);
+
+                    ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
                     if (kDebugMode) {
                       print('dddd $result');
                     }
                     //资源释放
-                    await audioPlayer.stop();
                     await initResource(play, ref);
                   },
                   child: Padding(
