@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:nil/nil.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
@@ -44,7 +45,7 @@ final save = Provider.autoDispose((ref) {
   DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
-int completed=0;
+int completed = 0;
 
 class Home extends ConsumerWidget {
   const Home({super.key});
@@ -60,24 +61,24 @@ class Home extends ConsumerWidget {
       if (kDebugMode) {
         print(event.processingState);
       }
+      s.state = event;
+
       switch (event.processingState) {
         case ProcessingState.completed:
-          completed+=1;
+          completed += 1;
           break;
         default:
-          completed=0;
+          completed = 0;
       }
-      if(completed==1){
-        print("ccccc");
-        await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!
-            .copyWith(
+      if (completed == 1) {
+        search.state = search.state!.copyWith(
             position: Duration.zero,
             duration: const Duration(seconds: 1),
-            idx: search.state!.idx! + 1));
+            idx: search.state!.idx! + 1);
+        await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
         ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
-        initResource(ref);
+        await initResource(ref);
       }
-      s.state = event;
     });
     audioPlayer.positionStream.listen((event) {
       final kk = ref.read(stateProvider.state).state;
@@ -85,7 +86,7 @@ class Home extends ConsumerWidget {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
         if (kDebugMode) {
-          // print(event);
+          // print(f.state);
         }
       }
     });
@@ -93,6 +94,7 @@ class Home extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.black,
         elevation: 2.2,
         title: Row(
           children: const [
@@ -128,7 +130,7 @@ class Home extends ConsumerWidget {
       ),
       body: Container(
         padding: const EdgeInsets.only(bottom: 70, top: 10),
-        color: Colors.white10,
+        color: Colors.black87,
         child: const HistoryList(),
       ),
       bottomSheet: const PlayBar(),
@@ -151,7 +153,7 @@ class LoadingWidget extends ConsumerWidget {
               color: Colors.white,
               size: 20,
             )
-          : null,
+          : nil,
     );
   }
 }

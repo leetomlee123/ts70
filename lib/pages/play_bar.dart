@@ -17,6 +17,7 @@ import 'package:ts70/utils/Screen.dart';
 initResource(WidgetRef ref) async {
   final state = ref.read(loadProvider.state);
   final play = ref.read(playProvider.state);
+  print(play.state!.idx);
   String url = "";
   state.state = true;
   try {
@@ -27,7 +28,6 @@ initResource(WidgetRef ref) async {
       state.state = false;
       return;
     }
-    state.state = false;
     audioSource = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
@@ -47,6 +47,7 @@ initResource(WidgetRef ref) async {
     if (kDebugMode) {
       print("play ${audioPlayer.processingState}");
     }
+    state.state = false;
     await audioPlayer.play();
   } catch (e) {
     if (kDebugMode) {
@@ -71,8 +72,8 @@ class PlayBar extends ConsumerWidget {
         height: 70,
         width: Screen.width,
         decoration: const BoxDecoration(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-            color: Colors.white),
+            // borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            color: Colors.black),
         child: Row(
           children: [
             const SizedBox(
@@ -80,7 +81,7 @@ class PlayBar extends ConsumerWidget {
             ),
             CircleAvatar(
               backgroundImage: CachedNetworkImageProvider(
-                data!.cover ?? "",
+                data.cover ?? "",
               ),
               radius: 25,
             ),
@@ -97,7 +98,7 @@ class PlayBar extends ConsumerWidget {
                       width: 160,
                       child: Text(
                         data.title ?? "",
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16,color: Colors.white),
                       ),
                     ),
                   ],
@@ -127,7 +128,8 @@ class PlayBar extends ConsumerWidget {
                 ),
               ),
               icon: const Icon(Icons.playlist_play_outlined),
-              iconSize: 40,
+              iconSize: 45,
+                color: Colors.white
             ),
             const SizedBox(
               width: 30,
@@ -147,7 +149,7 @@ class PositionWidget extends ConsumerWidget {
     final data = ref.watch(playProvider);
     return Text(
       "${DateUtil.formatDateMs(data!.position!.inMilliseconds, format: 'mm:ss')}/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-      style: const TextStyle(fontSize: 12),
+      style: const TextStyle(fontSize: 12,color: Colors.white),
     );
   }
 }

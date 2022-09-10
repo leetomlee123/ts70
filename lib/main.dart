@@ -13,10 +13,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: '听风',
+      darkTheme: ThemeData.dark(useMaterial3: true),
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
       home: const Home(),

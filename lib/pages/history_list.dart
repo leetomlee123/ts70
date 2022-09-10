@@ -14,6 +14,7 @@ class HistoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(historyProvider);
+    final p = ref.read(playProvider);
     return f.when(
         data: (data) {
           return ListView.builder(
@@ -31,9 +32,8 @@ class HistoryList extends ConsumerWidget {
                   }
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
-                  ref.read(playProvider.state).state =item;
+                  ref.read(playProvider.state).state = item;
                   await initResource(ref);
-
                 },
                 onLongPress: () {
                   BotToast.showWidget(
@@ -73,8 +73,8 @@ class HistoryList extends ConsumerWidget {
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Colors.deepPurpleAccent,
-                      boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
+                      color: Colors.black,
+                      // boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
                     ),
                     height: 90,
                     child: Row(
@@ -99,7 +99,7 @@ class HistoryList extends ConsumerWidget {
                               child: Text(
                                 item.title ?? "",
                                 style: const TextStyle(
-                                    fontSize: 20, color: Colors.white),
+                                    fontSize: 18, color: Colors.white),
                               ),
                             ),
                             const SizedBox(
@@ -113,43 +113,10 @@ class HistoryList extends ConsumerWidget {
                           ],
                         ),
                         const Spacer(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                onPressed: () async {
-                                  if (i == 0) return;
-                                  // controller.toTop(i);
-                                  //
-                                  // await controller.audioPlayer.stop();
-                                  // await controller.saveState();
-                                  // controller.model.value = item;
-                                  // controller.idx.value =
-                                  //     controller.model.value.idx ?? 0;
-                                  // controller.playerState.value =
-                                  //     ProcessingState.idle;
-                                  //
-                                  // await controller.getUrl(controller.idx.value);
-                                  //
-                                  // await controller.audioPlayer.play();
-                                  // controller.detail(item.id.toString());
-                                },
-                                icon: const Icon(
-                                  // controller.history[i].id ==
-                                  //         controller.model.value.id
-                                  //     ? Icons.music_note_outlined
-                                  //     :
-                                  Icons.play_arrow_rounded,
-                                  size: 40,
-                                  color: Colors.white,
-                                )),
-                            Text(
-                              '第${item.idx! + 1}回',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.white70),
-                            ),
-                          ],
+                        Text(
+                          '第${item.idx! + 1}回',
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white70),
                         ),
                         const SizedBox(
                           width: 20,
@@ -164,7 +131,7 @@ class HistoryList extends ConsumerWidget {
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text('Ops...'),
+              child: Text(''),
             ),
         loading: () => const Center(
               child: Text('loading...'),

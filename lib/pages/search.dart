@@ -5,13 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
-import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
-import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/services.dart';
-import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 final keyProvider = StateProvider.autoDispose((ref) => '');
@@ -58,11 +54,14 @@ class SearchViewState extends State<SearchPage> {
         title: Input(),
         backgroundColor: Colors.black87,
       ),
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child:  const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Result(),
+      body: Container(
+        color: Colors.black,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Result(),
+          ),
         ),
       ),
     );
@@ -107,6 +106,7 @@ class Input extends ConsumerWidget {
 class MyCustomClass {
   WidgetRef ref;
   Search model;
+
   MyCustomClass(this.model, this.ref);
 
   Future<void> myAsyncMethod(
@@ -115,7 +115,7 @@ class MyCustomClass {
     if (kDebugMode) {
       print('dddd $result');
     }
-    ref.read(refreshProvider.state).state=DateUtil.getNowDateMs();
+    ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
     onSuccess.call();
   }
 }
@@ -135,16 +135,17 @@ class Result extends ConsumerWidget {
               final model = data[index];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: ()  async {
+                onTap: () async {
                   Navigator.of(context).pop();
                   await audioPlayer.pause();
-                  int result = await DataBaseProvider.dbProvider
-                      .addVoiceOrUpdate(model);
-                  ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+                  int result =
+                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+                  ref.read(refreshProvider.state).state =
+                      DateUtil.getNowDateMs();
                   await audioPlayer.stop();
                 },
                 child: Container(
-                  height: 130,
+                  height: 100,
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
                   ),
@@ -157,8 +158,8 @@ class Result extends ConsumerWidget {
                       CachedNetworkImage(
                         imageUrl: model.cover ?? "",
                         fit: BoxFit.cover,
-                        width: 80,
-                        height: 120,
+                        width: 60,
+                        height: 80,
                         placeholder: (context, url) =>
                             LoadingAnimationWidget.dotsTriangle(
                           color: Colors.white,
@@ -178,18 +179,20 @@ class Result extends ConsumerWidget {
                             Text(
                               model.title ?? "",
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
+                                  fontWeight: FontWeight.bold, fontSize: 20,color: Colors.white),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               model.desc ?? "",
-                              maxLines: 3,
+                              maxLines: 2,
                               overflow: TextOverflow.clip,
+                              style: const TextStyle(color: Colors.white),
                             ),
                             Text(
                               model.bookMeta ?? "",
                               maxLines: 1,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ],
                         ),
