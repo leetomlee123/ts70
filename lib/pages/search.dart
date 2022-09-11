@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
@@ -19,7 +20,6 @@ final resultProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   return await ListenApi().search(keyword, cancelToken);
 });
 final FocusNode focusNode = FocusNode();
-
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -129,88 +129,107 @@ class Result extends ConsumerWidget {
     final f = ref.watch(resultProvider);
     return f.when(
         data: (data) {
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: ((context, index) {
-              final model = data[index];
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  await audioPlayer.pause();
-                  int result =
-                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-                  ref.read(refreshProvider.state).state =
-                      DateUtil.getNowDateMs();
-                  await audioPlayer.stop();
-                },
-                child: Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      // PowerImage.network(    model.cover ?? "",
-                      //   fit: BoxFit.cover,
-                      //   width: 80,
-                      //   height: 120),
-                      CachedNetworkImage(
-                        imageUrl: model.cover ?? "",
-                        fit: BoxFit.cover,
-                        width: 60,
-                        height: 80,
-                        placeholder: (context, url) =>
-                            LoadingAnimationWidget.dotsTriangle(
-                          color: Colors.white,
-                          size: 60,
+          return AnimationLimiter(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: ((context, index) {
+                final model = data[index];
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 375),
+                  child: SlideAnimation(
+                    child: FadeInAnimation(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () async {
+                          Navigator.of(context).pop();
+                          await audioPlayer.pause();
+                          int result = await DataBaseProvider.dbProvider
+                              .addVoiceOrUpdate(model);
+                          ref.read(refreshProvider.state).state =
+                              DateUtil.getNowDateMs();
+                          await audioPlayer.stop();
+                        },
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              // PowerImage.network(    model.cover ?? "",
+                              //   fit: BoxFit.cover,
+                              //   width: 80,
+                              //   height: 120),
+                              CachedNetworkImage(
+                                imageUrl: model.cover ?? "",
+                                fit: BoxFit.cover,
+                                width: 60,
+                                height: 80,
+                                placeholder: (context, url) =>
+                                    LoadingAnimationWidget.dotsTriangle(
+                                  color: Colors.white,
+                                  size: 60,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text(
+                                      model.title ?? "",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.white),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      model.desc ?? "",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.clip,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      model.bookMeta ?? "",
+                                      maxLines: 1,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          // child: ListTile(
                         ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
                       ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              model.title ?? "",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20,color: Colors.white),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              model.desc ?? "",
-                              maxLines: 2,
-                              overflow: TextOverflow.clip,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              model.bookMeta ?? "",
-                              maxLines: 1,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                    ),
                   ),
-                  // child: ListTile(
-                ),
-              );
-            }),
-            itemCount: data!.length,
-            itemExtent: 130,
+                );
+              }),
+              itemCount: data!.length,
+              itemExtent: 130,
+            ),
           );
         },
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Center(child: Text('loading...',style: TextStyle(color: Colors.white),)));
+        loading: () => const Center(
+                child: Text(
+              'loading...',
+              style: TextStyle(color: Colors.white),
+            )));
   }
 }
