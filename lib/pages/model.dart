@@ -7,6 +7,14 @@ class Chapter {
   Chapter({this.name, this.index});
 }
 
+class TopRank {
+  String? name;
+  String? a;
+  String? b;
+  String? id;
+  TopRank({this.a, this.b,this.id, this.name});
+}
+
 class Search extends Equatable {
   String? id;
   String? cover;

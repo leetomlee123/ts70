@@ -12,6 +12,12 @@ import 'package:ts70/services/services.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 final keyProvider = StateProvider.autoDispose((ref) => '');
+final topProvider = StateProvider.autoDispose((ref) => true);
+final sProvider = FutureProvider.autoDispose<List<TopRank>?>((ref) async {
+  final ss = await ListenApi().getTop("");
+  print(ss);
+  return ss;
+});
 final resultProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   final keyword = ref.watch(keyProvider);
   final cancelToken = CancelToken();
@@ -118,6 +124,88 @@ class MyCustomClass {
     }
     ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
     onSuccess.call();
+  }
+}
+
+class ViewBody extends ConsumerWidget {
+  const ViewBody({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = ref.watch(topProvider);
+    return p ? const Top() : const Result();
+  }
+}
+
+class Top extends ConsumerWidget {
+  const Top({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final f = ref.watch(sProvider);
+    return f.when(
+        data: (data) {
+          return AnimationLimiter(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: ((context, index) {
+                final model = data[index];
+                return AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 375),
+                  child: SlideAnimation(
+                    child: FadeInAnimation(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () async {
+                          // Navigator.of(context).pop();
+                          // await audioPlayer.pause();
+                          // int result = await DataBaseProvider.dbProvider
+                          //     .addVoiceOrUpdate(model);
+                          // ref.read(refreshProvider.state).state =
+                          //     DateUtil.getNowDateMs();
+                          // await audioPlayer.stop();
+                        },
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                          child: Column(
+                            children: [
+                              Text(model.name ?? ""),
+                              Row(
+                                children: [
+                                  const Icon(Icons.person),
+                                  Text(model.a ?? ""),
+                                  const Spacer(),
+                                  const Icon(Icons.voice_chat),
+                                  Text(model.b ?? "")
+                                ],
+                              )
+                            ],
+                          ),
+                          // child: ListTile(
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+              itemCount: data!.length,
+              itemExtent: 130,
+            ),
+          );
+        },
+        error: (error, stackTrace) => const Center(
+              child: Text('Ops...'),
+            ),
+        loading: () => const Center(
+                child: Text(
+              'loading...',
+              style: TextStyle(color: Colors.white),
+            )));
   }
 }
 

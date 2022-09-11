@@ -7,10 +7,27 @@ import 'package:ts70/utils/request.dart';
 
 class ListenApi {
   static String host = "https://m.70ts.cc";
+  static String hostPc = "https://www.70ts.cc";
 
   Future<int?> checkSite(String sk) async {
     var res = await Request().getBase(host);
     return res;
+  }
+
+  Future<List<TopRank>?> getTop(String rank) async {
+    var res = await Request().getBase(hostPc);
+    Document document = parse(res);
+    List<Element> es = document.querySelector(".top-ul")!.children;
+    print("ddddddddddd");
+    return es.map((element) {
+      final v1 = element.querySelector("h4>a");
+      final v2 = element.querySelector("p")!.children;
+      return TopRank(
+          id: v1!.attributes['href'],
+          name: v1.text,
+          a: v2[0].querySelector("a")!.text,
+          b: v2[1].querySelector("a")!.text);
+    }).toList();
   }
 
   Future<List<Search>?> search(String keyword, CancelToken cancelToken) async {
@@ -44,7 +61,8 @@ class ListenApi {
   }
 
   Future<List<Chapter>?> getChapters(String page, String id) async {
-    var link = "$host/tingshu/$id/${int.parse(page)==1?"":'/p$page.html'}";
+    var link =
+        "$host/tingshu/$id/${int.parse(page) == 1 ? "" : '/p$page.html'}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
@@ -75,7 +93,7 @@ class ListenApi {
     print(search);
     int idx = search!.idx ?? 0;
     int page = (idx ~/ 30) + 1;
-    var link = "$host/tingshu/${search.id}${page==1?"":'/p$page.html'}";
+    var link = "$host/tingshu/${search.id}${page == 1 ? "" : '/p$page.html'}";
     var res = await Request().get(link);
     Document document = parse(res);
     List<Element> list = document.querySelector("#playlist>ul")!.children;
