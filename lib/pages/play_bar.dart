@@ -87,6 +87,7 @@ class PlayBar extends ConsumerWidget {
               image: CachedNetworkImageProvider(data.cover ?? ""),
               height: 40,
               width: 40,
+              fit: BoxFit.fitWidth,
             ),
             const SizedBox(
               width: 10,

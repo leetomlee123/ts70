@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
@@ -145,57 +144,47 @@ class Top extends ConsumerWidget {
     final f = ref.watch(sProvider);
     return f.when(
         data: (data) {
-          return AnimationLimiter(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: ((context, index) {
-                final model = data[index];
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                    child: FadeInAnimation(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () async {
-                          // Navigator.of(context).pop();
-                          // await audioPlayer.pause();
-                          // int result = await DataBaseProvider.dbProvider
-                          //     .addVoiceOrUpdate(model);
-                          // ref.read(refreshProvider.state).state =
-                          //     DateUtil.getNowDateMs();
-                          // await audioPlayer.stop();
-                        },
-                        child: Container(
-                          height: 100,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
-                          child: Column(
-                            children: [
-                              Text(model.name ?? ""),
-                              Row(
-                                children: [
-                                  const Icon(Icons.person),
-                                  Text(model.a ?? ""),
-                                  const Spacer(),
-                                  const Icon(Icons.voice_chat),
-                                  Text(model.b ?? "")
-                                ],
-                              )
-                            ],
-                          ),
-                          // child: ListTile(
-                        ),
-                      ),
-                    ),
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: ((context, index) {
+              final model = data[index];
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  // Navigator.of(context).pop();
+                  // await audioPlayer.pause();
+                  // int result = await DataBaseProvider.dbProvider
+                  //     .addVoiceOrUpdate(model);
+                  // ref.read(refreshProvider.state).state =
+                  //     DateUtil.getNowDateMs();
+                  // await audioPlayer.stop();
+                },
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
                   ),
-                );
-              }),
-              itemCount: data!.length,
-              itemExtent: 130,
-            ),
+                  child: Column(
+                    children: [
+                      Text(model.name ?? ""),
+                      Row(
+                        children: [
+                          const Icon(Icons.person),
+                          Text(model.a ?? ""),
+                          const Spacer(),
+                          const Icon(Icons.voice_chat),
+                          Text(model.b ?? "")
+                        ],
+                      )
+                    ],
+                  ),
+                  // child: ListTile(
+                ),
+              );
+            }),
+            itemCount: data!.length,
+            itemExtent: 130,
           );
         },
         error: (error, stackTrace) => const Center(
@@ -217,18 +206,13 @@ class Result extends ConsumerWidget {
     final f = ref.watch(resultProvider);
     return f.when(
         data: (data) {
-          return AnimationLimiter(
-            child: ListView.builder(
+          return 
+           ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: ((context, index) {
+              itemBuilder: (context, index) {
                 final model = data[index];
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                    child: FadeInAnimation(
-                      child: GestureDetector(
+                return GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () async {
                           Navigator.of(context).pop();
@@ -301,15 +285,12 @@ class Result extends ConsumerWidget {
                           ),
                           // child: ListTile(
                         ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
+                      );
+              },
               itemCount: data!.length,
               itemExtent: 130,
-            ),
-          );
+            );
+          
         },
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
