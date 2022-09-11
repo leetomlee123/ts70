@@ -17,7 +17,6 @@ import 'package:ts70/utils/Screen.dart';
 initResource(WidgetRef ref) async {
   final state = ref.read(loadProvider.state);
   final play = ref.read(playProvider.state);
-  print(play.state!.idx);
   String url = "";
   state.state = true;
   try {
@@ -61,8 +60,13 @@ class PlayBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(playProvider);
+    ref.watch(playProvider.select((value) => value!.id));
+    final data = ref.read(playProvider.state).state;
+    if (kDebugMode) {
+      print("refresh play bar");
+    }
     if (data!.title == null) return nil;
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -80,21 +84,20 @@ class PlayBar extends ConsumerWidget {
               width: 10,
             ),
             Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusDirectional.circular(5)),
-            clipBehavior: Clip.antiAlias,
-              child: Image.network(data.cover ?? "",height: 45,width: 45,fit: BoxFit.fitWidth,)),
-            // CircleAvatar(
-            //   backgroundImage: CachedNetworkImageProvider(
-            //     data.cover ?? "",
-            //   ),
-            //   radius: 25,
-            // ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(5)),
+                clipBehavior: Clip.antiAlias,
+                // child: Image.network(data.cover ?? "",height: 45,width: 45,fit: BoxFit.fitWidth,)),
+                child: Image(
+                    image: CachedNetworkImageProvider(data.cover ?? ""),
+                    height: 45,
+                    width: 45,
+                    fit: BoxFit.fitWidth)),
             const SizedBox(
               width: 10,
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -103,15 +106,25 @@ class PlayBar extends ConsumerWidget {
                       width: 160,
                       child: Text(
                         data.title ?? "",
-                        style: const TextStyle(fontSize: 16,color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const PositionWidget()
+                // const SizedBox(
+                //   height: 10,
+                // ),
+                // const PositionWidget()
+                Row(
+                  children: [
+                    const PositionWidget(),
+                    Text(
+                      "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    )
+                  ],
+                )
               ],
             ),
             const Spacer(),
@@ -125,17 +138,16 @@ class PlayBar extends ConsumerWidget {
               width: 5,
             ),
             IconButton(
-              onPressed: () => showMaterialModalBottomSheet(
-                context: context,
-                builder: (context) => SizedBox(
-                  height: Screen.height * .8,
-                  child: const ChapterList(),
-                ),
-              ),
-              icon: const Icon(Icons.playlist_play_outlined),
-              iconSize: 40,
-                color: Colors.white
-            ),
+                onPressed: () => showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (context) => SizedBox(
+                        height: Screen.height * .8,
+                        child: const ChapterList(),
+                      ),
+                    ),
+                icon: const Icon(Icons.playlist_play_outlined),
+                iconSize: 40,
+                color: Colors.white),
             const SizedBox(
               width: 30,
             ),
@@ -151,10 +163,10 @@ class PositionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(playProvider);
+    final data = ref.watch(playProvider.select((value) => value!.position));
     return Text(
-      "${DateUtil.formatDateMs(data!.position!.inMilliseconds, format: 'mm:ss')}/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-      style: const TextStyle(fontSize: 12,color: Colors.white),
+      DateUtil.formatDateMs(data!.inMilliseconds, format: 'mm:ss'),
+      style: const TextStyle(fontSize: 12, color: Colors.white),
     );
   }
 }

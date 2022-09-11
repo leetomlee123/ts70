@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
@@ -35,6 +36,7 @@ class Global {
     //     errorCallbackSamplingRate: null,
     //     errorCallback: (PowerImageLoadException exception) {}));
     WidgetsFlutterBinding.ensureInitialized();
+    MobileAds.instance.initialize();
 
     Request();
     // 本地存储初始化

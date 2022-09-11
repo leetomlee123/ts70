@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nil/nil.dart';
+import 'package:ts70/pages/ad.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
@@ -30,12 +31,6 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   return voices;
 });
 
-// final processProvider = StateProvider.autoDispose((ref) {
-//   final keyword = ref.watch(playProvider);
-//   return keyword.whenOrNull(data:(data){
-//     return data!.position!.inMilliseconds;
-//   });
-// });
 final stateProvider = StateProvider.autoDispose<PlayerState>(
     (ref) => PlayerState(false, ProcessingState.idle));
 
@@ -129,12 +124,14 @@ class Home extends ConsumerWidget {
         ],
       ),
       body: Container(
-        padding: const EdgeInsets.only(bottom: 70, top: 10),
-        color: Colors.black87,
-        child: const HistoryList(),
-      ),
+          padding: const EdgeInsets.only(bottom: 70, top: 10),
+          color: Colors.black87,
+          child: Column(
+            children: const [SizedBox(height: 60,child: Ad(),),
+              Expanded(child: HistoryList())
+            ],
+          )),
       bottomSheet: const PlayBar(),
-      // bottomSheet: const PlayBar()
     );
   }
 }

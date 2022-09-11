@@ -10,13 +10,14 @@ import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
-
+const iconSize=40.0;
 class ListenDetail extends ConsumerWidget {
   const ListenDetail({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(playProvider);
+   ref.watch(playProvider.select((value) => value!.idx));
+   ref.watch(playProvider.select((value) => value!.id));
     var ps = ref.read(playProvider.state);
 
     return Scaffold(
@@ -31,24 +32,23 @@ class ListenDetail extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 80,
-              ),
+              const Spacer(),
+
               Image(
                 width: 100,
                 fit: BoxFit.cover,
-                image: CachedNetworkImageProvider(p!.cover ?? ""),
+                image: CachedNetworkImageProvider(ps.state!.cover ?? ""),
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  "第${(p.idx ?? 0) + 1}集",
+                  "第${(ps.state!.idx ?? 0) + 1}集",
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Text(p.bookMeta ?? "",
+                child: Text(ps.state!.bookMeta ?? "",
                     style: const TextStyle(color: Colors.white)),
               ),
               // Padding(
@@ -89,7 +89,6 @@ class ListenDetail extends ConsumerWidget {
               //     ],
               //   ),
               // ),
-              const Spacer(),
               SizedBox(
                 width: Screen.width,
                 child: const Padding(
@@ -101,7 +100,7 @@ class ListenDetail extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                      iconSize: 40,
+                      iconSize: iconSize,
                       color: Colors.white,
                       onPressed: () async {
                         if (ref
@@ -109,16 +108,16 @@ class ListenDetail extends ConsumerWidget {
                                 .state
                                 .processingState ==
                             ProcessingState.idle) return;
-                        int p1 = max(p.position!.inSeconds - 10, 0);
-                        ps.state = p.copyWith(position: Duration(seconds: p1));
+                        int p1 = max(ps.state!.position!.inSeconds - 10, 0);
+                        ps.state = ps.state!.copyWith(position: Duration(seconds: p1));
                         await audioPlayer.seek(ps.state!.position);
                       },
                       icon: const Icon(Icons.replay_10_outlined)),
                   IconButton(
-                      iconSize: 40,
+                      iconSize: iconSize,
                       color: Colors.white,
                       onPressed: () async {
-                        if (p.idx == 0) return;
+                        if (ps.state!.idx == 0) return;
                         final search = ref.read(playProvider.state);
                         await audioPlayer.stop();
                         search.state = search.state!.copyWith(
@@ -134,7 +133,7 @@ class ListenDetail extends ConsumerWidget {
                       icon: const Icon(Icons.skip_previous_outlined)),
                   const PlayButton(),
                   IconButton(
-                      iconSize: 40,
+                      iconSize: iconSize,
                       color: Colors.white,
                       onPressed: () async {
                         final search = ref.read(playProvider.state);
@@ -151,7 +150,7 @@ class ListenDetail extends ConsumerWidget {
                       },
                       icon: const Icon(Icons.skip_next_outlined)),
                   IconButton(
-                      iconSize: 40,
+                      iconSize: iconSize,
                       color: Colors.white,
                       onPressed: () async {
                         if (ref
@@ -159,9 +158,9 @@ class ListenDetail extends ConsumerWidget {
                                 .state
                                 .processingState ==
                             ProcessingState.idle) return;
-                        int p1 = min(p.position!.inSeconds + 10,
+                        int p1 = min(ps.state!.position!.inSeconds + 10,
                             ps.state!.duration!.inSeconds);
-                        ps.state = p.copyWith(position: Duration(seconds: p1));
+                        ps.state = ps.state!.copyWith(position: Duration(seconds: p1));
                         await audioPlayer.seek(ps.state!.position);
                       },
                       icon: const Icon(Icons.forward_10_outlined)),
@@ -180,7 +179,7 @@ class VoiceSlider extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(playProvider);
+   ref.watch(playProvider.select((value) => value!.position));
     final p1 = ref.read(playProvider.state);
     return Column(
       children: [
@@ -198,24 +197,21 @@ class VoiceSlider extends ConsumerWidget {
               await audioPlayer.seek(Duration(seconds: value.toInt()));
               await audioPlayer.play();
             },
-            value: p!.position!.inSeconds.toDouble(),
-            label: DateUtil.formatDateMs(p.position!.inMilliseconds,
+            value: p1.state!.position!.inSeconds.toDouble(),
+            label: DateUtil.formatDateMs(p1.state!.position!.inMilliseconds,
                 format: 'mm:ss'),
-            divisions: p.duration!.inSeconds,
-            max: p.duration!.inSeconds.toDouble(),
+            divisions: p1.state!.duration!.inSeconds,
+            max: p1.state!.duration!.inSeconds.toDouble(),
             min: -1,
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text(
-                DateUtil.formatDateMs(p.position!.inMilliseconds,
-                    format: 'mm:ss'),
-                style: const TextStyle(color: Colors.white)),
+            const PositionWidget(),
             const Spacer(),
             Text(
-                DateUtil.formatDateMs(p.duration!.inMilliseconds,
+                DateUtil.formatDateMs(p1.state!.duration!.inMilliseconds,
                     format: 'mm:ss'),
                 style: const TextStyle(color: Colors.white)),
           ],
