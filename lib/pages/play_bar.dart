@@ -79,12 +79,17 @@ class PlayBar extends ConsumerWidget {
             const SizedBox(
               width: 10,
             ),
-            CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(
-                data.cover ?? "",
-              ),
-              radius: 25,
-            ),
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(5)),
+            clipBehavior: Clip.antiAlias,
+              child: Image.network(data.cover ?? "",height: 45,width: 45,)),
+            // CircleAvatar(
+            //   backgroundImage: CachedNetworkImageProvider(
+            //     data.cover ?? "",
+            //   ),
+            //   radius: 25,
+            // ),
             const SizedBox(
               width: 10,
             ),
@@ -128,7 +133,7 @@ class PlayBar extends ConsumerWidget {
                 ),
               ),
               icon: const Icon(Icons.playlist_play_outlined),
-              iconSize: 45,
+              iconSize: 40,
                 color: Colors.white
             ),
             const SizedBox(

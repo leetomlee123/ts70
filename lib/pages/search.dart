@@ -20,6 +20,7 @@ final resultProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
 });
 final FocusNode focusNode = FocusNode();
 
+
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -210,6 +211,6 @@ class Result extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Center(child: Text('loading...')));
+        loading: () => const Center(child: Text('loading...',style: TextStyle(color: Colors.white),)));
   }
 }
