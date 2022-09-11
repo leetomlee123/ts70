@@ -83,7 +83,7 @@ class PlayBar extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.circular(5)),
             clipBehavior: Clip.antiAlias,
-              child: Image.network(data.cover ?? "",height: 45,width: 45,)),
+              child: Image.network(data.cover ?? "",height: 45,width: 45,fit: BoxFit.fitWidth,)),
             // CircleAvatar(
             //   backgroundImage: CachedNetworkImageProvider(
             //     data.cover ?? "",
