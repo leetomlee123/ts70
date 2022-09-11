@@ -83,21 +83,16 @@ class PlayBar extends ConsumerWidget {
             const SizedBox(
               width: 10,
             ),
-            Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(5)),
-                clipBehavior: Clip.antiAlias,
-                // child: Image.network(data.cover ?? "",height: 45,width: 45,fit: BoxFit.fitWidth,)),
-                child: Image(
-                    image: CachedNetworkImageProvider(data.cover ?? ""),
-                    height: 45,
-                    width: 45,
-                    fit: BoxFit.fitWidth)),
+            Image(
+              image: CachedNetworkImageProvider(data.cover ?? ""),
+              height: 40,
+              width: 40,
+            ),
             const SizedBox(
               width: 10,
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -112,9 +107,9 @@ class PlayBar extends ConsumerWidget {
                     ),
                   ],
                 ),
-                // const SizedBox(
-                //   height: 10,
-                // ),
+                const SizedBox(
+                  height: 10,
+                ),
                 // const PositionWidget()
                 Row(
                   children: [

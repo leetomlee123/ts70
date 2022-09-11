@@ -127,7 +127,7 @@ class Home extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 70, top: 10),
           color: Colors.black87,
           child: Column(
-            children: const [SizedBox(height: 60,child: Ad(),),
+            children: const [  Ad(),
               Expanded(child: HistoryList())
             ],
           )),
