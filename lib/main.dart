@@ -12,8 +12,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '听风',
-      darkTheme: ThemeData.dark(useMaterial3: true),
-      theme: ThemeData.dark(useMaterial3: true),
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
       home: const SplashScreen(),
