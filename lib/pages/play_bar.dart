@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -6,20 +8,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:nil/nil.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
 import 'package:ts70/pages/play_button.dart';
+import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
+import 'package:ts70/utils/database_provider.dart';
 
 initResource(WidgetRef ref) async {
   final state = ref.read(loadProvider.state);
   final play = ref.read(playProvider.state);
-  String url = "";
+  String url = play.state!.url??"";
   state.state = true;
   try {
+    if(play.state!.url!.isEmpty){
     url = "";
     url = await ListenApi().chapterUrl(play.state);
     if (url.isEmpty) {
@@ -27,7 +31,10 @@ initResource(WidgetRef ref) async {
       state.state = false;
       return;
     }
-    audioSource = AudioSource.uri(
+    play.state = play.state!.copyWith(url: url);
+    await DataBaseProvider.dbProvider.addVoiceOrUpdate(play.state!);
+    }
+    audioSource = LockCachingAudioSource(
       Uri.parse(url),
       tag: MediaItem(
         id: '1',
@@ -47,6 +54,7 @@ initResource(WidgetRef ref) async {
       print("play ${audioPlayer.processingState}");
     }
     state.state = false;
+    await DataBaseProvider.dbProvider.addVoiceOrUpdate(play.state!);
     await audioPlayer.play();
   } catch (e) {
     if (kDebugMode) {
@@ -61,12 +69,215 @@ class PlayBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(playProvider.select((value) => value!.id));
+    ref.watch(playProvider.select((value) => value!.idx));
     final data = ref.read(playProvider.state).state;
+    var ps = ref.read(playProvider.state);
     if (kDebugMode) {
       print("refresh play bar");
     }
-    if (data!.title == null) return nil;
+    if (data!.title == null) return Container();
+    return Container(
+          height: 200,
+          padding: const EdgeInsets.all(15),
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          width: Screen.width,
+          decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: Colors.black),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.title ?? "",
+                          style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "${data.bookMeta ?? ""}   第${data.idx! + 1}回",
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () => showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .8,
+                          child: const ChapterList(),
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage:
+                            CachedNetworkImageProvider(data.cover ?? ""),
+                        radius: 25,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const VoiceSlider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ref
+                                .read(stateProvider.state)
+                                .state
+                                .processingState ==
+                            ProcessingState.idle) return;
+                        int p1 = max(ps.state!.position!.inSeconds - 10, 0);
+                        ps.state =
+                            ps.state!.copyWith(position: Duration(seconds: p1));
+                        await audioPlayer.seek(ps.state!.position);
+                      },
+                      icon: const Icon(Icons.replay_10_outlined)),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ps.state!.idx == 0) return;
+                        final search = ref.read(playProvider.state);
+                        await audioPlayer.stop();
+                        search.state = search.state!.copyWith(
+                            position: Duration.zero,
+                            duration: const Duration(seconds: 1),
+                            url: "",
+                            idx: search.state!.idx! - 1);
+                        await DataBaseProvider.dbProvider
+                            .addVoiceOrUpdate(search.state!);
+                        ref.read(refreshProvider.state).state =
+                            DateUtil.getNowDateMs();
+                        await initResource(ref);
+                      },
+                      icon: const Icon(Icons.skip_previous_outlined)),
+                  const PlayButton(),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        final search = ref.read(playProvider.state);
+                        await audioPlayer.stop();
+                        search.state = search.state!.copyWith(
+                            position: Duration.zero,
+                            duration: const Duration(seconds: 1),
+                            url: "",
+                            idx: search.state!.idx! + 1);
+                        await DataBaseProvider.dbProvider
+                            .addVoiceOrUpdate(search.state!);
+                        ref.read(refreshProvider.state).state =
+                            DateUtil.getNowDateMs();
+                        await initResource(ref);
+                      },
+                      icon: const Icon(Icons.skip_next_outlined)),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ref
+                                .read(stateProvider.state)
+                                .state
+                                .processingState ==
+                            ProcessingState.idle) return;
+                        int p1 = min(ps.state!.position!.inSeconds + 10,
+                            ps.state!.duration!.inSeconds);
+                        ps.state =
+                            ps.state!.copyWith(position: Duration(seconds: p1));
+                        await audioPlayer.seek(ps.state!.position);
+                      },
+                      icon: const Icon(Icons.forward_10_outlined)),
+                ],
+              ),
+            ],
+          )
+          // child: Row(
+          //   children: [
+          //     const SizedBox(
+          //       width: 10,
+          //     ),
+          //     Image(
+          //       image: CachedNetworkImageProvider(data.cover ?? ""),
+          //       height: 40,
+          //       width: 40,
+          //       fit: BoxFit.fitWidth,
+          //     ),
+          //     const SizedBox(
+          //       width: 10,
+          //     ),
+          //     Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         Row(
+          //           children: [
+          //             SizedBox(
+          //               width: 160,
+          //               child: Text(
+          //                 data.title ?? "",
+          //                 style:
+          //                     const TextStyle(fontSize: 18, color: Colors.white),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         // const PositionWidget()
+          //         Row(
+          //           children: [
+          //             const PositionWidget(),
+          //             Text(
+          //               "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
+          //               style: const TextStyle(fontSize: 12, color: Colors.white),
+          //             )
+          //           ],
+          //         )
+          //       ],
+          //     ),
+          //     const Spacer(),
+          //     AnimatedSwitcher(
+          //         transitionBuilder: (child, anim) {
+          //           return ScaleTransition(scale: anim, child: child);
+          //         },
+          //         duration: const Duration(milliseconds: 300),
+          //         child: const PlayButton()),
+          //     const SizedBox(
+          //       width: 5,
+          //     ),
+          //     IconButton(
+          //         onPressed: () => showMaterialModalBottomSheet(
+          //               context: context,
+          //               builder: (context) => SizedBox(
+          //                 height: Screen.height * .8,
+          //                 child: const ChapterList(),
+          //               ),
+          //             ),
+          //         icon: const Icon(Icons.playlist_play_outlined),
+          //         iconSize: 40,
+          //         color: Colors.white),
+          //     const SizedBox(
+          //       width: 30,
+          //     ),
+          //   ],
+          // ),
 
+    );
     return GestureDetector(
       onTap: () => Navigator.push(
         context,

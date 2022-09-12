@@ -173,6 +173,8 @@ class ListPage extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),
             ),
-        loading: () => const Loading());
+        loading: () => const Center(
+          child: Text('loading...'),
+        ));
   }
 }

@@ -1,24 +1,46 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/utils/request.dart';
+var streamController = StreamController.broadcast();
 
 class ListenApi {
   static String host = "https://m.70ts.cc";
   static String hostPc = "https://www.70ts.cc";
 
-  Future<int?> checkSite(String sk) async {
-    var res = await Request().getBase(host);
-    return res;
+  void checkSite(String sk) async {
+    Response res = await Request().getBase(host);
+    streamController.add(res.statusCode);
+    var data = res.data;
+    Document document = parse(data);
+    Node e = document.querySelectorAll(".list-ul").first;
+    var list = e.children.map((e) {
+      final c = e
+          .querySelector("a>img")!
+          .attributes['data-original']
+          .toString();
+      return Search(
+        id: e
+            .querySelector("a")!
+            .attributes['href']
+            .toString()
+            .split("/")[2]
+            .split(".")[0],
+        cover: c.startsWith("http") ? c : host + c,
+        title: e.querySelector("a>figcaption")!.text.toString()
+      );
+    }).toList();
+    streamController.add(list);
   }
 
   Future<List<TopRank>?> getTop(String rank) async {
     var res = await Request().getBase(hostPc);
     Document document = parse(res);
     List<Element> es = document.querySelector(".top-ul")!.children;
-    print("ddddddddddd");
     return es.map((element) {
       final v1 = element.querySelector("h4>a");
       final v2 = element.querySelector("p")!.children;

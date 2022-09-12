@@ -85,7 +85,7 @@ class Request {
     String path,
   ) async {
     var response = await dio.get(path, cancelToken: cancelToken);
-    return response.statusCode;
+    return response;
   }
 
   /// restful get 操作

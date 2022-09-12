@@ -42,8 +42,8 @@ dependencies:
   modal_bottom_sheet: ^2.1.0
   google_mobile_ads: ^2.0.1
 
+
   equatable: ^2.0.5
-  nil: ^1.1.1
   # power_image: 0.1.0-pre.2
 
 
@@ -57,9 +57,12 @@ dependencies:
 
 
   shared_preferences: ^2.0.15
+  sentry_flutter: ^6.9.1
+#  flutter_native_splash: ^2.2.9
 
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
+  lottie: ^1.4.2
 
 
  
@@ -94,6 +97,13 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+#flutter_native_splash:
+#  color: "#FFFFFF"
+#  image: assets/splash.png
+#  android_12:
+#    color: "#FFFFFF"
+#    image: assets/splash.png
+
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -104,9 +114,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+     - lottie.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

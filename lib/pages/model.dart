@@ -6,7 +6,6 @@ class Chapter {
 
   Chapter({this.name, this.index});
 }
-
 class TopRank {
   String? name;
   String? a;

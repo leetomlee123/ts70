@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
+import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/request.dart';
 
 /// 全局配置
@@ -35,9 +38,16 @@ class Global {
     // PowerImageLoader.instance.setup(PowerImageSetupOptions(renderingTypeTexture,
     //     errorCallbackSamplingRate: null,
     //     errorCallback: (PowerImageLoadException exception) {}));
-    WidgetsFlutterBinding.ensureInitialized();
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     MobileAds.instance.initialize();
-
+    await SentryFlutter.init(
+      (options) {
+        options.dsn =
+            'https://041c11e61b9b4dba8b653a646523753b@o924080.ingest.sentry.io/6738525';
+        options.tracesSampleRate = 1.0;
+      },
+    );
+    ListenApi().checkSite("sk");
     Request();
     // 本地存储初始化
     await SpUtil.getInstance();
