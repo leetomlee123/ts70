@@ -18,15 +18,18 @@ final refreshProvider =
     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
 final playProvider = StateProvider.autoDispose<Search?>((ref) => Search());
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
+  if (kDebugMode) {
+    print('start refresh');
+  }
   ref.watch(refreshProvider);
   if (kDebugMode) {
-    print('refresh');
+    print('end refresh');
   }
-  List<Search> voices = await DataBaseProvider.dbProvider.voices();
-  if (voices.isNotEmpty) {
-    ref.read(playProvider.state).state = voices.first;
+  List<Search> history = await DataBaseProvider.dbProvider.voices();
+  if (history.isNotEmpty) {
+    ref.read(playProvider.state).state = history.first;
   }
-  return voices;
+  return history;
 });
 
 final stateProvider = StateProvider.autoDispose<PlayerState>(
@@ -39,32 +42,35 @@ final save = Provider.autoDispose((ref) {
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
 int completed = 0;
-AppLifecycleState appLifeCycle= AppLifecycleState.resumed;
-class Index extends StatefulWidget{
+AppLifecycleState appLifeCycle = AppLifecycleState.resumed;
+
+class Index extends StatefulWidget {
   const Index({super.key});
 
   @override
   State<StatefulWidget> createState() {
     return IndexState();
   }
-
 }
-class IndexState extends State<Index> with WidgetsBindingObserver{
+
+class IndexState extends State<Index> with WidgetsBindingObserver {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this); //添加观察者
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     WidgetsBinding.instance.removeObserver(this); //添加观察者
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    appLifeCycle=state;
+    appLifeCycle = state;
     switch (state) {
       case AppLifecycleState.detached:
         if (kDebugMode) {
@@ -101,14 +107,14 @@ class IndexState extends State<Index> with WidgetsBindingObserver{
       default:
     }
   }
+
   @override
   Widget build(BuildContext context) {
-   return const Home();
+    return const Home();
   }
-
 }
 
-class Home extends ConsumerWidget  {
+class Home extends ConsumerWidget {
   const Home({super.key});
 
   @override
@@ -146,7 +152,9 @@ class Home extends ConsumerWidget  {
     });
     audioPlayer.positionStream.listen((event) {
       final kk = ref.read(stateProvider.state).state;
-      if (kk.playing && kk.processingState != ProcessingState.completed&&appLifeCycle==AppLifecycleState.resumed) {
+      if (kk.playing &&
+          kk.processingState != ProcessingState.completed &&
+          appLifeCycle == AppLifecycleState.resumed) {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
         if (kDebugMode) {
@@ -194,8 +202,7 @@ class Home extends ConsumerWidget  {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const HistoryList()),
+                MaterialPageRoute(builder: (context) => const HistoryList()),
               );
             },
             icon: const Icon(
@@ -222,8 +229,6 @@ class Home extends ConsumerWidget  {
       // bottomSheet: const PlayBar(),
     );
   }
-
-
 }
 
 class LoadingWidget extends ConsumerWidget {

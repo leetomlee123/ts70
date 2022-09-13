@@ -8,14 +8,18 @@ import 'package:ts70/pages/model.dart';
 class DataBaseProvider {
   DataBaseProvider._();
 
-  static final String _dbVoice = "voice";
+  static const String _dbVoice = "voice";
+
+  static List<Search> history = [];
 
   static final DataBaseProvider dbProvider = DataBaseProvider._();
 
   Database? _databaseVoice;
 
   Future<Database?> get databaseVoice async {
-    if (_databaseVoice != null) return _databaseVoice;
+    if (_databaseVoice != null) {
+      return _databaseVoice;
+    }
     _databaseVoice = await getDatabaseInstanceVoice();
     return _databaseVoice;
   }
@@ -40,6 +44,7 @@ class DataBaseProvider {
   }
 
   addVoiceOrUpdate(Search listenSearchModel) async {
+    history=[];
     listenSearchModel.lastTime = DateUtil.getNowDateMs();
     var client = await databaseVoice;
 
@@ -55,12 +60,15 @@ class DataBaseProvider {
   }
 
   Future<List<Search>> voices() async {
+    if(history.isNotEmpty)return history;
+    print("get");
     var client = await databaseVoice;
     List result = await client!.query(
       _dbVoice,
       orderBy: "last_time desc",
     );
-    return result.map((e) => Search.fromJson(e)).toList();
+    history = result.map((e) => Search.fromJson(e)).toList();
+    return history;
   }
 
   Future<Search?> voiceById(int? id) async {
@@ -71,11 +79,13 @@ class DataBaseProvider {
   }
 
   delById(String? id) async {
+    history=[];
     var client = await databaseVoice;
     return await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
   }
 
   clear() async {
+    history=[];
     var client = await databaseVoice;
     client!.delete(_dbVoice);
   }

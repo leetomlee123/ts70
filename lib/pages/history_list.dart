@@ -4,6 +4,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -13,7 +14,7 @@ class HistoryList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final f = ref.watch(historyProvider);
+    final f = ref.read(historyProvider);
     final view = f.when(
         data: (data) {
           return ListView.builder(

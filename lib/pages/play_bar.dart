@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:ts70/global.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
@@ -68,8 +69,8 @@ class PlayBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(playProvider.select((value) => value!.id));
-    ref.watch(playProvider.select((value) => value!.idx));
+    ref.watch(playProvider);
+    ref.watch(historyProvider);
     final data = ref.read(playProvider.state).state;
     var ps = ref.read(playProvider.state);
     if (kDebugMode) {

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
@@ -216,12 +217,11 @@ class Result extends ConsumerWidget {
                         behavior: HitTestBehavior.opaque,
                         onTap: () async {
                           Navigator.of(context).pop();
-                          await audioPlayer.pause();
+                          await audioPlayer.stop();
                           int result = await DataBaseProvider.dbProvider
                               .addVoiceOrUpdate(model);
                           ref.read(refreshProvider.state).state =
                               DateUtil.getNowDateMs();
-                          await audioPlayer.stop();
                         },
                         child: Container(
                           height: 100,

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -9,6 +10,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:ts70/services/listen.dart';
+import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';
 
 /// 全局配置
@@ -38,8 +40,8 @@ class Global {
     // PowerImageLoader.instance.setup(PowerImageSetupOptions(renderingTypeTexture,
     //     errorCallbackSamplingRate: null,
     //     errorCallback: (PowerImageLoadException exception) {}));
-    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-    MobileAds.instance.initialize();
+    WidgetsFlutterBinding.ensureInitialized();
+    await MobileAds.instance.initialize();
     await SentryFlutter.init(
       (options) {
         options.dsn =
@@ -51,7 +53,7 @@ class Global {
     Request();
     // 本地存储初始化
     await SpUtil.getInstance();
-
+    await DataBaseProvider.dbProvider.voices();
     //init audioservice
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
