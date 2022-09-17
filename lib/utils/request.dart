@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
-import 'package:fast_gbk/fast_gbk.dart';
 
 /*
   * http 操作类
@@ -30,7 +29,6 @@ class Request {
       headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
-
       },
       contentType: 'application/json; charset=utf-8',
       responseType: ResponseType.json,
@@ -133,12 +131,10 @@ class Request {
     Options? options,
     bool? useToken = true,
   }) async {
-    Options requestOptions = options ?? Options();
-
-    Map<String, dynamic> _authorization = getAuthorizationHeader();
-    if (useToken! && _authorization.isNotEmpty) {
-      requestOptions = requestOptions.copyWith(headers: _authorization);
-    }
+    Options requestOptions = Options(headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+    });
 
     var response = await dio.post(path,
         data: params, options: requestOptions, cancelToken: cancelToken);
@@ -204,30 +200,11 @@ class Request {
   /// restful post form 表单提交操作
   Future postForm(String path,
       {dynamic params, Options? options, bool? useToken = true}) async {
-    Options requestOptions = options ?? Options();
-
-    Map<String, dynamic> _authorization = getAuthorizationHeader();
-
-    if (useToken! && _authorization.isNotEmpty) {
-      requestOptions = requestOptions.copyWith(headers: _authorization);
-    }
     var response = await dio.post(path,
         data: FormData.fromMap(params),
-        options: requestOptions,
+        options: Options(contentType: Headers.formUrlEncodedContentType),
         cancelToken: cancelToken);
     return response.data;
-  }
-
-  String gbkDecoder(List<int> responseBytes, RequestOptions options,
-      ResponseBody responseBody) {
-    return gbk.decode(responseBytes);
-  }
-
-  List<int> gbkEncoder(
-    String req,
-    RequestOptions options,
-  ) {
-    return gbk.encode(req);
   }
 
   Future postForm1(String path,
