@@ -40,7 +40,7 @@ dependencies:
   bot_toast: ^4.0.2
   loading_animation_widget: ^1.2.0+2
   modal_bottom_sheet: ^2.1.0
-  google_mobile_ads: ^2.0.1
+  firebase_core: ^1.22.0
 
 
   equatable: ^2.0.5
@@ -57,8 +57,6 @@ dependencies:
 
 
   shared_preferences: ^2.0.15
-  sentry_flutter: ^6.9.1
-#  flutter_native_splash: ^2.2.9
 
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
@@ -82,6 +80,9 @@ dependencies:
   just_audio: ^0.9.27
   just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
+  firebase_crashlytics: ^2.8.10
+  firebase_analytics: ^9.3.5
+  firebase_in_app_messaging: ^0.6.0+24
 
 dev_dependencies:
   flutter_test:

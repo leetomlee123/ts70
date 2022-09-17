@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ts70/pages/ad.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
@@ -218,7 +217,7 @@ class Home extends ConsumerWidget {
           children: const [
             // HeaderImages(),
             // HeaderCategory(),
-            Ad(),
+            // Ad(),
             Align(
               alignment: Alignment.bottomCenter,
               child: PlayBar(),

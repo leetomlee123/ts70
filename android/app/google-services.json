@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "1091396025886",
+    "project_id": "ts70-fe81d",
+    "storage_bucket": "ts70-fe81d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091396025886:android:e02f1dca15d71981cbf80f",
+        "android_client_info": {
+          "package_name": "com.china.ts70"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1091396025886-6odrm3cnoh1goc5vb7gknu3l21h6f8pm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuhCRaeeVPwGCKnT7hKoHTifK9xI007Bg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1091396025886-6odrm3cnoh1goc5vb7gknu3l21h6f8pm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1091396025886-ipkhig4cs0thjq0htur0bc4aoej82554.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.china.ts70"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091396025886:android:466b76892605b446cbf80f",
+        "android_client_info": {
+          "package_name": "com.example.ts70"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1091396025886-6odrm3cnoh1goc5vb7gknu3l21h6f8pm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuhCRaeeVPwGCKnT7hKoHTifK9xI007Bg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1091396025886-6odrm3cnoh1goc5vb7gknu3l21h6f8pm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1091396025886-ipkhig4cs0thjq0htur0bc4aoej82554.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.china.ts70"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
