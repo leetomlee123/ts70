@@ -9,6 +9,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';
+import 'package:ts70/utils/update.dart';
 
 /// 全局配置
 class Global {
@@ -34,8 +35,9 @@ class Global {
     );
     ListenApi().checkSite("sk");
     Request();
+    // UpdateApp.initXUpdate();
     // 本地存储初始化
-    // await DataBaseProvider.dbProvider.voices();
+    await DataBaseProvider.dbProvider.voices();
     //init audioservice
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',

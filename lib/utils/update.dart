@@ -34,7 +34,7 @@
 
 //               ///是否开启自动模式
 //               isWifiOnly: false,
-// dc4
+
 //               ///是否开启自动模式
 //               isAutoMode: false,
 
@@ -45,6 +45,9 @@
 //               enableRetry: false)
 //           .then((value) {
 //         //  updateMessage("初始化成功: $value");
+//         if (kDebugMode) {
+//           print("update app init success");
+//         }
 //         enableChangeDownLoadType();
 //       }).catchError((error) {
 //         if (kDebugMode) {
