@@ -25,7 +25,7 @@ initResource(WidgetRef ref) async {
   try {
     if (play.state!.url!.isEmpty) {
       url = "";
-      url = await ListenApi().chapterUrl(play.state);
+      url = await compute(ListenApi().chapterUrl,play.state);
       if (url.isEmpty) {
         // BotToast.showText(text: "fetch resource failed,please try it again");
         state.state = false;

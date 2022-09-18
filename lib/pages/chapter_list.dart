@@ -17,7 +17,7 @@ final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final play = ref.watch(playProvider);
-  final result = await ListenApi().getOptions(play);
+  final result = await compute( ListenApi().getOptions,play);
   final s = result![play!.idx! ~/ 30].index!;
   ref.read(v.state).state = s;
   return result;

@@ -1,15 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';
-import 'package:ts70/utils/update.dart';
 
 /// 全局配置
 class Global {
@@ -33,7 +32,7 @@ class Global {
         options.tracesSampleRate = 1.0;
       },
     );
-    ListenApi().checkSite("sk");
+    compute(ListenApi().checkSite, "");
     Request();
     // UpdateApp.initXUpdate();
     // 本地存储初始化
