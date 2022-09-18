@@ -150,8 +150,8 @@ class ListenApi {
           .trim();
       if (kDebugMode) {
         print("link: $link");
-        return link;
       }
+      return link;
     } catch (e) {
       if (kDebugMode) {
         print(e);

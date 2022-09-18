@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
-import 'package:ts70/pages/loading.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/listen.dart';
@@ -39,7 +38,7 @@ class ChapterList extends ConsumerWidget {
               child: Column(
                 children: [
                   DropdownButton(
-                    dropdownColor: Colors.black87,
+                      dropdownColor: Colors.black87,
                       // isExpanded: true,
                       // 图标大小
                       iconSize: 40,
@@ -62,9 +61,14 @@ class ChapterList extends ConsumerWidget {
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text('Ops...'),
+              child: Text('Ops...' ,style: TextStyle(color: Colors.white),),
             ),
-        loading: () => const Loading());
+        loading: () => const Center(
+              child: Text(
+                'loading...',
+                style: TextStyle(color: Colors.white),
+              ),
+            ));
   }
 }
 
@@ -128,8 +132,8 @@ class ListPage extends ConsumerWidget {
                   play!.idx = index + (int.parse(vs) - 1) * 30;
                   play.position = Duration.zero;
                   play.duration = const Duration(seconds: 1);
-                  int result = await DataBaseProvider.dbProvider
-                      .addVoiceOrUpdate(play);
+                  int result =
+                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
                   if (kDebugMode) {
@@ -148,7 +152,8 @@ class ListPage extends ConsumerWidget {
                       Text(
                         "${model.name}",
                         style: TextStyle(
-                            color: b ? Colors.lightBlue : Colors.white, fontSize: 22),
+                            color: b ? Colors.lightBlue : Colors.white,
+                            fontSize: 22),
                       ),
                       const Spacer(),
                       Offstage(
@@ -174,7 +179,7 @@ class ListPage extends ConsumerWidget {
               child: Text('Ops...'),
             ),
         loading: () => const Center(
-          child: Text('loading...'),
-        ));
+              child: Text('loading...'),
+            ));
   }
 }
