@@ -42,7 +42,7 @@ final save = Provider.autoDispose((ref) {
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
 int completed = 0;
-AppLifecycleState appLifeCycle = AppLifecycleState.resumed;
+// AppLifecycleState appLifeCycle = AppLifecycleState.resumed;
 
 class Index extends StatefulWidget {
   const Index({super.key});
@@ -70,7 +70,7 @@ class IndexState extends State<Index> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    appLifeCycle = state;
+    // appLifeCycle = state;
     switch (state) {
       case AppLifecycleState.detached:
         if (kDebugMode) {
@@ -153,8 +153,7 @@ class Home extends ConsumerWidget {
     audioPlayer.positionStream.listen((event) {
       final kk = ref.read(stateProvider.state).state;
       if (kk.playing &&
-          kk.processingState != ProcessingState.completed &&
-          appLifeCycle == AppLifecycleState.resumed) {
+          kk.processingState != ProcessingState.completed ) {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
         if (kDebugMode) {
