@@ -8,7 +8,7 @@
 PRODUCT_NAME = ts70
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.ts70
+PRODUCT_BUNDLE_IDENTIFIER = com.china.ts70
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2022 com.china. All rights reserved.

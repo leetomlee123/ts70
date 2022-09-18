@@ -40,7 +40,6 @@ dependencies:
   bot_toast: ^4.0.2
   loading_animation_widget: ^1.2.0+2
   modal_bottom_sheet: ^2.1.0
-  google_mobile_ads: ^2.0.1
 
 
   equatable: ^2.0.5
@@ -72,14 +71,14 @@ dependencies:
   cached_network_image: ^3.2.2
  
 
-  sp_util: ^2.0.3
+  # sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
   dio_smart_retry: ^1.2.0
   
 
   
 
-  just_audio: ^0.9.27
+  just_audio: ^0.9.29
   just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
 
@@ -127,7 +126,7 @@ flutter:
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
-  # example:
+  # china:
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -1,4 +1,4 @@
-package com.example.ts70
+package com.china.ts70
 
 import io.flutter.embedding.android.FlutterActivity
 

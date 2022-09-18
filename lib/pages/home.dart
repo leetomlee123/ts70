@@ -163,6 +163,8 @@ class Home extends ConsumerWidget {
       }
     });
 
+    
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -218,7 +220,7 @@ class Home extends ConsumerWidget {
           children: const [
             // HeaderImages(),
             // HeaderCategory(),
-            Ad(),
+            // Ad(),
             Align(
               alignment: Alignment.bottomCenter,
               child: PlayBar(),
