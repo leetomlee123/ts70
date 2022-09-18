@@ -62,6 +62,7 @@ dependencies:
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
   lottie: ^1.4.2
+  sqflite: ^2.0.3+1
 
 
  

@@ -35,7 +35,7 @@ class Global {
     ListenApi().checkSite("sk");
     Request();
     // 本地存储初始化
-    await DataBaseProvider.dbProvider.voices();
+    // await DataBaseProvider.dbProvider.voices();
     //init audioservice
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
