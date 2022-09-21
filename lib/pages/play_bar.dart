@@ -12,12 +12,14 @@ import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
 import 'package:ts70/pages/play_button.dart';
+import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
-initResource(WidgetRef ref) async {
+initResource(BuildContext context) async {
+  ProviderContainer ref = ProviderScope.containerOf(context);
   final state = ref.read(loadProvider.state);
   final play = ref.read(playProvider.state);
   String url = play.state!.url ?? "";
@@ -79,7 +81,7 @@ class PlayBar extends ConsumerWidget {
     }
     if (data!.title == null) return Container();
     return Container(
-        height: 200,
+        height: 250,
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         width: Screen.width,
@@ -112,20 +114,10 @@ class PlayBar extends ConsumerWidget {
                     ],
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: () => showMaterialModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.black,
-                      builder: (context) => SizedBox(
-                        height: Screen.height * .8,
-                        child: const ChapterList(),
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage:
-                          CachedNetworkImageProvider(data.cover ?? ""),
-                      radius: 25,
-                    ),
+                  CircleAvatar(
+                    backgroundImage:
+                        CachedNetworkImageProvider(data.cover ?? ""),
+                    radius: 25,
                   ),
                 ],
               ),
@@ -162,7 +154,7 @@ class PlayBar extends ConsumerWidget {
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
                           DateUtil.getNowDateMs();
-                      await initResource(ref);
+                      await initResource(context);
                     },
                     icon: const Icon(Icons.skip_previous_outlined)),
                 const PlayButton(),
@@ -181,7 +173,7 @@ class PlayBar extends ConsumerWidget {
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
                           DateUtil.getNowDateMs();
-                      await initResource(ref);
+                      await initResource(context);
                     },
                     icon: const Icon(Icons.skip_next_outlined)),
                 IconButton(
@@ -199,6 +191,41 @@ class PlayBar extends ConsumerWidget {
                     icon: const Icon(Icons.forward_10_outlined)),
               ],
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .7,
+                          child: const ChapterList(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.menu,
+                      color: Colors.white,
+                    )),
+                IconButton(
+                    onPressed: () {
+                                showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .7,
+                          child: const Speed(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.speed,
+                      color: Colors.white,
+                    ))
+              ],
+            )
           ],
         )
         // child: Row(

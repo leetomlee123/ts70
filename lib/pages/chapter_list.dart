@@ -144,7 +144,7 @@ class ListPage extends ConsumerWidget {
                     print('dddd $result');
                   }
                   //资源释放
-                  await initResource(ref);
+                  await initResource(context);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),

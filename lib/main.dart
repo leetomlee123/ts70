@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: '听风',
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: const Home(),
+      home: const Index(),
     );
   }
 }

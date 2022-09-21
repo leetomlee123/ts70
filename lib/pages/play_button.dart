@@ -24,7 +24,7 @@ class PlayButton extends ConsumerWidget {
             if (f.processingState== ProcessingState.ready) {
              await audioPlayer.play();
             } else {
-             initResource(ref);
+             initResource(context);
             }
           }
         },

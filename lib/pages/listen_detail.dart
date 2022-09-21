@@ -125,7 +125,7 @@ class ListenDetail extends ConsumerWidget {
                               .addVoiceOrUpdate(search.state!);
                           ref.read(refreshProvider.state).state =
                               DateUtil.getNowDateMs();
-                          await initResource(ref);
+                          await initResource(context);
                         },
                         icon: const Icon(Icons.skip_previous_outlined)),
                     const PlayButton(),
@@ -143,7 +143,7 @@ class ListenDetail extends ConsumerWidget {
                               .addVoiceOrUpdate(search.state!);
                           ref.read(refreshProvider.state).state =
                               DateUtil.getNowDateMs();
-                          await initResource(ref);
+                          await initResource(context);
                         },
                         icon: const Icon(Icons.skip_next_outlined)),
                     IconButton(

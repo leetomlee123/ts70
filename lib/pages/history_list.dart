@@ -33,7 +33,7 @@ class HistoryList extends ConsumerWidget {
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
                   ref.read(playProvider.state).state = item;
-                  await initResource(ref);
+                  await initResource(context);
                 },
                 onLongPress: () {
                   BotToast.showWidget(
