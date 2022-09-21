@@ -4,7 +4,6 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -24,6 +23,7 @@ class HistoryList extends ConsumerWidget {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
+                  Navigator.pop(context);
                   await audioPlayer.stop();
                   int result =
                       await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);

@@ -13,7 +13,7 @@ class ListenApi {
   static String host = "https://m.70ts.cc";
   static String hostPc = "https://www.70ts.cc";
 
-  void checkSite(String sk) async {
+  void checkSite() async {
     Response res = await Request().getBase(host);
     streamController.add(res.statusCode);
     var data = res.data;

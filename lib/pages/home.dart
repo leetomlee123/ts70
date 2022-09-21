@@ -152,8 +152,7 @@ class Home extends ConsumerWidget {
     });
     audioPlayer.positionStream.listen((event) {
       final kk = ref.read(stateProvider.state).state;
-      if (kk.playing &&
-          kk.processingState != ProcessingState.completed ) {
+      if (kk.playing && kk.processingState != ProcessingState.completed) {
         final f = ref.read(playProvider.state);
         f.state = f.state!.copyWith(position: event);
         if (kDebugMode) {
@@ -161,8 +160,6 @@ class Home extends ConsumerWidget {
         }
       }
     });
-
-    
 
     return Scaffold(
       appBar: AppBar(
@@ -216,10 +213,16 @@ class Home extends ConsumerWidget {
       body: Container(
         color: Colors.black87,
         child: Stack(
-          children: const [
+          children:  const [
             // HeaderImages(),
             // HeaderCategory(),
             // Ad(),
+            // MaterialButton(
+            //   color: Colors.blue,
+            //     onPressed: () {
+            //       throw Exception("fk all person");
+            //     },
+            //     child: const Text('测试',style: TextStyle(color: Colors.white),)),
             Align(
               alignment: Alignment.bottomCenter,
               child: PlayBar(),

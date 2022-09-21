@@ -16,8 +16,9 @@ final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   return result;
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
-  final play = ref.watch(playProvider);
-  final result = await compute( ListenApi().getOptions,play);
+
+  final play = ref.read(playProvider);
+  final result = await compute(ListenApi().getOptions, play);
   final s = result![play!.idx! ~/ 30].index!;
   ref.read(v.state).state = s;
   return result;
@@ -61,7 +62,10 @@ class ChapterList extends ConsumerWidget {
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text('Ops...' ,style: TextStyle(color: Colors.white),),
+              child: Text(
+                'Ops...',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
         loading: () => const Center(
               child: Text(

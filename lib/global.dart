@@ -32,7 +32,7 @@ class Global {
         options.tracesSampleRate = 1.0;
       },
     );
-    compute(ListenApi().checkSite, "");
+    ListenApi().checkSite();
     Request();
     // UpdateApp.initXUpdate();
     // 本地存储初始化

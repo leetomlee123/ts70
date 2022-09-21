@@ -5,17 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 
-/*
-  * http 操作类
-  *
-  * 手册
-  * https://github.com/flutterchina/dio/blob/master/README-ZH.md
-  *
-  * 从3.x升级到 4.x
-  * https://github.com/flutterchina/dio/blob/master/migration_to_4.x.md
-*/
 class Request {
-  static Request _instance = Request._internal();
+  static final Request _instance = Request._internal();
 
   factory Request() => _instance;
 
@@ -36,15 +27,11 @@ class Request {
     );
 
     dio = Dio(options);
-    // cookieJar = CookieJar();
-    // dio.interceptors.add(CookieManager(cookieJar));
-
     dio.interceptors.add(RetryInterceptor(
       dio: dio,
       logPrint: print, // specify log function (optional)
       retries: 3, // retry count (optional)
       retryDelays: const [
-        // set delays between retries (optional)
         Duration(seconds: 1), // wait 1 sec before first retry
         Duration(seconds: 2), // wait 2 sec before second retry
         Duration(seconds: 3), // wait 3 sec before third retry
