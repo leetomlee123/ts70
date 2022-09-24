@@ -1,13 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
 
-class Speed extends ConsumerWidget {
-  const Speed({super.key});
+class CountTimer extends ConsumerWidget {
+  const CountTimer({super.key});
+
+  timer(v) {
+    if (timerInstance?.isActive ?? false) {
+      timerInstance!.cancel();
+    }
+    timerInstance = Timer(Duration(minutes: v), () async {
+      await audioPlayer.pause();
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(speedProvider.state);
+    final p = ref.watch(cronProvider.state);
     return SingleChildScrollView(
       child: Container(
         color: Colors.black,
@@ -28,7 +39,7 @@ class Speed extends ConsumerWidget {
                   width: 20,
                 ),
                 const Text(
-                  '播放速度调节',
+                  '定时关闭',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -41,16 +52,14 @@ class Speed extends ConsumerWidget {
                 itemCount: 9,
                 itemExtent: 40,
                 itemBuilder: (ctx, i) {
-                  var v = (.5 + (.25 * i));
+                  int v = 5 * (i + 1);
                   return ListTile(
                     onTap: () async {
-                      // controller.fast.value = v;
-                      // Get.back();
                       p.state = v;
-                      await audioPlayer.setSpeed(p.state);
+                      timer(v);
                     },
                     title: Text(
-                      "${v}x",
+                      "$v分钟",
                       style: const TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
@@ -61,7 +70,7 @@ class Speed extends ConsumerWidget {
                       value: p.state == v,
                       onChanged: (bool? value) async {
                         p.state = v;
-                        await audioPlayer.setSpeed(p.state);
+                        timer(v);
                       },
                     ),
                   );
@@ -70,6 +79,5 @@ class Speed extends ConsumerWidget {
         ),
       ),
     );
- 
   }
 }

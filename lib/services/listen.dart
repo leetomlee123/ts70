@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -10,11 +11,13 @@ import 'package:ts70/utils/request.dart';
 var streamController = StreamController.broadcast();
 
 class ListenApi {
-  static String host = "https://m.70ts.cc";
-  static String hostPc = "https://www.70ts.cc";
+  //  String host = "https://m.70ts.cc";
+  String host = "https://www.70tsw.com";
+  String host2 = "https://www.70ts.cc";
 
   void checkSite() async {
     Response res = await Request().getBase(host);
+
     streamController.add(res.statusCode);
     var data = res.data;
     Document document = parse(data);
@@ -36,7 +39,7 @@ class ListenApi {
   }
 
   Future<List<TopRank>?> getTop(String rank) async {
-    var res = await Request().getBase(hostPc);
+    var res = await Request().getBase(host);
     Document document = parse(res);
     List<Element> es = document.querySelector(".top-ul")!.children;
     return es.map((element) {
@@ -53,28 +56,34 @@ class ListenApi {
   Future<List<Search>?> search(String keyword, CancelToken cancelToken) async {
     if (keyword.isEmpty) return const [];
     var res = await Request().postForm1("$host/novelsearch/search/result.html",
-        params: "searchword=${Uri.encodeQueryComponent(keyword)}",
+        params:
+            "searchword=${Uri.encodeQueryComponent(keyword)}&searchtype=novelname",
         cancelToken: cancelToken);
+    // final params = {"searchtype": "novelname", "searchword": keyword};
+    // var res = await Request().postForm("$host/novelsearch/search/result.html",
+    //     params: params, cancelToken: cancelToken);
     Document document = parse(res);
 
-    List<Element> es = document.querySelectorAll(".book-li");
+    List<Element> es = document.querySelector(".list-works")!.children;
     var result = es.map((e) {
-      final c = e
-          .getElementsByClassName("book-cover")[0]
-          .attributes['data-original']
-          .toString();
-      final metas = e.querySelectorAll('.book-meta>a');
+      final cover =
+          e.querySelector("div>a>img")!.attributes['data-original'].toString();
+      final id = e
+          .querySelector("div>a")!
+          .attributes['href']
+          .toString()
+          .split("/")[2]
+          .split(".")[0];
+      final title = e.querySelector("dl>dt>a")!.text.toString();
+      final desc = e.querySelector('dl>dd.list-book-des')!.text.trim();
+      final bookMeta =
+          "${e.querySelector("dl>dd.list-book-cs>span:nth-child(1)")!.text}/${e.querySelector("dl>dd.list-book-cs>span:nth-child(3)")!.text}";
       return Search(
-        id: e
-            .querySelector("a")!
-            .attributes['href']
-            .toString()
-            .split("/")[2]
-            .split(".")[0],
-        cover: c.startsWith("http") ? c : host + c,
-        title: e.querySelector(".book-title>a")!.text.toString(),
-        desc: e.getElementsByClassName('book-desc')[0].text.trim(),
-        bookMeta: "${metas[0].text}/${metas[1].text}",
+        id: id,
+        cover: cover.startsWith("http") ? cover : host + cover,
+        title: title,
+        desc: desc,
+        bookMeta: bookMeta,
       );
     }).toList();
     return result;
@@ -98,8 +107,7 @@ class ListenApi {
     var link = "$host/tingshu/${search!.id}";
     var res = await Request().get(link);
     Document document = parse(res);
-    List<Element> list = document.querySelectorAll("select")[0].children;
-
+    List<Element> list = document.querySelectorAll("select")[1].children;
     int len = list.length;
     List<Chapter>? result = [];
     for (int i = 0; i < len; i++) {

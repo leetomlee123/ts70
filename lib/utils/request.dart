@@ -190,7 +190,7 @@ class Request {
 
   /// restful post form 表单提交操作
   Future postForm(String path,
-      {dynamic params, Options? options, bool? useToken = true}) async {
+      {dynamic params, Options? options, bool? useToken = true,CancelToken? cancelToken}) async {
     Options requestOptions = options ?? Options();
 
     Map<String, dynamic> _authorization = getAuthorizationHeader();

@@ -13,6 +13,7 @@ import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/listen_detail.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
+import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/Screen.dart';
@@ -209,9 +210,10 @@ class PlayBar extends ConsumerWidget {
                       Icons.menu,
                       color: Colors.white,
                     )),
+                const Spacer(),
                 IconButton(
                     onPressed: () {
-                                showMaterialModalBottomSheet(
+                      showMaterialModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.black,
                         builder: (context) => SizedBox(
@@ -222,6 +224,21 @@ class PlayBar extends ConsumerWidget {
                     },
                     icon: const Icon(
                       Icons.speed,
+                      color: Colors.white,
+                    )),
+                IconButton(
+                    onPressed: () {
+                      showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .7,
+                          child: const CountTimer(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.timer,
                       color: Colors.white,
                     ))
               ],

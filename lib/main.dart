@@ -1,10 +1,30 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 
-void main() =>Global.init().then((value) =>  runApp(const ProviderScope(child: MyApp())));
+Future<void> main() async {
+  runZonedGuarded(() async {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn =
+            'https://041c11e61b9b4dba8b653a646523753b@o924080.ingest.sentry.io/6738525';
+        options.tracesSampleRate = 1.0;
+      },
+    );
+    Global.init().then((value) => runApp(const ProviderScope(child: MyApp())));
+  }, (exception, stackTrace) async {
+    if (kDebugMode) {
+      print(exception);
+    }
+    await Sentry.captureException(exception, stackTrace: stackTrace);
+  });
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +34,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '听风',
       builder: BotToastInit(),
-      navigatorObservers: [BotToastNavigatorObserver()],
+      navigatorObservers: [
+        BotToastNavigatorObserver(),
+        SentryNavigatorObserver(),
+      ],
       home: const Index(),
     );
   }

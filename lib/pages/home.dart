@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ final refreshProvider =
     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
 final playProvider = StateProvider.autoDispose<Search?>((ref) => Search());
 final speedProvider = StateProvider.autoDispose<double>((ref) => 1.0);
+final cronProvider = StateProvider.autoDispose<int>((ref) => 0);
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   if (kDebugMode) {
     print('start refresh');
@@ -42,6 +45,8 @@ final save = Provider.autoDispose((ref) {
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
 int completed = 0;
+Timer? timerInstance;
+
 // AppLifecycleState appLifeCycle = AppLifecycleState.resumed;
 
 // class Index extends StatefulWidget {
@@ -118,7 +123,7 @@ class Index extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   ProviderContainer ref=   ProviderScope.containerOf(context);
+    ProviderContainer ref = ProviderScope.containerOf(context);
 
     audioPlayer.playerStateStream.listen((event) async {
       final s = ref.read(stateProvider.state);

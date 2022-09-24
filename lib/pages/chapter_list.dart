@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,10 @@ import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
+const itemHeight = 40.0;
+
 final v = StateProvider(((ref) => ""));
+final index = StateProvider(((ref) => 0));
 final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final vs = ref.watch(v);
   final play = ref.read(playProvider);
@@ -16,13 +21,13 @@ final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   return result;
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
-
   final play = ref.read(playProvider);
   final result = await compute(ListenApi().getOptions, play);
   final s = result![play!.idx! ~/ 30].index!;
   ref.read(v.state).state = s;
   return result;
 });
+ScrollController controller = ScrollController();
 
 class ChapterList extends ConsumerWidget {
   const ChapterList({super.key});
@@ -36,6 +41,7 @@ class ChapterList extends ConsumerWidget {
           return Container(
             color: Colors.black,
             child: SingleChildScrollView(
+              controller: controller,
               child: Column(
                 children: [
                   DropdownButton(
@@ -55,7 +61,7 @@ class ChapterList extends ConsumerWidget {
                       onChanged: ((value) {
                         vp.state = value!;
                       })),
-                  const ListPage()
+                  ListPage()
                 ],
               ),
             ),
@@ -103,6 +109,7 @@ class MyCustomClass {
 
 final scroll = StateProvider(((ref) => ""));
 
+// ignore: must_be_immutable
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
 
@@ -110,7 +117,6 @@ class ListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(chapterProvider);
     final play = ref.read(playProvider);
-    // ScrollController(initialScrollOffset: max(0,play!.idx! % 30+1)*40 )
     return f.when(
         data: (data) {
           final vp = ref.read(v.state).state;
@@ -119,9 +125,12 @@ class ListPage extends ConsumerWidget {
           var bool = int.parse(vp) == (j);
           // final controller = ScrollController(initialScrollOffset: i*40);
           // print("init scroller");
+          controller.animateTo(max(0, i-3) * itemHeight,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.linear);
           return ListView.builder(
             shrinkWrap: true,
-            // controller: controller,
+            controller: controller,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: ((context, index) {
               final model = data[index];
@@ -135,6 +144,7 @@ class ListPage extends ConsumerWidget {
                   final vs = ref.read(v.state).state;
                   play!.idx = index + (int.parse(vs) - 1) * 30;
                   play.position = Duration.zero;
+                  play.url = "";
                   play.duration = const Duration(seconds: 1);
                   int result =
                       await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
@@ -144,7 +154,7 @@ class ListPage extends ConsumerWidget {
                     print('dddd $result');
                   }
                   //资源释放
-                  await initResource(context);
+                  initResource(context);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -176,7 +186,7 @@ class ListPage extends ConsumerWidget {
               );
             }),
             itemCount: data!.length,
-            itemExtent: 40,
+            itemExtent: itemHeight,
           );
         },
         error: (error, stackTrace) => const Center(
