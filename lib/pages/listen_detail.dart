@@ -10,7 +10,7 @@ import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/voice_slider.dart';
-import 'package:ts70/utils/Screen.dart';
+import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 const iconSize=40.0;
 class ListenDetail extends ConsumerWidget {

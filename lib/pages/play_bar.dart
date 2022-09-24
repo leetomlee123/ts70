@@ -16,7 +16,7 @@ import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/services/listen.dart';
-import 'package:ts70/utils/Screen.dart';
+import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 initResource(BuildContext context) async {

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/utils/Screen.dart';
+import 'package:ts70/utils/screen.dart';
 
 class HeaderCategory extends ConsumerWidget {
   const HeaderCategory({super.key});
