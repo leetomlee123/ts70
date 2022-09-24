@@ -16,8 +16,8 @@ import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/services/listen.dart';
-import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/screen.dart';
 
 initResource(BuildContext context) async {
   ProviderContainer ref = ProviderScope.containerOf(context);
@@ -81,326 +81,180 @@ class PlayBar extends ConsumerWidget {
       print("refresh play bar");
     }
     if (data!.title == null) return Container();
-    return Container(
-        height: 250,
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        width: Screen.width,
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.black),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+    return Theme(
+      data: ThemeData.dark(useMaterial3: true)
+          .copyWith(iconTheme: const IconThemeData(size: iconSize)),
+      child: Container(
+          height: 420,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+          margin: const EdgeInsets.all(10),
+          width: Screen.width,
+          decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: Colors.black),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.title ?? "",
+                          style: const TextStyle(
+                              fontSize: 28,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "${data.bookMeta ?? ""}   第${data.idx! + 1}回",
+                          style: const TextStyle(
+                              fontSize: 23, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    CircleAvatar(
+                      backgroundImage:
+                          CachedNetworkImageProvider(data.cover ?? ""),
+                      radius: 55,
+                    ),
+                  ],
+                ),
+              ),
+              const VoiceSlider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.title ?? "",
-                        style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${data.bookMeta ?? ""}   第${data.idx! + 1}回",
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.white70),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  CircleAvatar(
-                    backgroundImage:
-                        CachedNetworkImageProvider(data.cover ?? ""),
-                    radius: 25,
-                  ),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ref
+                                .read(stateProvider.state)
+                                .state
+                                .processingState ==
+                            ProcessingState.idle) return;
+                        int p1 = max(ps.state!.position!.inSeconds - 10, 0);
+                        ps.state =
+                            ps.state!.copyWith(position: Duration(seconds: p1));
+                        await audioPlayer.seek(ps.state!.position);
+                      },
+                      icon: const Icon(Icons.replay_10_outlined)),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ps.state!.idx == 0) return;
+                        final search = ref.read(playProvider.state);
+                        await audioPlayer.stop();
+                        search.state = search.state!.copyWith(
+                            position: Duration.zero,
+                            duration: const Duration(seconds: 1),
+                            url: "",
+                            idx: search.state!.idx! - 1);
+                        await DataBaseProvider.dbProvider
+                            .addVoiceOrUpdate(search.state!);
+                        ref.read(refreshProvider.state).state =
+                            DateUtil.getNowDateMs();
+                        await initResource(context);
+                      },
+                      icon: const Icon(Icons.skip_previous_outlined)),
+                  const PlayButton(),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        final search = ref.read(playProvider.state);
+                        await audioPlayer.stop();
+                        search.state = search.state!.copyWith(
+                            position: Duration.zero,
+                            duration: const Duration(seconds: 1),
+                            url: "",
+                            idx: search.state!.idx! + 1);
+                        await DataBaseProvider.dbProvider
+                            .addVoiceOrUpdate(search.state!);
+                        ref.read(refreshProvider.state).state =
+                            DateUtil.getNowDateMs();
+                        await initResource(context);
+                      },
+                      icon: const Icon(Icons.skip_next_outlined)),
+                  IconButton(
+                      iconSize: iconSize,
+                      color: Colors.white,
+                      onPressed: () async {
+                        if (ref
+                                .read(stateProvider.state)
+                                .state
+                                .processingState ==
+                            ProcessingState.idle) return;
+                        int p1 = min(ps.state!.position!.inSeconds + 10,
+                            ps.state!.duration!.inSeconds);
+                        ps.state =
+                            ps.state!.copyWith(position: Duration(seconds: p1));
+                        await audioPlayer.seek(ps.state!.position);
+                      },
+                      icon: const Icon(Icons.forward_10_outlined)),
                 ],
               ),
-            ),
-            const VoiceSlider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                    iconSize: iconSize,
-                    color: Colors.white,
-                    onPressed: () async {
-                      if (ref.read(stateProvider.state).state.processingState ==
-                          ProcessingState.idle) return;
-                      int p1 = max(ps.state!.position!.inSeconds - 10, 0);
-                      ps.state =
-                          ps.state!.copyWith(position: Duration(seconds: p1));
-                      await audioPlayer.seek(ps.state!.position);
-                    },
-                    icon: const Icon(Icons.replay_10_outlined)),
-                IconButton(
-                    iconSize: iconSize,
-                    color: Colors.white,
-                    onPressed: () async {
-                      if (ps.state!.idx == 0) return;
-                      final search = ref.read(playProvider.state);
-                      await audioPlayer.stop();
-                      search.state = search.state!.copyWith(
-                          position: Duration.zero,
-                          duration: const Duration(seconds: 1),
-                          url: "",
-                          idx: search.state!.idx! - 1);
-                      await DataBaseProvider.dbProvider
-                          .addVoiceOrUpdate(search.state!);
-                      ref.read(refreshProvider.state).state =
-                          DateUtil.getNowDateMs();
-                      await initResource(context);
-                    },
-                    icon: const Icon(Icons.skip_previous_outlined)),
-                const PlayButton(),
-                IconButton(
-                    iconSize: iconSize,
-                    color: Colors.white,
-                    onPressed: () async {
-                      final search = ref.read(playProvider.state);
-                      await audioPlayer.stop();
-                      search.state = search.state!.copyWith(
-                          position: Duration.zero,
-                          duration: const Duration(seconds: 1),
-                          url: "",
-                          idx: search.state!.idx! + 1);
-                      await DataBaseProvider.dbProvider
-                          .addVoiceOrUpdate(search.state!);
-                      ref.read(refreshProvider.state).state =
-                          DateUtil.getNowDateMs();
-                      await initResource(context);
-                    },
-                    icon: const Icon(Icons.skip_next_outlined)),
-                IconButton(
-                    iconSize: iconSize,
-                    color: Colors.white,
-                    onPressed: () async {
-                      if (ref.read(stateProvider.state).state.processingState ==
-                          ProcessingState.idle) return;
-                      int p1 = min(ps.state!.position!.inSeconds + 10,
-                          ps.state!.duration!.inSeconds);
-                      ps.state =
-                          ps.state!.copyWith(position: Duration(seconds: p1));
-                      await audioPlayer.seek(ps.state!.position);
-                    },
-                    icon: const Icon(Icons.forward_10_outlined)),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      showMaterialModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.black,
-                        builder: (context) => SizedBox(
-                          height: Screen.height * .7,
-                          child: const ChapterList(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.white,
-                    )),
-                const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      showMaterialModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.black,
-                        builder: (context) => SizedBox(
-                          height: Screen.height * .7,
-                          child: const Speed(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.speed,
-                      color: Colors.white,
-                    )),
-                IconButton(
-                    onPressed: () {
-                      showMaterialModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.black,
-                        builder: (context) => SizedBox(
-                          height: Screen.height * .7,
-                          child: const CountTimer(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.timer,
-                      color: Colors.white,
-                    ))
-              ],
-            )
-          ],
-        )
-        // child: Row(
-        //   children: [
-        //     const SizedBox(
-        //       width: 10,
-        //     ),
-        //     Image(
-        //       image: CachedNetworkImageProvider(data.cover ?? ""),
-        //       height: 40,
-        //       width: 40,
-        //       fit: BoxFit.fitWidth,
-        //     ),
-        //     const SizedBox(
-        //       width: 10,
-        //     ),
-        //     Column(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         Row(
-        //           children: [
-        //             SizedBox(
-        //               width: 160,
-        //               child: Text(
-        //                 data.title ?? "",
-        //                 style:
-        //                     const TextStyle(fontSize: 18, color: Colors.white),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //         const SizedBox(
-        //           height: 10,
-        //         ),
-        //         // const PositionWidget()
-        //         Row(
-        //           children: [
-        //             const PositionWidget(),
-        //             Text(
-        //               "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-        //               style: const TextStyle(fontSize: 12, color: Colors.white),
-        //             )
-        //           ],
-        //         )
-        //       ],
-        //     ),
-        //     const Spacer(),
-        //     AnimatedSwitcher(
-        //         transitionBuilder: (child, anim) {
-        //           return ScaleTransition(scale: anim, child: child);
-        //         },
-        //         duration: const Duration(milliseconds: 300),
-        //         child: const PlayButton()),
-        //     const SizedBox(
-        //       width: 5,
-        //     ),
-        //     IconButton(
-        //         onPressed: () => showMaterialModalBottomSheet(
-        //               context: context,
-        //               builder: (context) => SizedBox(
-        //                 height: Screen.height * .8,
-        //                 child: const ChapterList(),
-        //               ),
-        //             ),
-        //         icon: const Icon(Icons.playlist_play_outlined),
-        //         iconSize: 40,
-        //         color: Colors.white),
-        //     const SizedBox(
-        //       width: 30,
-        //     ),
-        //   ],
-        // ),
-
-        );
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ListenDetail()),
-      ),
-      child: Container(
-        height: 70,
-        width: Screen.width,
-        decoration: const BoxDecoration(
-            // borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-            color: Colors.black),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Image(
-              image: CachedNetworkImageProvider(data.cover ?? ""),
-              height: 40,
-              width: 40,
-              fit: BoxFit.fitWidth,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 160,
-                      child: Text(
-                        data.title ?? "",
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                // const PositionWidget()
-                Row(
-                  children: [
-                    const PositionWidget(),
-                    Text(
-                      "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
-                    )
-                  ],
-                )
-              ],
-            ),
-            const Spacer(),
-            AnimatedSwitcher(
-                transitionBuilder: (child, anim) {
-                  return ScaleTransition(scale: anim, child: child);
-                },
-                duration: const Duration(milliseconds: 300),
-                child: const PlayButton()),
-            const SizedBox(
-              width: 5,
-            ),
-            IconButton(
-                onPressed: () => showMaterialModalBottomSheet(
-                      context: context,
-                      builder: (context) => SizedBox(
-                        height: Screen.height * .8,
-                        child: const ChapterList(),
-                      ),
-                    ),
-                icon: const Icon(Icons.playlist_play_outlined),
-                iconSize: 40,
-                color: Colors.white),
-            const SizedBox(
-              width: 30,
-            ),
-          ],
-        ),
-      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.black,
+                          builder: (context) => SizedBox(
+                            height: Screen.height * .7,
+                            child: const ChapterList(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                      )),
+                  const Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.black,
+                          builder: (context) => SizedBox(
+                            height: Screen.height * .7,
+                            child: const Speed(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.speed,
+                        color: Colors.white,
+                      )),
+                  IconButton(
+                      onPressed: () {
+                        showMaterialModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.black,
+                          builder: (context) => SizedBox(
+                            height: Screen.height * .7,
+                            child: const CountTimer(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.timer,
+                        color: Colors.white,
+                      ))
+                ],
+              )
+            ],
+          )),
     );
   }
 }
@@ -413,7 +267,7 @@ class PositionWidget extends ConsumerWidget {
     final data = ref.watch(playProvider.select((value) => value!.position));
     return Text(
       DateUtil.formatDateMs(data!.inMilliseconds, format: 'mm:ss'),
-      style: const TextStyle(fontSize: 12, color: Colors.white),
+      style: const TextStyle(fontSize: 20, color: Colors.white),
     );
   }
 }

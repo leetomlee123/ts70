@@ -14,7 +14,7 @@ class VoiceSlider extends ConsumerWidget {
     return Column(
       children: [
         SizedBox(
-          height: 40,
+          height: 50,
           child: Slider(
             activeColor: Colors.white,
             onChangeStart: (value) async {
@@ -46,7 +46,7 @@ class VoiceSlider extends ConsumerWidget {
               Text(
                   DateUtil.formatDateMs(p1.state!.duration!.inMilliseconds,
                       format: 'mm:ss'),
-                  style: const TextStyle(color: Colors.white, fontSize: 12)),
+                  style: const TextStyle(color: Colors.white, fontSize: 20)),
             ],
           ),
         )

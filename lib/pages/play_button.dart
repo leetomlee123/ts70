@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/listen_detail.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
 
@@ -15,7 +16,7 @@ class PlayButton extends ConsumerWidget {
     final p = ref.read(playProvider.state);
     return IconButton(
         key: ValueKey(f),
-        iconSize: 45,
+        iconSize: iconSize,
         onPressed: () async {
           if(f.playing){
             await audioPlayer.pause();

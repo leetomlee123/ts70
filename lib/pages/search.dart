@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
@@ -57,9 +56,17 @@ class SearchViewState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 45,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         elevation: 0,
         title: Input(),
         backgroundColor: Colors.black87,
+        toolbarHeight: 80,
       ),
       body: Container(
         color: Colors.black,
@@ -86,7 +93,7 @@ class Input extends ConsumerWidget {
       autofocus: false,
       focusNode: focusNode,
       cursorColor: Colors.white,
-      cursorHeight: 25,
+      cursorHeight: 30,
       controller: _textEditingController,
       style: const TextStyle(color: Colors.white),
       onChanged: (v) {
@@ -94,11 +101,13 @@ class Input extends ConsumerWidget {
       },
       decoration: InputDecoration(
           hintText: 'Search',
-          hintStyle: const TextStyle(color: Colors.white),
+          hintStyle: const TextStyle(color: Colors.white,fontSize: 20),
           alignLabelWithHint: true,
           suffixIcon: IconButton(
             icon: const Icon(
               Icons.close_outlined,
+              color: Colors.white,
+              size: 45,
             ),
             onPressed: () {
               _textEditingController.text = "";
@@ -207,90 +216,83 @@ class Result extends ConsumerWidget {
     final f = ref.watch(resultProvider);
     return f.when(
         data: (data) {
-          return 
-           ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final model = data[index];
-                return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () async {
-                          Navigator.of(context).pop();
-                          await audioPlayer.stop();
-                          int result = await DataBaseProvider.dbProvider
-                              .addVoiceOrUpdate(model);
-                          ref.read(refreshProvider.state).state =
-                              DateUtil.getNowDateMs();
-                        },
-                        child: Container(
-                          height: 100,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              // PowerImage.network(    model.cover ?? "",
-                              //   fit: BoxFit.cover,
-                              //   width: 80,
-                              //   height: 120),
-                              CachedNetworkImage(
-                                imageUrl: model.cover ?? "",
-                                fit: BoxFit.cover,
-                                width: 60,
-                                height: 80,
-                                placeholder: (context, url) =>
-                                    LoadingAnimationWidget.dotsTriangle(
-                                  color: Colors.white,
-                                  size: 60,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text(
-                                      model.title ?? "",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Colors.white),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      model.desc ?? "",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.clip,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      model.bookMeta ?? "",
-                                      maxLines: 1,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          // child: ListTile(
+          return ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final model = data[index];
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await audioPlayer.stop();
+                  int result =
+                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+                  ref.read(refreshProvider.state).state =
+                      DateUtil.getNowDateMs();
+                },
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      // PowerImage.network(    model.cover ?? "",
+                      //   fit: BoxFit.cover,
+                      //   width: 80,
+                      //   height: 120),
+                      CachedNetworkImage(
+                        imageUrl: model.cover ?? "",
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 130,
+                        placeholder: (context, url) =>
+                            const Text('loading'),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              model.title ?? "",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              model.desc ?? "",
+                              maxLines: 2,
+                              overflow: TextOverflow.clip,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              model.bookMeta ?? "",
+                              maxLines: 1,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
                         ),
-                      );
-              },
-              itemCount: data!.length,
-              itemExtent: 130,
-            );
-          
+                      )
+                    ],
+                  ),
+                  // child: ListTile(
+                ),
+              );
+            },
+            itemCount: data!.length,
+            itemExtent: 150,
+          );
         },
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),

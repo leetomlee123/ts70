@@ -12,7 +12,7 @@ import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
-const iconSize=40.0;
+const iconSize=80.0;
 class ListenDetail extends ConsumerWidget {
   const ListenDetail({super.key});
 
