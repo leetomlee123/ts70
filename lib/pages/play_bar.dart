@@ -85,9 +85,9 @@ class PlayBar extends ConsumerWidget {
     }
     if (data!.title == null) return Container();
     return Container(
-        height: 250,
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        height: 245,
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5),
         width: Screen.width,
         decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -95,7 +95,7 @@ class PlayBar extends ConsumerWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -106,7 +106,7 @@ class PlayBar extends ConsumerWidget {
                       Text(
                         data.title ?? "",
                         style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 20,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
