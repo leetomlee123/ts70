@@ -19,7 +19,7 @@ class WebState extends ConsumerWidget {
     return CircleAvatar(
       backgroundColor:
           f.state == 200 ? const Color.fromARGB(255, 66, 196, 70) : Colors.red,
-      radius: 4,
+      radius: 3,
     );
   }
 }

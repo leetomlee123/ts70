@@ -10,7 +10,7 @@ import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
-import 'package:ts70/pages/web_state.dart';
+import 'package:ts70/pages/online_check.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
