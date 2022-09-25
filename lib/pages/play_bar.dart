@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -15,6 +17,7 @@ import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
+import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -211,6 +214,31 @@ class PlayBar extends ConsumerWidget {
                       color: Colors.white,
                     )),
                 const Spacer(),
+                IconButton(
+                    onPressed: () {
+                      Clipboard.setData(const ClipboardData(text: "187905651"));
+                      BotToast.showText(text: "QQ群号已复制到粘贴板");
+                    },
+                    icon: const Icon(
+                      Icons.support_agent,
+                      color: Colors.white,
+                    )),
+                IconButton(
+                    onPressed: () async {
+
+                      showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .7,
+                          child: const Vpn(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.vpn_lock,
+                      color: Colors.white,
+                    )),
                 IconButton(
                     onPressed: () {
                       showMaterialModalBottomSheet(

@@ -11,40 +11,54 @@ import 'package:html/parser.dart';
 import 'package:ts70/utils/request.dart';
 
 Future<void> main() async {
-  print(1356 % 30);
+  final text = """
+    function importSublink(client) {
+      if (client == 'quantumult') {
+        oneclickImport('quantumult', '');
+      }
+      if (client == 'quantumultx') {
+        oneclickImport('quantumultx', 'https://api.jsm.one/link/twgexw2prGYmvyDD?list=quantumultx');
+      }
+      if (client == 'shadowrocket') {
+        oneclickImport('shadowrocket','https://api.jsm.one/link/twgexw2prGYmvyDD?list=shadowrocket')
+      };
+      if (client == 'surfboard') {
+        oneclickImport('surfboard','https://api.jsm.one/link/twgexw2prGYmvyDD?surfboard=1')
+      };
+      if (client == 'surge2') {
+        oneclickImport('surge','https://api.jsm.one/link/twgexw2prGYmvyDD?surge=2')
+      };
+      if (client == 'surge3') {
+        oneclickImport('surge3','https://api.jsm.one/link/twgexw2prGYmvyDD?surge=3')
+      };
+      if (client == 'surge4') {
+        oneclickImport('surge3','https://api.jsm.one/link/twgexw2prGYmvyDD?surge=4')
+      };
+      if (client == 'clash') {
+        oneclickImport('clash','https://api.jsm.one/link/twgexw2prGYmvyDD?clash=1')
+      };
+      if (client == 'ssr') {
+        oneclickImport('ssr','https://api.jsm.one/link/twgexw2prGYmvyDD?sub=1')
+      }
+    }
 
-  // String host = "https://m.70ts.cc";
-  // var link = "$host/tingshu/777";
-  // var res = await Request().get(link);
-  // Document document = parse(res);
-  // List<Element> list = document.querySelector("#playlist>ul")!.children;
-  // int index = 1;
-  // String chapterUrl =
-  //     host + list[index].querySelector("a")!.attributes['href']!;
-  // res = await Request().get(chapterUrl);
-  // document = parse(res);
-  // chapterUrl = host + document.querySelector("iframe")!.attributes['src']!;
-  // res = await Request().get(chapterUrl);
-  // document = parse(res);
-  // Element e = document.querySelectorAll('script').last;
-  // // print(e.text);
-  // List<String> split = e.text.split('\n');
-  // var split4 = split[7];
-  // var split5 = split[8];
+    appName = "加速猫";
 
-  // var split7 = split4.split("=");
-  // var split8 = split5.split("=");
-  // var s = e.text
-  //     .substring(e.text.indexOf("mp3:") + 4, e.text.indexOf("}).jPlayer"));
-  // s = s.replaceAll("+", "");
-  // s = s.replaceAll(split7[0].trim(), split4.substring(split4.indexOf("=") + 1));
-  // s = s.replaceAll(split8[0].trim(), split5.substring(split5.indexOf("=") + 1));
-  // s = s.replaceAll(split7[0].trim(), split4.substring(split4.indexOf("=") + 1));
-  // link = s
-  //     .replaceAll("'", "")
-  //     .replaceAll("+", "")
-  //     .replaceAll(";", "")
-  //     .replaceAll(" ", "")
-  //     .trim();
-  // print(link);
+    setTimeout(loadTrafficChart(), 3000);
+  
+""";
+
+  final reg = RegExp(r"oneclickImport(.*)");
+
+  final s = reg.stringMatch(text);
+  final ss = reg.allMatches(text);
+
+  ss.forEach(
+    (element) {
+      final result = element.group(0);
+      print(result);
+    },
+  );
+
+  print(s);
 }

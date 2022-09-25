@@ -11,6 +11,7 @@ import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
 import 'package:ts70/pages/web_state.dart';
+import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 AudioPlayer audioPlayer = AudioPlayer();
@@ -234,12 +235,6 @@ class Home extends ConsumerWidget {
             // HeaderImages(),
             // HeaderCategory(),
             // Ad(),
-            // MaterialButton(
-            //   color: Colors.blue,
-            //     onPressed: () {
-            //       throw Exception("fk all person");
-            //     },
-            //     child: const Text('测试',style: TextStyle(color: Colors.white),)),
             Align(
               alignment: Alignment.bottomCenter,
               child: PlayBar(),

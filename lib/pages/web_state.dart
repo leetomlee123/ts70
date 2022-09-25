@@ -16,20 +16,10 @@ class WebState extends ConsumerWidget {
         streamController.close();
       }
     });
-    final errorWidget = Container(
-      width: 6,
-      height: 6,
-      decoration: const BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
+    return CircleAvatar(
+      backgroundColor:
+          f.state == 200 ? const Color.fromARGB(255, 66, 196, 70) : Colors.red,
+      radius: 4,
     );
-    final okWidget = Container(
-      width: 6,
-      height: 6,
-      decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 66, 196, 70),
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-    );
-    return f.state == 200 ? okWidget : errorWidget;
   }
 }

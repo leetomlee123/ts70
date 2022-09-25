@@ -7,8 +7,11 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/utils/request.dart';
+import 'package:uuid/uuid.dart';
 
 var streamController = StreamController.broadcast();
+
+var uuid = Uuid();
 
 class ListenApi {
   //  String host = "https://m.70ts.cc";
@@ -77,7 +80,7 @@ class ListenApi {
       final title = e.querySelector("dl>dt>a")!.text.toString();
       final desc = e.querySelector('dl>dd.list-book-des')!.text.trim();
       final bookMeta =
-          "${e.querySelector("dl>dd.list-book-cs>span:nth-child(1)")!.text}/${e.querySelector("dl>dd.list-book-cs>span:nth-child(3)")!.text}";
+          "${e.querySelector("dl>dd.list-book-cs>span:nth-child(1)")!.text}|${e.querySelector("dl>dd.list-book-cs>span:nth-child(3)")!.text}";
       return Search(
         id: id,
         cover: cover.startsWith("http") ? cover : host + cover,
@@ -166,5 +169,37 @@ class ListenApi {
       }
     }
     return "";
+  }
+
+  Future<List<Chapter>?> imageLink() async {
+    List<Chapter>? result = [];
+    final key = uuid.v4().substring(10).replaceAll("-", "");
+    final data = {
+      "email": "$key@qq.com",
+      "name": key,
+      "passwd": key,
+      "repasswd": key,
+      "code": 0
+    };
+    await Request().postForm("https://jsmao.org/auth/register", params: data);
+    await Request().postForm("https://jsmao.org/auth/login", params: data);
+    final res3 = await Request().get("https://jsmao.org/user");
+    Document document = parse(res3);
+    final v2ray = document
+        .getElementsByClassName('btn-v2ray')[0]
+        .attributes['data-clipboard-text'];
+    final reg = RegExp(r"oneclickImport(.*)");
+    result.add(Chapter(name: "v2ray", index: v2ray));
+
+    final ss = reg.allMatches(res3);
+
+    for (var element in ss) {
+      final r = element.group(0);
+      final sss = r!.split("'");
+      if (sss[3].isNotEmpty) {
+        result.add(Chapter(name: sss[1], index: sss[3]));
+      }
+    }
+    return result;
   }
 }

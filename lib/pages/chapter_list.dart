@@ -79,6 +79,7 @@ class ChapterList extends ConsumerWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ));
+ 
   }
 }
 
