@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +10,7 @@ import 'package:uuid/uuid.dart';
 
 var streamController = StreamController.broadcast();
 
-var uuid = Uuid();
+var uuid = const Uuid();
 
 class ListenApi {
   //  String host = "https://m.70ts.cc";

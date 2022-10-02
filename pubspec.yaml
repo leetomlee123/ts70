@@ -40,6 +40,7 @@ dependencies:
   bot_toast: ^4.0.2
   loading_animation_widget: ^1.2.0+2
   modal_bottom_sheet: ^2.1.0
+  postgres: ^2.5.2
 
 
   equatable: ^2.0.5
@@ -84,7 +85,6 @@ dependencies:
   just_audio: ^0.9.29
   just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
-
   uuid: ^3.0.6
 
 

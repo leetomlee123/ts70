@@ -99,6 +99,7 @@ class Input extends ConsumerWidget {
           suffixIcon: IconButton(
             icon: const Icon(
               Icons.close_outlined,
+              color: Colors.white,
             ),
             onPressed: () {
               _textEditingController.text = "";
@@ -211,6 +212,8 @@ class Result extends ConsumerWidget {
            ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              addRepaintBoundaries: false,
+              addAutomaticKeepAlives: false,
               itemBuilder: (context, index) {
                 final model = data[index];
                 return GestureDetector(
@@ -237,7 +240,10 @@ class Result extends ConsumerWidget {
                               CachedNetworkImage(
                                 imageUrl: model.cover ?? "",
                                 fit: BoxFit.cover,
+                                maxWidthDiskCache: 157,
+                                maxHeightDiskCache: 210,
                                 width: 60,
+
                                 height: 80,
                                 placeholder: (context, url) =>
                                     LoadingAnimationWidget.dotsTriangle(

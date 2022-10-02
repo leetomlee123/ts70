@@ -24,9 +24,7 @@ class Speed extends ConsumerWidget {
                       Icons.close_outlined,
                       color: Colors.white,
                     )),
-                const SizedBox(
-                  width: 20,
-                ),
+
                 const Text(
                   '播放速度调节',
                   style: TextStyle(

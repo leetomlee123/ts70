@@ -19,10 +19,11 @@ import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/services/listen.dart';
-import 'package:ts70/utils/screen.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/screen.dart';
 
 initResource(BuildContext context) async {
+
   ProviderContainer ref = ProviderScope.containerOf(context);
   final state = ref.read(loadProvider.state);
   final play = ref.read(playProvider.state);
@@ -33,14 +34,13 @@ initResource(BuildContext context) async {
       url = "";
       url = await compute(ListenApi().chapterUrl, play.state);
       if (url.isEmpty) {
-        // BotToast.showText(text: "fetch resource failed,please try it again");
         state.state = false;
         return;
       }
       play.state = play.state!.copyWith(url: url);
       await DataBaseProvider.dbProvider.addVoiceOrUpdate(play.state!);
     }
-    audioSource = LockCachingAudioSource(
+    audioSource = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
         id: '1',
@@ -80,9 +80,6 @@ class PlayBar extends ConsumerWidget {
     ref.watch(historyProvider);
     final data = ref.read(playProvider.state).state;
     var ps = ref.read(playProvider.state);
-    if (kDebugMode) {
-      print("refresh play bar");
-    }
     if (data!.title == null) return Container();
     return Container(
         height: 245,
@@ -119,8 +116,10 @@ class PlayBar extends ConsumerWidget {
                   ),
                   const Spacer(),
                   CircleAvatar(
-                    backgroundImage:
-                        CachedNetworkImageProvider(data.cover ?? ""),
+                    backgroundImage: CachedNetworkImageProvider(
+                        data.cover ?? "",
+                        maxWidth: 131,
+                        maxHeight: 131),
                     radius: 25,
                   ),
                 ],
@@ -225,7 +224,6 @@ class PlayBar extends ConsumerWidget {
                     )),
                 IconButton(
                     onPressed: () async {
-
                       showMaterialModalBottomSheet(
                         context: context,
                         backgroundColor: Colors.black,
@@ -272,164 +270,7 @@ class PlayBar extends ConsumerWidget {
               ],
             )
           ],
-        )
-        // child: Row(
-        //   children: [
-        //     const SizedBox(
-        //       width: 10,
-        //     ),
-        //     Image(
-        //       image: CachedNetworkImageProvider(data.cover ?? ""),
-        //       height: 40,
-        //       width: 40,
-        //       fit: BoxFit.fitWidth,
-        //     ),
-        //     const SizedBox(
-        //       width: 10,
-        //     ),
-        //     Column(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         Row(
-        //           children: [
-        //             SizedBox(
-        //               width: 160,
-        //               child: Text(
-        //                 data.title ?? "",
-        //                 style:
-        //                     const TextStyle(fontSize: 18, color: Colors.white),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //         const SizedBox(
-        //           height: 10,
-        //         ),
-        //         // const PositionWidget()
-        //         Row(
-        //           children: [
-        //             const PositionWidget(),
-        //             Text(
-        //               "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-        //               style: const TextStyle(fontSize: 12, color: Colors.white),
-        //             )
-        //           ],
-        //         )
-        //       ],
-        //     ),
-        //     const Spacer(),
-        //     AnimatedSwitcher(
-        //         transitionBuilder: (child, anim) {
-        //           return ScaleTransition(scale: anim, child: child);
-        //         },
-        //         duration: const Duration(milliseconds: 300),
-        //         child: const PlayButton()),
-        //     const SizedBox(
-        //       width: 5,
-        //     ),
-        //     IconButton(
-        //         onPressed: () => showMaterialModalBottomSheet(
-        //               context: context,
-        //               builder: (context) => SizedBox(
-        //                 height: Screen.height * .8,
-        //                 child: const ChapterList(),
-        //               ),
-        //             ),
-        //         icon: const Icon(Icons.playlist_play_outlined),
-        //         iconSize: 40,
-        //         color: Colors.white),
-        //     const SizedBox(
-        //       width: 30,
-        //     ),
-        //   ],
-        // ),
-
-        );
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ListenDetail()),
-      ),
-      child: Container(
-        height: 70,
-        width: Screen.width,
-        decoration: const BoxDecoration(
-            // borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-            color: Colors.black),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Image(
-              image: CachedNetworkImageProvider(data.cover ?? ""),
-              height: 40,
-              width: 40,
-              fit: BoxFit.fitWidth,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 160,
-                      child: Text(
-                        data.title ?? "",
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                // const PositionWidget()
-                Row(
-                  children: [
-                    const PositionWidget(),
-                    Text(
-                      "/${DateUtil.formatDateMs(data.duration!.inMilliseconds, format: 'mm:ss')}",
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
-                    )
-                  ],
-                )
-              ],
-            ),
-            const Spacer(),
-            AnimatedSwitcher(
-                transitionBuilder: (child, anim) {
-                  return ScaleTransition(scale: anim, child: child);
-                },
-                duration: const Duration(milliseconds: 300),
-                child: const PlayButton()),
-            const SizedBox(
-              width: 5,
-            ),
-            IconButton(
-                onPressed: () => showMaterialModalBottomSheet(
-                      context: context,
-                      builder: (context) => SizedBox(
-                        height: Screen.height * .8,
-                        child: const ChapterList(),
-                      ),
-                    ),
-                icon: const Icon(Icons.playlist_play_outlined),
-                iconSize: 40,
-                color: Colors.white),
-            const SizedBox(
-              width: 30,
-            ),
-          ],
-        ),
-      ),
-    );
+        ));
   }
 }
 

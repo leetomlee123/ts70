@@ -28,8 +28,10 @@ class Vpn extends ConsumerWidget {
                   return ListTile(
                     title: Text(
                       item.name ?? "",
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
+                    subtitle: Text(item.index ?? ""),
                     trailing: IconButton(
                         icon: const Icon(
                           Icons.copy,
@@ -37,7 +39,7 @@ class Vpn extends ConsumerWidget {
                         ),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: item.index));
-                          BotToast.showText(text: 'paste success');
+                          BotToast.showText(text: 'copy link success');
                         }),
                   );
                 },

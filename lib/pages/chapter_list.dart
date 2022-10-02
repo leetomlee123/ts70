@@ -38,18 +38,15 @@ class ChapterList extends ConsumerWidget {
     final vp = ref.watch(v.state);
     return f.when(
         data: (data) {
-          return Container(
-            color: Colors.black,
-            child: SingleChildScrollView(
-              controller: controller,
+          return SingleChildScrollView(
+            controller: controller,
+            child: Container(
+              color: Colors.black,
               child: Column(
                 children: [
                   DropdownButton(
                       dropdownColor: Colors.black87,
-                      // isExpanded: true,
-                      // 图标大小
                       iconSize: 40,
-                      // 下拉文本样式
                       style: const TextStyle(color: Colors.blue),
                       value: vp.state,
                       items: data!
@@ -61,7 +58,7 @@ class ChapterList extends ConsumerWidget {
                       onChanged: ((value) {
                         vp.state = value!;
                       })),
-                  ListPage()
+                  const ListPage()
                 ],
               ),
             ),
@@ -124,15 +121,13 @@ class ListPage extends ConsumerWidget {
           var i = play!.idx! % 30;
           var j = play.idx! ~/ 30 + 1;
           var bool = int.parse(vp) == (j);
-          // final controller = ScrollController(initialScrollOffset: i*40);
-          // print("init scroller");
           controller.animateTo(max(0, i-3) * itemHeight,
               duration: const Duration(milliseconds: 200),
               curve: Curves.linear);
           return ListView.builder(
             shrinkWrap: true,
             controller: controller,
-            physics: const NeverScrollableScrollPhysics(),
+            // physics: const NeverScrollableScrollPhysics(),
             itemBuilder: ((context, index) {
               final model = data[index];
               final b = index == i && bool;

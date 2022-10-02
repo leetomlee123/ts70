@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/postgresql_provider.dart';
 import 'package:ts70/utils/request.dart';
 // final cron = Cron();
 
@@ -30,6 +31,7 @@ class Global {
     // UpdateApp.initXUpdate();
     // 本地存储初始化
     await DataBaseProvider.dbProvider.voices();
+    PostGreSqlProvider.dbProvider.databaseVoice;
     //init audioservice
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
