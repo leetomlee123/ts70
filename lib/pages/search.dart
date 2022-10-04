@@ -10,6 +10,7 @@ import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/event_bus.dart';
 
 final keyProvider = StateProvider.autoDispose((ref) => '');
 final topProvider = StateProvider.autoDispose((ref) => true);
@@ -221,10 +222,11 @@ class Result extends ConsumerWidget {
                         onTap: () async {
                           Navigator.of(context).pop();
                           await audioPlayer.stop();
-                          int result = await DataBaseProvider.dbProvider
+                          await DataBaseProvider.dbProvider
                               .addVoiceOrUpdate(model);
                           ref.read(refreshProvider.state).state =
                               DateUtil.getNowDateMs();
+                          eventBus.fire(PlayEvent(play: false));
                         },
                         child: Container(
                           height: 100,

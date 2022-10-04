@@ -21,6 +21,7 @@ class ListenApi {
     Response res = await Request().getBase(host);
 
     streamController.add(res.statusCode);
+    if (res.statusCode != 200) return;
     var data = res.data;
     Document document = parse(data);
     Node e = document.querySelectorAll(".list-ul").first;

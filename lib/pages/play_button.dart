@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/event_bus.dart';
 
 class PlayButton extends ConsumerWidget {
   const PlayButton({super.key});
@@ -23,7 +24,7 @@ class PlayButton extends ConsumerWidget {
             if (f.processingState== ProcessingState.ready) {
              await audioPlayer.play();
             } else {
-             initResource(context);
+              eventBus.fire(PlayEvent());
             }
           }
         },

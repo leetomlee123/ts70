@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/event_bus.dart';
 
 class HistoryList extends ConsumerWidget {
   const HistoryList({super.key});
@@ -25,15 +26,12 @@ class HistoryList extends ConsumerWidget {
                 onTap: () async {
                   Navigator.pop(context);
                   await audioPlayer.stop();
-                  int result =
-                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
-                  if (kDebugMode) {
-                    print('dddd $result');
-                  }
+                  DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
+
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
                   ref.read(playProvider.state).state = item;
-                  await initResource(context);
+                  eventBus.fire(PlayEvent());
                 },
                 onLongPress: () {
                   BotToast.showWidget(

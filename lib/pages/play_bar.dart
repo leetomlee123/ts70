@@ -3,80 +3,30 @@ import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
-import 'package:ts70/pages/listen_detail.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
 import 'package:ts70/pages/vpn.dart';
-import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
-initResource(BuildContext context) async {
-
-  ProviderContainer ref = ProviderScope.containerOf(context);
-  final state = ref.read(loadProvider.state);
-  final play = ref.read(playProvider.state);
-  String url = play.state!.url ?? "";
-  state.state = true;
-  try {
-    if (play.state!.url!.isEmpty) {
-      url = "";
-      url = await compute(ListenApi().chapterUrl, play.state);
-      if (url.isEmpty) {
-        state.state = false;
-        return;
-      }
-      play.state = play.state!.copyWith(url: url);
-      await DataBaseProvider.dbProvider.addVoiceOrUpdate(play.state!);
-    }
-    audioSource = AudioSource.uri(
-      Uri.parse(url),
-      tag: MediaItem(
-        id: '1',
-        album: play.state!.title,
-        title: "${play.state!.title}-第${(play.state!.idx ?? 0) + 1}回",
-        artUri: Uri.parse(play.state!.cover ?? ""),
-      ),
-    );
-    if (kDebugMode) {
-      print("loading network resource");
-    }
-    await audioPlayer.setAudioSource(audioSource);
-    final duration = await audioPlayer.load();
-    play.state = play.state!.copyWith(duration: duration);
-    await audioPlayer.seek(play.state!.position);
-    if (kDebugMode) {
-      print("play ${audioPlayer.processingState}");
-    }
-    state.state = false;
-    await DataBaseProvider.dbProvider.addVoiceOrUpdate(play.state!);
-    // await audioPlayer.setSpeed(20);
-    await audioPlayer.play();
-  } catch (e) {
-    state.state = false;
-    if (kDebugMode) {
-      print(e);
-    }
-  }
-}
+const iconSize = 40.0;
 
 class PlayBar extends ConsumerWidget {
   const PlayBar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(playProvider);
+    ref.watch(playProvider.select((value) => value!.idx));
     ref.watch(historyProvider);
     final data = ref.read(playProvider.state).state;
     var ps = ref.read(playProvider.state);
@@ -157,7 +107,7 @@ class PlayBar extends ConsumerWidget {
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
                           DateUtil.getNowDateMs();
-                      await initResource(context);
+                      eventBus.fire(PlayEvent());
                     },
                     icon: const Icon(Icons.skip_previous_outlined)),
                 const PlayButton(),
@@ -176,7 +126,7 @@ class PlayBar extends ConsumerWidget {
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
                           DateUtil.getNowDateMs();
-                      await initResource(context);
+                      eventBus.fire(PlayEvent());
                     },
                     icon: const Icon(Icons.skip_next_outlined)),
                 IconButton(

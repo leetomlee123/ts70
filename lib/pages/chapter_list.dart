@@ -9,6 +9,7 @@ import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
+import 'package:ts70/utils/event_bus.dart';
 
 const itemHeight = 40.0;
 
@@ -76,7 +77,6 @@ class ChapterList extends ConsumerWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ));
- 
   }
 }
 
@@ -121,13 +121,14 @@ class ListPage extends ConsumerWidget {
           var i = play!.idx! % 30;
           var j = play.idx! ~/ 30 + 1;
           var bool = int.parse(vp) == (j);
-          controller.animateTo(max(0, i-3) * itemHeight,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear);
+          if(bool) {
+            controller.animateTo(max(0, i - 3) * itemHeight,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.linear);
+          }
           return ListView.builder(
             shrinkWrap: true,
             controller: controller,
-            // physics: const NeverScrollableScrollPhysics(),
             itemBuilder: ((context, index) {
               final model = data[index];
               final b = index == i && bool;
@@ -142,15 +143,11 @@ class ListPage extends ConsumerWidget {
                   play.position = Duration.zero;
                   play.url = "";
                   play.duration = const Duration(seconds: 1);
-                  int result =
-                      await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
+
+                  await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
                   ref.read(refreshProvider.state).state =
                       DateUtil.getNowDateMs();
-                  if (kDebugMode) {
-                    print('dddd $result');
-                  }
-                  //资源释放
-                  initResource(context);
+                  eventBus.fire(PlayEvent());
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),

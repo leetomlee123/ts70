@@ -78,6 +78,7 @@ dependencies:
   dio_smart_retry: ^1.2.0
 
   # flutter_xupdate: ^2.0.3
+  event_bus: ^2.0.0
   
 
   
