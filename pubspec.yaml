@@ -77,20 +77,9 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   dio_smart_retry: ^1.2.0
 
-  # flutter_xupdate: ^2.0.3
-  event_bus: ^2.0.0
-
-
-
-
-  just_audio: ^0.9.29
-  just_audio_background: ^0.0.1-beta.7
-  just_audio_cache: ^0.1.1
 
   uuid: ^3.0.6
-  firebase_core: ^1.24.0
-  firebase_analytics: ^9.3.7
-  firebase_in_app_messaging: ^0.6.0+26
+
 
 
 dev_dependencies:
