@@ -21,24 +21,24 @@ class ListenApi {
     Response res = await Request().getBase(host);
 
     streamController.add(res.statusCode);
-    if (res.statusCode != 200) return;
-    var data = res.data;
-    Document document = parse(data);
-    Node e = document.querySelectorAll(".list-ul").first;
-    var list = e.children.map((e) {
-      final c =
-          e.querySelector("a>img")!.attributes['data-original'].toString();
-      return Search(
-          id: e
-              .querySelector("a")!
-              .attributes['href']
-              .toString()
-              .split("/")[2]
-              .split(".")[0],
-          cover: c.startsWith("http") ? c : host + c,
-          title: e.querySelector("a>figcaption")!.text.toString());
-    }).toList();
-    streamController.add(list);
+    // if (res.statusCode != 200) return;
+    // var data = res.data;
+    // Document document = parse(data);
+    // Node e = document.querySelectorAll(".list-ul").first;
+    // var list = e.children.map((e) {
+    //   final c =
+    //       e.querySelector("a>img")!.attributes['data-original'].toString();
+    //   return Search(
+    //       id: e
+    //           .querySelector("a")!
+    //           .attributes['href']
+    //           .toString()
+    //           .split("/")[2]
+    //           .split(".")[0],
+    //       cover: c.startsWith("http") ? c : host + c,
+    //       title: e.querySelector("a>figcaption")!.text.toString());
+    // }).toList();
+    // streamController.add(list);
   }
 
   Future<List<TopRank>?> getTop(String rank) async {
@@ -122,6 +122,7 @@ class ListenApi {
 
   Future<String> chapterUrl(Search? search) async {
     try {
+      print(search!.toMap());
       int idx = search!.idx ?? 0;
       int page = (idx ~/ 30) + 1;
       var link = "$host/tingshu/${search.id}${page == 1 ? "" : '/p$page.html'}";
@@ -200,6 +201,7 @@ class ListenApi {
         result.add(Chapter(name: sss[1], index: sss[3]));
       }
     }
+    Request().clear();
     return result;
   }
 }

@@ -9,6 +9,7 @@ final vpns = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final result = await ListenApi().imageLink();
   return result;
 });
+final check = StateProvider.autoDispose<int>((ref) => -1);
 
 class Vpn extends ConsumerWidget {
   const Vpn({super.key});
@@ -16,6 +17,7 @@ class Vpn extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(vpns);
+    final cc = ref.watch(check.state);
     return f.when(
         data: (data) {
           return Container(
@@ -33,11 +35,12 @@ class Vpn extends ConsumerWidget {
                     ),
                     subtitle: Text(item.index ?? ""),
                     trailing: IconButton(
-                        icon: const Icon(
-                          Icons.copy,
+                        icon: Icon(
+                          cc.state == index ? Icons.check : Icons.copy,
                           color: Colors.white,
                         ),
                         onPressed: () {
+                          cc.state=index;
                           Clipboard.setData(ClipboardData(text: item.index));
                           BotToast.showText(text: 'copy link success');
                         }),

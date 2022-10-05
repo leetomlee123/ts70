@@ -1,5 +1,5 @@
 class PlayEvent {
   bool play;
 
-  PlayEvent({this.play=true});
+  PlayEvent({this.play = true});
 }

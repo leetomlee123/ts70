@@ -5,7 +5,6 @@ class PlayManage extends ChangeNotifier {
   bool play = false;
   List<Search>? list;
 
-
   PlayManage({this.list = const []});
 
   void toggle() {

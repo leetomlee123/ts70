@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "539261450051",
+    "project_id": "ts-31986",
+    "storage_bucket": "ts-31986.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539261450051:android:914e93bc06f87e3f6b61f6",
+        "android_client_info": {
+          "package_name": "com.china.ts70"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "539261450051-kjajaq8q3bmp4hbvfo65btbmmss91jnr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4fYG7CzXzZdHU3g4g-TuDpgi69YYYAG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "539261450051-kjajaq8q3bmp4hbvfo65btbmmss91jnr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "539261450051-7ssu8dals3hk1p0hskcjbp624cvu26pb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.china.ts70"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

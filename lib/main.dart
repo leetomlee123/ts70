@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -19,12 +19,11 @@ Future<void> main() async {
     );
     Global.init().then((value) => runApp(const ProviderScope(child: MyApp())));
   }, (exception, stackTrace) async {
-    if (kDebugMode) {
-      print(exception);
-    }
     await Sentry.captureException(exception, stackTrace: stackTrace);
   });
 }
+// void main() =>
+//     Global.init().then((value) => runApp(const ProviderScope(child: MyApp())));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,7 +35,7 @@ class MyApp extends StatelessWidget {
       builder: BotToastInit(),
       navigatorObservers: [
         BotToastNavigatorObserver(),
-        SentryNavigatorObserver(),
+        FirebaseAnalyticsObserver(analytics: Global.analytics),
       ],
       home: const Index(),
     );

@@ -9,22 +9,38 @@ class HeaderCategory extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-        height: 200,
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
-        width: Screen.width,
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.black),child: Row(children: [
-Column(children: const [Icon(Icons.category),Text('分类')],),
-Column(children: const [Image(image: CachedNetworkImageProvider("")),Text('排行')],),
-Column(children: const [Image(image: CachedNetworkImageProvider("")),Text('完本')],),
-Column(children: const [Image(image: CachedNetworkImageProvider("")),Text('新书')],),
-
-
-    ],),);
+      height: 200,
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+      width: Screen.width,
+      decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.black),
+      child: Row(
+        children: [
+          Column(
+            children: const [Icon(Icons.category), Text('分类')],
+          ),
+          Column(
+            children: const [
+              Image(image: CachedNetworkImageProvider("")),
+              Text('排行')
+            ],
+          ),
+          Column(
+            children: const [
+              Image(image: CachedNetworkImageProvider("")),
+              Text('完本')
+            ],
+          ),
+          Column(
+            children: const [
+              Image(image: CachedNetworkImageProvider("")),
+              Text('新书')
+            ],
+          ),
+        ],
+      ),
+    );
   }
-
-
-
 }

@@ -12,7 +12,8 @@ class TopRank {
   String? a;
   String? b;
   String? id;
-  TopRank({this.a, this.b,this.id, this.name});
+
+  TopRank({this.a, this.b, this.id, this.name});
 }
 
 class Search extends Equatable {

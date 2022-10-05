@@ -44,7 +44,7 @@ class DataBaseProvider {
   }
 
   addVoiceOrUpdate(Search listenSearchModel) async {
-    history=[];
+    history = [];
     listenSearchModel.lastTime = DateUtil.getNowDateMs();
     var client = await databaseVoice;
 
@@ -60,7 +60,7 @@ class DataBaseProvider {
   }
 
   Future<List<Search>> voices() async {
-    if(history.isNotEmpty)return history;
+    if (history.isNotEmpty) return history;
     print("get");
     var client = await databaseVoice;
     List result = await client!.query(
@@ -79,13 +79,13 @@ class DataBaseProvider {
   }
 
   delById(String? id) async {
-    history=[];
+    history = [];
     var client = await databaseVoice;
     return await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
   }
 
   clear() async {
-    history=[];
+    history = [];
     var client = await databaseVoice;
     client!.delete(_dbVoice);
   }

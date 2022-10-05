@@ -24,7 +24,6 @@ class Speed extends ConsumerWidget {
                       Icons.close_outlined,
                       color: Colors.white,
                     )),
-
                 const Text(
                   '播放速度调节',
                   style: TextStyle(
@@ -68,6 +67,5 @@ class Speed extends ConsumerWidget {
         ),
       ),
     );
- 
   }
 }

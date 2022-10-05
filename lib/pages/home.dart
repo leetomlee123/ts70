@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,15 +25,9 @@ final refreshProvider =
     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
 final playProvider = StateProvider.autoDispose<Search?>((ref) => Search());
 final speedProvider = StateProvider.autoDispose<double>((ref) => 1.0);
-final cronProvider = StateProvider.autoDispose<int>((ref) => 0);
+final cronProvider = StateProvider<int>((ref) => 0);
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
-  if (kDebugMode) {
-    print('start refresh');
-  }
   ref.watch(refreshProvider);
-  if (kDebugMode) {
-    print('end refresh');
-  }
   List<Search> history = await DataBaseProvider.dbProvider.voices();
   if (history.isNotEmpty) {
     ref.read(playProvider.state).state = history.first;
@@ -44,7 +39,7 @@ final stateProvider = StateProvider.autoDispose<PlayerState>(
     (ref) => PlayerState(false, ProcessingState.idle));
 
 final save = Provider.autoDispose((ref) {
-  final f = ref.watch(stateProvider.select((value) => value.playing));
+  ref.watch(stateProvider.select((value) => value.playing));
   final play = ref.read(playProvider);
   DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
 });
@@ -123,7 +118,6 @@ class Home extends ConsumerWidget {
             return;
           }
           play.url = url;
-          await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
         }
         audioSource = LockCachingAudioSource(
           Uri.parse(url),
@@ -137,16 +131,21 @@ class Home extends ConsumerWidget {
         if (kDebugMode) {
           print("loading network resource");
         }
+        FirebaseAnalytics.instance.logEvent(
+            name: "fetch_source_link",
+            parameters: {"sourceData": play.toMap()});
+
         await audioPlayer.setAudioSource(audioSource);
         final duration = await audioPlayer.load();
         play.duration = duration;
         await audioPlayer.seek(play.position);
+        await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
+        ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
         if (kDebugMode) {
           print("play ${audioPlayer.processingState}");
         }
-        await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
-        ref.read(playProvider.state).state = play;
         load.state = false;
+
         if (event.play) {
           await audioPlayer.play();
         }

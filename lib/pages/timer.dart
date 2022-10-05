@@ -21,7 +21,6 @@ class CountTimer extends ConsumerWidget {
     final p = ref.watch(cronProvider.state);
     return SingleChildScrollView(
       child: Container(
-
         color: Colors.black,
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -36,7 +35,6 @@ class CountTimer extends ConsumerWidget {
                       Icons.close_outlined,
                       color: Colors.white,
                     )),
-
                 const Text(
                   '定时关闭',
                   style: TextStyle(
@@ -45,10 +43,12 @@ class CountTimer extends ConsumerWidget {
                       color: Colors.white),
                 ),
                 const Spacer(),
-                TextButton(onPressed: (){
-                   timerInstance!.cancel();
-                   p.state = 0;
-                }, child: const Text('取消定时'))
+                TextButton(
+                    onPressed: () {
+                      timerInstance!.cancel();
+                      p.state = 0;
+                    },
+                    child: const Text('取消定时'))
               ],
             ),
             ListView.builder(

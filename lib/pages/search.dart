@@ -4,8 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
@@ -16,7 +14,6 @@ final keyProvider = StateProvider.autoDispose((ref) => '');
 final topProvider = StateProvider.autoDispose((ref) => true);
 final sProvider = FutureProvider.autoDispose<List<TopRank>?>((ref) async {
   final ss = await ListenApi().getTop("");
-  print(ss);
   return ss;
 });
 final resultProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
@@ -209,96 +206,82 @@ class Result extends ConsumerWidget {
     final f = ref.watch(resultProvider);
     return f.when(
         data: (data) {
-          return 
-           ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              addRepaintBoundaries: false,
-              addAutomaticKeepAlives: false,
-              itemBuilder: (context, index) {
-                final model = data[index];
-                return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () async {
-                          Navigator.of(context).pop();
-                          await audioPlayer.stop();
-                          await DataBaseProvider.dbProvider
-                              .addVoiceOrUpdate(model);
-                          ref.read(refreshProvider.state).state =
-                              DateUtil.getNowDateMs();
-                          eventBus.fire(PlayEvent(play: false));
-                        },
-                        child: Container(
-                          height: 100,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              // PowerImage.network(    model.cover ?? "",
-                              //   fit: BoxFit.cover,
-                              //   width: 80,
-                              //   height: 120),
-                              CachedNetworkImage(
-                                imageUrl: model.cover ?? "",
-                                fit: BoxFit.cover,
-                                maxWidthDiskCache: 157,
-                                maxHeightDiskCache: 210,
-                                width: 60,
-
-                                height: 80,
-                                placeholder: (context, url) =>
-                                    LoadingAnimationWidget.dotsTriangle(
-                                  color: Colors.white,
-                                  size: 60,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text(
-                                      model.title ?? "",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          color: Colors.white),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      model.desc ?? "",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.clip,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      model.bookMeta ?? "",
-                                      maxLines: 1,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          // child: ListTile(
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            addRepaintBoundaries: false,
+            addAutomaticKeepAlives: false,
+            itemBuilder: (context, index) {
+              final model = data[index];
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await audioPlayer.stop();
+                  await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+                  ref.read(refreshProvider.state).state =
+                      DateUtil.getNowDateMs();
+                  ref.read(playProvider.state).state = model;
+                  eventBus.fire(PlayEvent(play: false));
+                },
+                child: Container(
+                  height: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: model.cover ?? "",
+                        fit: BoxFit.cover,
+                        maxWidthDiskCache: 157,
+                        maxHeightDiskCache: 210,
+                        width: 60,
+                        height: 80,
+                        // ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              model.title ?? "",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              model.desc ?? "",
+                              maxLines: 2,
+                              overflow: TextOverflow.clip,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              model.bookMeta ?? "",
+                              maxLines: 1,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
                         ),
-                      );
-              },
-              itemCount: data!.length,
-              itemExtent: 130,
-            );
-          
+                      )
+                    ],
+                  ),
+                  // child: ListTile(
+                ),
+              );
+            },
+            itemCount: data!.length,
+            itemExtent: 130,
+          );
         },
         error: (error, stackTrace) => const Center(
               child: Text('Ops...'),

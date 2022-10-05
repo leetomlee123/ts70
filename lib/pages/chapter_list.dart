@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
-import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
+import 'package:ts70/utils/screen.dart';
 
-const itemHeight = 40.0;
+const itemHeight = 45.0;
 
 final v = StateProvider(((ref) => ""));
 final index = StateProvider(((ref) => 0));
@@ -121,7 +121,7 @@ class ListPage extends ConsumerWidget {
           var i = play!.idx! % 30;
           var j = play.idx! ~/ 30 + 1;
           var bool = int.parse(vp) == (j);
-          if(bool) {
+          if (bool) {
             controller.animateTo(max(0, i - 3) * itemHeight,
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.linear);
@@ -156,11 +156,15 @@ class ListPage extends ConsumerWidget {
                       const SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        "${model.name}",
-                        style: TextStyle(
-                            color: b ? Colors.lightBlue : Colors.white,
-                            fontSize: 22),
+                      SizedBox(
+                        width: Screen.width*.7,
+                        child: Text(
+                          "${model.name}",
+                          style: TextStyle(
+                              color: b ? Colors.lightBlue : Colors.white,
+                              fontSize: 15),
+                          maxLines: 2,
+                        ),
                       ),
                       const Spacer(),
                       Offstage(

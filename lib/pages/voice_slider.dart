@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ts70/pages/seek_bar.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
 

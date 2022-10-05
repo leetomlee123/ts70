@@ -58,7 +58,7 @@ dependencies:
 
   shared_preferences: ^2.0.15
   sentry_flutter: ^6.9.1
-#  flutter_native_splash: ^2.2.9
+  #  flutter_native_splash: ^2.2.9
 
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
@@ -66,12 +66,12 @@ dependencies:
   sqflite: ^2.0.3+1
 
 
- 
+
   path_provider: ^2.0.10
   get_it: ^6.0.0
   html: ^0.15.0
   cached_network_image: ^3.2.2
- 
+
 
   # sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
@@ -79,14 +79,18 @@ dependencies:
 
   # flutter_xupdate: ^2.0.3
   event_bus: ^2.0.0
-  
 
-  
+
+
 
   just_audio: ^0.9.29
   just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
+
   uuid: ^3.0.6
+  firebase_core: ^1.24.0
+  firebase_analytics: ^9.3.7
+  firebase_in_app_messaging: ^0.6.0+26
 
 
 dev_dependencies:
@@ -121,7 +125,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - lottie.json
+    - lottie.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

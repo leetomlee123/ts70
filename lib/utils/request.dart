@@ -1,12 +1,11 @@
 import 'dart:async';
 
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:fast_gbk/fast_gbk.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
 
 class Request {
   static final Request _instance = Request._internal();
@@ -16,6 +15,7 @@ class Request {
   late Dio dio;
   CancelToken cancelToken = CancelToken();
   var cookieJar = CookieJar();
+
 
   Request._internal() {
     BaseOptions options = BaseOptions(
@@ -80,7 +80,9 @@ class Request {
     var response = await dio.get(path, cancelToken: cancelToken);
     return response;
   }
-
+void clear(){
+  cookieJar.deleteAll();
+}
   /// restful get 操作
   Future get(String path,
       {dynamic params, Options? options, String? proxy = ""}) async {
