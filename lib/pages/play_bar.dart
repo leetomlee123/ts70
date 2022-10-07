@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/seek_bar.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/home.dart';
@@ -173,21 +174,21 @@ class PlayBar extends ConsumerWidget {
                       Icons.support_agent,
                       color: Colors.white,
                     )),
-                IconButton(
-                    onPressed: () async {
-                      showMaterialModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.black,
-                        builder: (context) => SizedBox(
-                          height: Screen.height * .7,
-                          child: const Vpn(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.vpn_lock,
-                      color: Colors.white,
-                    )),
+                // IconButton(
+                //     onPressed: () async {
+                //       showMaterialModalBottomSheet(
+                //         context: context,
+                //         backgroundColor: Colors.black,
+                //         builder: (context) => SizedBox(
+                //           height: Screen.height * .7,
+                //           child: const Vpn(),
+                //         ),
+                //       );
+                //     },
+                //     icon: const Icon(
+                //       Icons.vpn_lock,
+                //       color: Colors.white,
+                //     )),
                 IconButton(
                     onPressed: () {
                       showMaterialModalBottomSheet(
@@ -225,15 +226,6 @@ class PlayBar extends ConsumerWidget {
   }
 }
 
-class PositionWidget extends ConsumerWidget {
-  const PositionWidget({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(playProvider.select((value) => value!.position));
-    return Text(
-      DateUtil.formatDateMs(data!.inMilliseconds, format: 'mm:ss'),
-      style: const TextStyle(fontSize: 12, color: Colors.white),
-    );
-  }
-}
+
+

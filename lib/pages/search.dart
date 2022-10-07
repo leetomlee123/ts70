@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/services.dart';
 import 'package:ts70/utils/database_provider.dart';

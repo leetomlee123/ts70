@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -67,7 +68,7 @@ class ChapterList extends ConsumerWidget {
         },
         error: (error, stackTrace) => const Center(
               child: Text(
-                'Ops...',
+                'oops...',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -187,7 +188,7 @@ class ListPage extends ConsumerWidget {
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text('Ops...'),
+              child: Text('oops...'),
             ),
         loading: () => const Center(
               child: Text('loading...'),

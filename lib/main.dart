@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/index.dart';
 
 Future<void> main() async {
   runZonedGuarded(() async {

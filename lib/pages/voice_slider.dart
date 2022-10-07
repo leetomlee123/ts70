@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/seek_bar.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/play_bar.dart';
@@ -10,7 +11,8 @@ class VoiceSlider extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(playProvider.select((value) => value!.position));
+    ref.watch(playProvider);
+
     final p1 = ref.read(playProvider.state);
     return Column(
       children: [
@@ -41,17 +43,40 @@ class VoiceSlider extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const PositionWidget(),
-              const Spacer(),
-              Text(
-                  DateUtil.formatDateMs(p1.state!.duration!.inMilliseconds,
-                      format: 'mm:ss'),
-                  style: const TextStyle(color: Colors.white, fontSize: 12)),
+            children: const [
+              PositionWidget(),
+              Spacer(),
+              DurationWidget(),
             ],
           ),
         )
       ],
+    );
+  }
+}
+
+class PositionWidget extends ConsumerWidget {
+  const PositionWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(playProvider.select((value) => value!.position));
+    return Text(
+      DateUtil.formatDateMs(data!.inMilliseconds, format: 'mm:ss'),
+      style: const TextStyle(fontSize: 12, color: Colors.white),
+    );
+  }
+}
+
+class DurationWidget extends ConsumerWidget {
+  const DurationWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(playProvider);
+    return Text(
+      DateUtil.formatDateMs(data!.duration!.inMilliseconds, format: 'mm:ss'),
+      style: const TextStyle(fontSize: 12, color: Colors.white),
     );
   }
 }

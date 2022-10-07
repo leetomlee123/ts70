@@ -281,20 +281,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.3"
-  firebase_in_app_messaging:
-    dependency: "direct main"
-    description:
-      name: firebase_in_app_messaging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.0+26"
-  firebase_in_app_messaging_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_in_app_messaging_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1+18"
   flutter:
     dependency: "direct main"
     description: flutter

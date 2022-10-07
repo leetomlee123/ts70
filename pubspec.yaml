@@ -90,7 +90,6 @@ dependencies:
   uuid: ^3.0.6
   firebase_core: ^1.24.0
   firebase_analytics: ^9.3.7
-  firebase_in_app_messaging: ^0.6.0+26
 
 
 dev_dependencies:

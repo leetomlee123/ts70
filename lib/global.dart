@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
-import 'package:ts70/utils/postgresql_provider.dart';
 import 'package:ts70/utils/request.dart';
 
 import 'firebase_options.dart';
@@ -28,6 +28,10 @@ class Global {
   /// init
   static Future init() async {
     WidgetsFlutterBinding.ensureInitialized();
+    if (kDebugMode) {
+      print("app init env ");
+    }
+
     ListenApi().checkSite();
     Request();
     // UpdateApp.initXUpdate();
@@ -36,7 +40,7 @@ class Global {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await DataBaseProvider.dbProvider.voices();
-    PostGreSqlProvider.dbProvider.databaseVoice;
+    // PostGreSqlProvider.dbProvider.databaseVoice;
     //init audioservice
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
@@ -50,5 +54,4 @@ class Global {
       SystemChrome.setSystemUIOverlayStyle(style);
     }
   }
-
 }
