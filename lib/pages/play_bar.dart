@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/seek_bar.dart';
 import 'package:ts70/pages/chapter_list.dart';

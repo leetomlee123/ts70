@@ -1,21 +1,20 @@
 import 'dart:async';
 
 import 'package:common_utils/common_utils.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:ts70/main.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
-EventBus eventBus = EventBus();
-AudioPlayer audioPlayer = AudioPlayer();
+late AudioPlayer audioPlayer;
 late LockCachingAudioSource audioSource;
 final refreshProvider =
     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
@@ -40,14 +39,20 @@ final save = Provider.autoDispose((ref) {
   DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
 });
 final loadProvider = StateProvider.autoDispose((ref) => false);
-int completed = 0;
 Timer? timerInstance;
 
-class Index extends ConsumerWidget {
+class Index extends ConsumerStatefulWidget {
   const Index({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  IndexState createState() => IndexState();
+}
+
+class IndexState extends ConsumerState {
+  @override
+  void initState() {
+    super.initState();
+    audioPlayer = AudioPlayer();
     eventBus.on<PlayEvent>().listen((event) async {
       final play = ref.read(playProvider);
       final load = ref.read(loadProvider.state);
@@ -111,14 +116,7 @@ class Index extends ConsumerWidget {
       }
       s.state = event;
 
-      switch (event.processingState) {
-        case ProcessingState.completed:
-          completed += 1;
-          break;
-        default:
-          completed = 0;
-      }
-      if (completed == 1) {
+      if (event.processingState == ProcessingState.completed) {
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
             position: Duration.zero,
@@ -142,6 +140,25 @@ class Index extends ConsumerWidget {
       }
     });
 
+    // Catching errors during playback (e.g. lost network connection)
+    audioPlayer.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace st) {
+      if (e is PlayerException) {
+        FirebaseAnalytics.instance.logEvent(
+            name: "audio_player_error", parameters: {"sourceData": e.message});
+      } else {}
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    audioPlayer.dispose();
+    eventBus.destroy();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return const Home();
   }
 }

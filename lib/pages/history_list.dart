@@ -4,6 +4,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';

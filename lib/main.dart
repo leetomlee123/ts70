@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:ts70/global.dart';
-import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/index.dart';
+
+EventBus eventBus = EventBus();
 
 Future<void> main() async {
   runZonedGuarded(() async {
@@ -31,6 +34,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("app root ");
+    }
     return MaterialApp(
       title: '听风',
       builder: BotToastInit(),

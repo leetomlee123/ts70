@@ -1,34 +1,15 @@
-import 'dart:async';
-
-import 'package:common_utils/common_utils.dart';
-import 'package:event_bus/event_bus.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/model.dart';
 import 'package:ts70/pages/online_check.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
-import 'package:ts70/services/listen.dart';
-import 'package:ts70/utils/database_provider.dart';
-import 'package:ts70/utils/event_bus.dart';
-
-
-
-
 class Home extends ConsumerWidget {
   const Home({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,

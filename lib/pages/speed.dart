@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/index.dart';
 
 class Speed extends ConsumerWidget {
