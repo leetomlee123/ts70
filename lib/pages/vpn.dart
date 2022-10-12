@@ -61,13 +61,11 @@ class Vpn extends ConsumerWidget {
         error: (error, stackTrace) => const Center(
               child: Text(
                 'Ops...',
-                style: TextStyle(color: Colors.white),
               ),
             ),
         loading: () => const Center(
               child: Text(
                 'loading...',
-                style: TextStyle(color: Colors.white),
               ),
             ));
   }
