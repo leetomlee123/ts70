@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';
@@ -42,11 +41,7 @@ class Global {
     await DataBaseProvider.dbProvider.voices();
     // PostGreSqlProvider.dbProvider.databaseVoice;
     //init audioservice
-    await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-      androidNotificationChannelName: 'Audio playback',
-      androidNotificationOngoing: true,
-    );
+
     if (Platform.isAndroid) {
       SystemUiOverlayStyle style = const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,

@@ -44,7 +44,7 @@ class Speed extends ConsumerWidget {
                       // controller.fast.value = v;
                       // Get.back();
                       p.state = v;
-                      await audioPlayer.setSpeed(p.state);
+                      await audioPlayer.setPlaybackRate(p.state);
                     },
                     title: Text(
                       "${v}x",
@@ -58,7 +58,7 @@ class Speed extends ConsumerWidget {
                       value: p.state == v,
                       onChanged: (bool? value) async {
                         p.state = v;
-                        await audioPlayer.setSpeed(p.state);
+                        await audioPlayer.setPlaybackRate(p.state);
                       },
                     ),
                   );

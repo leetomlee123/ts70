@@ -2,9 +2,6 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/seek_bar.dart';
-import 'package:ts70/pages/home.dart';
-import 'package:ts70/pages/play_bar.dart';
 
 class VoiceSlider extends ConsumerWidget {
   const VoiceSlider({super.key});
@@ -29,7 +26,7 @@ class VoiceSlider extends ConsumerWidget {
             },
             onChangeEnd: (double value) async {
               await audioPlayer.seek(Duration(seconds: value.toInt()));
-              await audioPlayer.play();
+              await audioPlayer.resume();
             },
             value: p1.state!.position!.inSeconds.toDouble(),
             label: DateUtil.formatDateMs(p1.state!.position!.inMilliseconds,

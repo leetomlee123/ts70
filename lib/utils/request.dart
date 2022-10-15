@@ -5,7 +5,6 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
-import 'package:fast_gbk/fast_gbk.dart';
 
 class Request {
   static final Request _instance = Request._internal();
@@ -216,17 +215,6 @@ void clear(){
     return response.data;
   }
 
-  String gbkDecoder(List<int> responseBytes, RequestOptions options,
-      ResponseBody responseBody) {
-    return gbk.decode(responseBytes);
-  }
-
-  List<int> gbkEncoder(
-    String req,
-    RequestOptions options,
-  ) {
-    return gbk.encode(req);
-  }
 
   Future postForm1(String path,
       {String? params,
