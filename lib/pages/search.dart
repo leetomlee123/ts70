@@ -255,7 +255,7 @@ class Result extends ConsumerWidget {
                               model.title ?? "",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                  fontSize: 16,
                                   color: Colors.white),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -264,12 +264,18 @@ class Result extends ConsumerWidget {
                               model.desc ?? "",
                               maxLines: 2,
                               overflow: TextOverflow.clip,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                             Text(
                               model.bookMeta ?? "",
                               maxLines: 1,
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
@@ -281,7 +287,7 @@ class Result extends ConsumerWidget {
               );
             },
             itemCount: data!.length,
-            itemExtent: 130,
+            itemExtent: 110,
           );
         },
         error: (error, stackTrace) => const Center(

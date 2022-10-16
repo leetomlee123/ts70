@@ -25,7 +25,7 @@ final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final play = ref.read(playProvider);
-  final result = await compute(ListenApi().getOptions, play);
+  final result = await ListenApi().getOptions(play);
   final s = result![play!.idx! ~/ 30].index!;
   ref.read(v.state).state = s;
   return result;
@@ -159,7 +159,7 @@ class ListPage extends ConsumerWidget {
                         width: 10,
                       ),
                       SizedBox(
-                        width: Screen.width*.7,
+                        width: Screen.width * .7,
                         child: Text(
                           "${model.name}",
                           style: TextStyle(

@@ -33,11 +33,6 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
 final stateProvider = StateProvider.autoDispose<PlayerState>(
     (ref) => PlayerState(false, ProcessingState.idle));
 
-final save = Provider.autoDispose((ref) {
-  ref.watch(stateProvider.select((value) => value.playing));
-  final play = ref.read(playProvider);
-  DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
-});
 final loadProvider = StateProvider.autoDispose((ref) => false);
 Timer? timerInstance;
 
@@ -61,7 +56,7 @@ class IndexState extends ConsumerState {
       try {
         if (url.isEmpty) {
           url = "";
-          url = await compute(ListenApi().chapterUrl, play);
+          url = await ListenApi().chapterUrl(play);
           if (url.isEmpty) {
             load.state = false;
             return;
@@ -99,24 +94,17 @@ class IndexState extends ConsumerState {
           await audioPlayer.play();
         }
       } catch (e) {
-        if (kDebugMode) {
-          print(e);
-        }
+        FirebaseAnalytics.instance.logEvent(
+            name: "player_error", parameters: {"error_message": e.toString()});
       }
     });
-
     audioPlayer.playerStateStream.listen((event) async {
+      final play = ref.read(playProvider);
+      DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
       final s = ref.read(stateProvider.state);
-      final search = ref.read(playProvider.state);
-      if (s.state.playing && !event.playing) {
-        DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
-      }
-      if (kDebugMode) {
-        print(event.processingState);
-      }
       s.state = event;
-
       if (event.processingState == ProcessingState.completed) {
+        final search = ref.read(playProvider.state);
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
             position: Duration.zero,
@@ -128,7 +116,6 @@ class IndexState extends ConsumerState {
         eventBus.fire(PlayEvent());
       }
     });
-
     audioPlayer.positionStream.listen((event) {
       final kk = ref.read(stateProvider.state).state;
       if (kk.playing && kk.processingState != ProcessingState.completed) {
