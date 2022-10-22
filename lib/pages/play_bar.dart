@@ -26,7 +26,7 @@ class PlayBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(playProvider.select((value) => value!.idx));
+    ref.watch(playProvider);
     ref.watch(historyProvider);
     final data = ref.read(playProvider.state).state;
     var ps = ref.read(playProvider.state);
@@ -103,6 +103,7 @@ class PlayBar extends ConsumerWidget {
                           duration: const Duration(seconds: 1),
                           url: "",
                           idx: search.state!.idx! - 1);
+                      ref.read(positionProvider.state).state = 0;
                       await DataBaseProvider.dbProvider
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
@@ -122,6 +123,9 @@ class PlayBar extends ConsumerWidget {
                           duration: const Duration(seconds: 1),
                           url: "",
                           idx: search.state!.idx! + 1);
+                      ref.read(positionProvider.state).state = 0;
+
+
                       await DataBaseProvider.dbProvider
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
@@ -137,6 +141,7 @@ class PlayBar extends ConsumerWidget {
                           ProcessingState.idle) return;
                       int p1 = min(ps.state!.position!.inSeconds + 10,
                           ps.state!.duration!.inSeconds);
+
                       ps.state =
                           ps.state!.copyWith(position: Duration(seconds: p1));
                       await audioPlayer.seek(ps.state!.position);

@@ -4,6 +4,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -74,7 +75,7 @@ class IndexState extends ConsumerState {
       try {
         if (url.isEmpty) {
           url = "";
-          url = await ListenApi().chapterUrl(play);
+          url = await compute( ListenApi().chapterUrl,play);
           if (url.isEmpty) {
             load.state = false;
             return;
@@ -127,6 +128,7 @@ class IndexState extends ConsumerState {
             duration: const Duration(seconds: 1),
             url: "",
             idx: search.state!.idx! + 1);
+        ref.read(positionProvider.state).state = 0;
         await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
         ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
         eventBus.fire(PlayEvent());
@@ -147,6 +149,7 @@ class IndexState extends ConsumerState {
             name: "audio_player_error", parameters: {"sourceData": e.message});
       } else {}
     });
+    SchedulerBinding.instance.addPostFrameCallback((_) => {eventBus.fire(PlayEvent(play: false))});
   }
 
   @override
