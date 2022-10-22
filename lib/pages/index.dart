@@ -29,9 +29,27 @@ final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
   }
   return history;
 });
+final positionProvider = StateProvider.autoDispose<int>((ref) {
+  return ref.read(playProvider)!.position!.inSeconds;
+});
 
-final stateProvider = StateProvider.autoDispose<PlayerState>(
-    (ref) => PlayerState(false, ProcessingState.idle));
+final statePlayProvider = StateProvider<bool>((ref) => false);
+final stateEventProvider =
+    StateProvider<ProcessingState>((ref) => ProcessingState.idle);
+final ffff = Provider(
+  (ref) {
+    ref.watch(statePlayProvider);
+    if (kDebugMode) {
+      print("save state");
+    }
+    if (ref.read(statePlayProvider)) {
+      final item = ref.read(playProvider);
+      final position = ref.read(positionProvider);
+      item!.position = Duration(seconds: position);
+      DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
+    }
+  },
+);
 
 final loadProvider = StateProvider.autoDispose((ref) => false);
 Timer? timerInstance;
@@ -99,10 +117,8 @@ class IndexState extends ConsumerState {
       }
     });
     audioPlayer.playerStateStream.listen((event) async {
-      final play = ref.read(playProvider);
-      DataBaseProvider.dbProvider.addVoiceOrUpdate(play!);
-      final s = ref.read(stateProvider.state);
-      s.state = event;
+      ref.read(statePlayProvider.state).state = event.playing;
+      ref.read(stateEventProvider.state).state = event.processingState;
       if (event.processingState == ProcessingState.completed) {
         final search = ref.read(playProvider.state);
         await audioSource.clearCache();
@@ -117,13 +133,9 @@ class IndexState extends ConsumerState {
       }
     });
     audioPlayer.positionStream.listen((event) {
-      final kk = ref.read(stateProvider.state).state;
-      if (kk.playing && kk.processingState != ProcessingState.completed) {
-        final f = ref.read(playProvider.state);
-        f.state = f.state!.copyWith(position: event);
-        if (kDebugMode) {
-          // print(f.state);
-        }
+      if (ref.read(statePlayProvider) &&
+          ref.read(stateEventProvider) != ProcessingState.completed) {
+        ref.read(positionProvider.state).state = event.inSeconds;
       }
     });
 

@@ -9,15 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ts70/main.dart';
-import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/seek_bar.dart';
 import 'package:ts70/pages/chapter_list.dart';
-import 'package:ts70/pages/home.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
-import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
@@ -86,7 +83,7 @@ class PlayBar extends ConsumerWidget {
                     iconSize: iconSize,
                     color: Colors.white,
                     onPressed: () async {
-                      if (ref.read(stateProvider.state).state.processingState ==
+                      if (ref.read(stateEventProvider) ==
                           ProcessingState.idle) return;
                       int p1 = max(ps.state!.position!.inSeconds - 10, 0);
                       ps.state =
@@ -136,7 +133,7 @@ class PlayBar extends ConsumerWidget {
                     iconSize: iconSize,
                     color: Colors.white,
                     onPressed: () async {
-                      if (ref.read(stateProvider.state).state.processingState ==
+                      if (ref.read(stateEventProvider)==
                           ProcessingState.idle) return;
                       int p1 = min(ps.state!.position!.inSeconds + 10,
                           ps.state!.duration!.inSeconds);
@@ -226,7 +223,3 @@ class PlayBar extends ConsumerWidget {
         ));
   }
 }
-
-
-
-

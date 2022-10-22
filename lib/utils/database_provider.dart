@@ -61,7 +61,6 @@ class DataBaseProvider {
 
   Future<List<Search>> voices() async {
     if (history.isNotEmpty) return history;
-    print("get");
     var client = await databaseVoice;
     List result = await client!.query(
       _dbVoice,

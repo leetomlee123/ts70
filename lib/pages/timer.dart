@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/index.dart';
 
 class CountTimer extends ConsumerWidget {
@@ -12,7 +11,7 @@ class CountTimer extends ConsumerWidget {
     if (timerInstance?.isActive ?? false) {
       timerInstance!.cancel();
     }
-    timerInstance = Timer(Duration(minutes: v), () async {
+    timerInstance = Timer(Duration(seconds: v), () async {
       await audioPlayer.pause();
     });
   }
