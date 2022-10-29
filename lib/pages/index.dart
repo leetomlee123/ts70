@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:common_utils/common_utils.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,20 +38,6 @@ final positionProvider = StateProvider.autoDispose<int>((ref) {
 final statePlayProvider = StateProvider<bool>((ref) => false);
 final stateEventProvider =
     StateProvider<ProcessingState>((ref) => ProcessingState.idle);
-final ffff = Provider(
-  (ref) {
-    ref.watch(statePlayProvider);
-    if (kDebugMode) {
-      print("save state");
-    }
-    if (ref.read(statePlayProvider)) {
-      final item = ref.read(playProvider);
-      final position = ref.read(positionProvider);
-      item!.position = Duration(seconds: position);
-      DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
-    }
-  },
-);
 
 final loadProvider = StateProvider.autoDispose((ref) => false);
 Timer? timerInstance;
@@ -67,6 +54,9 @@ class IndexState extends ConsumerState {
   void initState() {
     super.initState();
     audioPlayer = AudioPlayer();
+    eventBus.on<TimerEvent>().listen((event) {
+      ref.read(cronProvider.state).state = 0;
+    });
     eventBus.on<PlayEvent>().listen((event) async {
       final play = ref.read(playProvider);
       final load = ref.read(loadProvider.state);
@@ -75,7 +65,7 @@ class IndexState extends ConsumerState {
       try {
         if (url.isEmpty) {
           url = "";
-          url = await compute( ListenApi().chapterUrl,play);
+          url = await compute(ListenApi().chapterUrl, play);
           if (url.isEmpty) {
             load.state = false;
             return;
@@ -120,6 +110,10 @@ class IndexState extends ConsumerState {
     audioPlayer.playerStateStream.listen((event) async {
       ref.read(statePlayProvider.state).state = event.playing;
       ref.read(stateEventProvider.state).state = event.processingState;
+      final item = ref.read(playProvider);
+      final position = ref.read(positionProvider);
+      item!.position = Duration(seconds: position);
+      DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
       if (event.processingState == ProcessingState.completed) {
         final search = ref.read(playProvider.state);
         await audioSource.clearCache();
@@ -149,7 +143,8 @@ class IndexState extends ConsumerState {
             name: "audio_player_error", parameters: {"sourceData": e.message});
       } else {}
     });
-    SchedulerBinding.instance.addPostFrameCallback((_) => {eventBus.fire(PlayEvent(play: false))});
+
+    // SchedulerBinding.instance.addPostFrameCallback((_) => {eventBus.fire(PlayEvent(play: false))});
   }
 
   @override

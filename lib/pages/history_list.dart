@@ -14,6 +14,7 @@ class HistoryList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(historyProvider);
     final f = ref.read(historyProvider);
     final view = f.when(
         data: (data) {
@@ -34,6 +35,7 @@ class HistoryList extends ConsumerWidget {
                   eventBus.fire(PlayEvent());
                 },
                 onLongPress: () {
+
                   BotToast.showWidget(
                       toastBuilder: (void Function() cancelFunc) {
                     return AlertDialog(

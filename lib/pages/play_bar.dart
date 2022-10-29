@@ -15,6 +15,7 @@ import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
+import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
@@ -177,21 +178,21 @@ class PlayBar extends ConsumerWidget {
                       Icons.support_agent,
                       color: Colors.white,
                     )),
-                // IconButton(
-                //     onPressed: () async {
-                //       showMaterialModalBottomSheet(
-                //         context: context,
-                //         backgroundColor: Colors.black,
-                //         builder: (context) => SizedBox(
-                //           height: Screen.height * .7,
-                //           child: const Vpn(),
-                //         ),
-                //       );
-                //     },
-                //     icon: const Icon(
-                //       Icons.vpn_lock,
-                //       color: Colors.white,
-                //     )),
+                IconButton(
+                    onPressed: () async {
+                      showMaterialModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.black,
+                        builder: (context) => SizedBox(
+                          height: Screen.height * .7,
+                          child: const Vpn(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.vpn_lock,
+                      color: Colors.white,
+                    )),
                 IconButton(
                     onPressed: () {
                       showMaterialModalBottomSheet(

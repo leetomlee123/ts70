@@ -41,6 +41,7 @@ dependencies:
   loading_animation_widget: ^1.2.0+2
   modal_bottom_sheet: ^2.1.0
   postgres: ^2.5.2
+  flutter_launcher_icons: ^0.10.0
 
 
   equatable: ^2.0.5
@@ -54,6 +55,7 @@ dependencies:
 
   # http
   dio: ^4.0.6
+  keframe: ^3.0.0
 
 
   shared_preferences: ^2.0.15
@@ -123,8 +125,6 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - lottie.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

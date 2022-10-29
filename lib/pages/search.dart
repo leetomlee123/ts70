@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keframe/keframe.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
@@ -66,7 +67,7 @@ class SearchViewState extends State<SearchPage> {
           controller: scrollController,
           child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Result(),
+            child: SizeCacheWidget(child: Result()),
           ),
         ),
       ),
@@ -208,81 +209,85 @@ class Result extends ConsumerWidget {
     return f.when(
         data: (data) {
           return ListView.builder(
+            cacheExtent: 500,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             addRepaintBoundaries: false,
             addAutomaticKeepAlives: false,
             itemBuilder: (context, index) {
               final model = data[index];
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  await audioPlayer.stop();
-                  await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-                  ref.read(refreshProvider.state).state =
-                      DateUtil.getNowDateMs();
-                  ref.read(playProvider.state).state = model;
-                  eventBus.fire(PlayEvent(play: false));
-                },
-                child: Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: model.cover ?? "",
-                        fit: BoxFit.cover,
-                        maxWidthDiskCache: 157,
-                        maxHeightDiskCache: 210,
-                        width: 60,
-                        height: 80,
-                        // ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              model.title ?? "",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              model.desc ?? "",
-                              maxLines: 2,
-                              overflow: TextOverflow.clip,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              model.bookMeta ?? "",
-                              maxLines: 1,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
+              
+              return FrameSeparateWidget(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await audioPlayer.stop();
+                    await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
+                    ref.read(refreshProvider.state).state =
+                        DateUtil.getNowDateMs();
+                    ref.read(playProvider.state).state = model;
+                    eventBus.fire(PlayEvent(play: false));
+                  },
+                  child: Container(
+                    height: 100,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: model.cover ?? "",
+                          fit: BoxFit.cover,
+                          maxWidthDiskCache: 157,
+                          maxHeightDiskCache: 210,
+                          width: 60,
+                          height: 80,
+                          // ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                model.title ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.white),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                model.desc ?? "",
+                                maxLines: 2,
+                                overflow: TextOverflow.clip,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                model.bookMeta ?? "",
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    // child: ListTile(
                   ),
-                  // child: ListTile(
                 ),
               );
             },
