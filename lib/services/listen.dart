@@ -182,9 +182,9 @@ class ListenApi {
       "repasswd": key,
       "code": 0
     };
-    await Request().postForm("https://jsmao.org/auth/register", params: data);
-    await Request().postForm("https://jsmao.org/auth/login", params: data);
-    final res3 = await Request().get("https://jsmao.org/user");
+    await Request().postForm("https://jsmao.xyz/auth/register", params: data);
+    await Request().postForm("https://jsmao.xyz/auth/login", params: data);
+    final res3 = await Request().get("https://jsmao.xyz/user");
     Document document = parse(res3);
     final v2ray = document
         .getElementsByClassName('btn-v2ray')[0]
@@ -204,4 +204,5 @@ class ListenApi {
     Request().clear();
     return result;
   }
+
 }

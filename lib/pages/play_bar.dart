@@ -84,8 +84,8 @@ class PlayBar extends ConsumerWidget {
                     iconSize: iconSize,
                     color: Colors.white,
                     onPressed: () async {
-                      if (ref.read(stateEventProvider) ==
-                          ProcessingState.idle) return;
+                      if (ref.read(stateEventProvider) == ProcessingState.idle)
+                        return;
                       int p1 = max(ps.state!.position!.inSeconds - 10, 0);
                       ps.state =
                           ps.state!.copyWith(position: Duration(seconds: p1));
@@ -126,7 +126,6 @@ class PlayBar extends ConsumerWidget {
                           idx: search.state!.idx! + 1);
                       ref.read(positionProvider.state).state = 0;
 
-
                       await DataBaseProvider.dbProvider
                           .addVoiceOrUpdate(search.state!);
                       ref.read(refreshProvider.state).state =
@@ -138,8 +137,8 @@ class PlayBar extends ConsumerWidget {
                     iconSize: iconSize,
                     color: Colors.white,
                     onPressed: () async {
-                      if (ref.read(stateEventProvider)==
-                          ProcessingState.idle) return;
+                      if (ref.read(stateEventProvider) == ProcessingState.idle)
+                        return;
                       int p1 = min(ps.state!.position!.inSeconds + 10,
                           ps.state!.duration!.inSeconds);
 
