@@ -35,6 +35,7 @@ class HistoryList extends ConsumerWidget {
                   eventBus.fire(PlayEvent());
                 },
                 onLongPress: () {
+
                   BotToast.showWidget(
                       toastBuilder: (void Function() cancelFunc) {
                     return AlertDialog(
@@ -142,13 +143,6 @@ class HistoryList extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text("历史记录"),
-        actions: [
-          TextButton(
-              onPressed: () {
-                DataBaseProvider.dbProvider.clear();
-              },
-              child: const Text('清空'))
-        ],
       ),
       body: Container(
         color: Colors.black87,

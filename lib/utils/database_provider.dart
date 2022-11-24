@@ -51,9 +51,6 @@ class DataBaseProvider {
     int result = await client!.update(_dbVoice, listenSearchModel.toMap(),
         where: "id=?", whereArgs: [listenSearchModel.id]);
     if (result < 1) {
-      if (listenSearchModel.title == "") {
-        return;
-      }
       result = await client.insert(
         _dbVoice,
         listenSearchModel.toMap(),
