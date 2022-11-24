@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:common_utils/common_utils.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/main.dart';
+import 'package:ts70/pages/bg_color.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
@@ -49,14 +48,34 @@ class Index extends ConsumerStatefulWidget {
   IndexState createState() => IndexState();
 }
 
-class IndexState extends ConsumerState {
-  @override
+class IndexState extends ConsumerState with TickerProviderStateMixin {
+  // late AnimationController _animationController;
+  // late Animation<double> _animation;
+  // late Animation<Color?> _colorAnimation;
+  // @override
   void initState() {
     super.initState();
+    // _animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 300), vsync: this);
+    // _animation = Tween<double>(begin: 0, end: 50).animate(_animationController)
+    //   ..addListener(() {
+    //     setState(() {});
+    //   });
+    // _colorAnimation =
+    //     ColorTween(begin: Colors.orangeAccent, end: Colors.redAccent)
+    //         .animate(_animationController)
+    //       ..addListener(() {
+    //         setState(() {});
+    //       });
+
+    // _animationController.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) print("动画完成");
+    // });
     audioPlayer = AudioPlayer();
     eventBus.on<TimerEvent>().listen((event) {
       ref.read(cronProvider.state).state = 0;
     });
+    // startEasyAnimation();
     eventBus.on<PlayEvent>().listen((event) async {
       final play = ref.read(playProvider);
       final load = ref.read(loadProvider.state);
@@ -152,10 +171,24 @@ class IndexState extends ConsumerState {
     super.dispose();
     audioPlayer.dispose();
     eventBus.destroy();
+    // _animationController.dispose();
+  }
+
+  void startEasyAnimation() {
+    // _animationController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Home();
+    return Scaffold(
+      body: Stack(children: const [
+        BgColor(),
+        Home(),
+        // const Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: PlayBar(),
+        // )
+      ]),
+    );
   }
 }

@@ -39,7 +39,7 @@ class Global {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await DataBaseProvider.dbProvider.voices();
+    // await DataBaseProvider.dbProvider.voices();
     // PostGreSqlProvider.dbProvider.databaseVoice;
     //init audioservice
     await JustAudioBackground.init(
