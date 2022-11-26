@@ -201,7 +201,7 @@ class Result extends ConsumerWidget {
                     await audioPlayer.stop();
                     await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
                     ref.read(playProvider.state).state = model;
-                    eventBus.fire(PlayEvent(play: false));
+                    // eventBus.fire(PlayEvent(play: false));
                   },
                   child: Container(
                     height: 100,
