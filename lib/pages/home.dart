@@ -4,7 +4,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/online_check.dart';
-import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
 
 class Home extends ConsumerWidget {
@@ -15,7 +14,7 @@ class Home extends ConsumerWidget {
     return Theme(
       data: Theme.of(context),
       child: Container(
-        padding: const EdgeInsets.only(top: 46,left: 10,right: 10),
+        padding: const EdgeInsets.only(top: 46, left: 10, right: 10),
         color: Colors.transparent,
         child: Column(
           children: [
@@ -40,7 +39,8 @@ class Home extends ConsumerWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SearchPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const SearchPage()),
                     );
                   },
                   icon: const Icon(
@@ -67,7 +67,6 @@ class Home extends ConsumerWidget {
         ),
       ),
     );
-
   }
 }
 
@@ -77,15 +76,18 @@ class LoadingWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(loadProvider);
-    return SizedBox(
-      height: 14,
-      width: 14,
-      child: p
-          ? LoadingAnimationWidget.fallingDot(
-              color: Colors.white,
-              size: 20,
-            )
-          : null,
+    return Offstage(
+      offstage: p,
+      child: SizedBox(
+        height: 14,
+        width: 14,
+        child: p
+            ? LoadingAnimationWidget.fallingDot(
+                color: Colors.white,
+                size: 20,
+              )
+            : null,
+      ),
     );
   }
 }

@@ -21,9 +21,9 @@ late AudioPlayer audioPlayer;
 late LockCachingAudioSource audioSource;
 // final refreshProvider =
 //     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
-final playProvider = StateProvider.autoDispose<Search?>((ref){
+final playProvider = StateProvider.autoDispose<Search?>((ref) {
   var history = Global.history;
-  if(history.isNotEmpty){
+  if (history.isNotEmpty) {
     return history.first;
   }
   return Search();
@@ -84,19 +84,23 @@ class IndexState extends ConsumerState {
         }
         await audioPlayer.setAudioSource(audioSource);
         final duration = await audioPlayer.load();
-        play.state=play.state!.copyWith(url: url,duration: duration!.inSeconds);
-        await audioPlayer.seek(Duration(seconds: play.state!.position!.toInt()));
+        play.state =
+            play.state!.copyWith(url: url, duration: duration!.inSeconds);
+        await audioPlayer
+            .seek(Duration(seconds: play.state!.position!.toInt()));
 
         if (kDebugMode) {
           print("play ${audioPlayer.processingState}");
         }
-
+        load.state = false;
         if (event.play) {
           await audioPlayer.play();
         }
       } catch (e) {
+        load.state = false;
+      } finally {
+        load.state = false;
       }
-      load.state = false;
     });
     audioPlayer.playerStateStream.listen((event) async {
       ref.read(statePlayProvider.state).state = event.playing;
@@ -107,10 +111,7 @@ class IndexState extends ConsumerState {
         final search = ref.read(playProvider.state);
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
-            position: 0,
-            duration: 1,
-            url: "",
-            idx: search.state!.idx! + 1);
+            position: 0, duration: 1, url: "", idx: search.state!.idx! + 1);
         await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
         eventBus.fire(PlayEvent());
       }
@@ -119,7 +120,7 @@ class IndexState extends ConsumerState {
       if (ref.read(statePlayProvider) &&
           ref.read(stateEventProvider) != ProcessingState.completed) {
         final pp = ref.read(playProvider.state);
-        pp.state = pp.state!.copyWith(position:  event.inSeconds);
+        pp.state = pp.state!.copyWith(position: event.inSeconds);
       }
     });
 
@@ -130,7 +131,6 @@ class IndexState extends ConsumerState {
             name: "audio_player_error", parameters: {"sourceData": e.message});
       } else {}
     });
-
   }
 
   @override
@@ -143,14 +143,16 @@ class IndexState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: const [
-        BgColor(),
-        Home(),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: PlayBar(),
-        )
-      ],),
+      body: Stack(
+        children: const [
+          BgColor(),
+          Home(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: PlayBar(),
+          )
+        ],
+      ),
     );
   }
 }
