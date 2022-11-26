@@ -6,16 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
+import 'package:ts70/pages/model.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
-
+final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
+  List<Search> history = await DataBaseProvider.dbProvider.voices();
+  return history;
+});
 class HistoryList extends ConsumerWidget {
   const HistoryList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(historyProvider);
-    final f = ref.read(historyProvider);
+    final f =ref.watch(historyProvider);
     final view = f.when(
         data: (data) {
           return ListView.builder(
@@ -28,9 +31,6 @@ class HistoryList extends ConsumerWidget {
                   Navigator.pop(context);
                   await audioPlayer.stop();
                   await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
-
-                  ref.read(refreshProvider.state).state =
-                      DateUtil.getNowDateMs();
                   ref.read(playProvider.state).state = item;
                   eventBus.fire(PlayEvent());
                 },
@@ -57,8 +57,7 @@ class HistoryList extends ConsumerWidget {
                             if (kDebugMode) {
                               print('dddd $result');
                             }
-                            ref.read(refreshProvider.state).state =
-                                DateUtil.getNowDateMs();
+
                             cancelFunc();
                           },
                           // onPressed: () => controller.delete(i),
@@ -141,13 +140,9 @@ class HistoryList extends ConsumerWidget {
             ));
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: const Text("历史记录"),
       ),
-      body: Container(
-        color: Colors.black87,
-        child: view,
-      ),
+      body: view,
     );
   }
 }

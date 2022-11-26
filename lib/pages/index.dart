@@ -1,39 +1,35 @@
 import 'dart:async';
 
-import 'package:common_utils/common_utils.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:ts70/global.dart';
 import 'package:ts70/main.dart';
+import 'package:ts70/pages/bg_color.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
+import 'play_bar.dart';
+
 late AudioPlayer audioPlayer;
 late LockCachingAudioSource audioSource;
-final refreshProvider =
-    StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
-final playProvider = StateProvider.autoDispose<Search?>((ref) => Search());
+// final refreshProvider =
+//     StateProvider.autoDispose((ref) => DateUtil.getNowDateMs());
+final playProvider = StateProvider.autoDispose<Search?>((ref){
+  var history = Global.history;
+  if(history.isNotEmpty){
+    return history.first;
+  }
+  return Search();
+});
 final speedProvider = StateProvider.autoDispose<double>((ref) => 1.0);
 final cronProvider = StateProvider<int>((ref) => 0);
-final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
-  ref.watch(refreshProvider);
-  List<Search> history = await DataBaseProvider.dbProvider.voices();
-  if (history.isNotEmpty) {
-    ref.read(playProvider.state).state = history.first;
-  }
-  return history;
-});
-final positionProvider = StateProvider.autoDispose<int>((ref) {
-  return ref.read(playProvider)!.position!.inSeconds;
-});
 
 final statePlayProvider = StateProvider<bool>((ref) => false);
 final stateEventProvider =
@@ -52,90 +48,81 @@ class Index extends ConsumerStatefulWidget {
 class IndexState extends ConsumerState {
   @override
   void initState() {
+    if (kDebugMode) {
+      print("Index init");
+    }
     super.initState();
     audioPlayer = AudioPlayer();
     eventBus.on<TimerEvent>().listen((event) {
       ref.read(cronProvider.state).state = 0;
     });
     eventBus.on<PlayEvent>().listen((event) async {
-      final play = ref.read(playProvider);
+      final play = ref.read(playProvider.state);
       final load = ref.read(loadProvider.state);
       load.state = true;
-      String url = play!.url ?? "";
+      String url = play.state!.url ?? "";
       try {
         if (url.isEmpty) {
           url = "";
-          url = await compute(ListenApi().chapterUrl, play);
+          url = await compute(ListenApi().chapterUrl, play.state);
           if (url.isEmpty) {
             load.state = false;
             return;
           }
-          play.url = url;
         }
         audioSource = LockCachingAudioSource(
           Uri.parse(url),
           tag: MediaItem(
             id: '1',
-            album: play.title,
-            title: "${play.title}-第${(play.idx ?? 0) + 1}回",
-            artUri: Uri.parse(play.cover ?? ""),
+            album: play.state!.title,
+            title: "${play.state!.title}-第${(play.state!.idx ?? 0) + 1}回",
+            artUri: Uri.parse(play.state!.cover ?? ""),
           ),
         );
         if (kDebugMode) {
           print("loading network resource");
         }
-        FirebaseAnalytics.instance.logEvent(
-            name: "fetch_source_link",
-            parameters: {"sourceData": play.toMap()});
-
         await audioPlayer.setAudioSource(audioSource);
         final duration = await audioPlayer.load();
-        play.duration = duration;
-        await audioPlayer.seek(play.position);
-        await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
-        ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
+        play.state=play.state!.copyWith(url: url,duration: duration!.inSeconds);
+        await audioPlayer.seek(Duration(seconds: play.state!.position!.toInt()));
+
         if (kDebugMode) {
           print("play ${audioPlayer.processingState}");
         }
-        load.state = false;
 
         if (event.play) {
           await audioPlayer.play();
         }
       } catch (e) {
-        FirebaseAnalytics.instance.logEvent(
-            name: "player_error", parameters: {"error_message": e.toString()});
       }
+      load.state = false;
     });
     audioPlayer.playerStateStream.listen((event) async {
       ref.read(statePlayProvider.state).state = event.playing;
       ref.read(stateEventProvider.state).state = event.processingState;
       final item = ref.read(playProvider);
-      final position = ref.read(positionProvider);
-      item!.position = Duration(seconds: position);
-      DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
+      DataBaseProvider.dbProvider.addVoiceOrUpdate(item!);
       if (event.processingState == ProcessingState.completed) {
         final search = ref.read(playProvider.state);
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
-            position: Duration.zero,
-            duration: const Duration(seconds: 1),
+            position: 0,
+            duration: 1,
             url: "",
             idx: search.state!.idx! + 1);
-        ref.read(positionProvider.state).state = 0;
         await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
-        ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
         eventBus.fire(PlayEvent());
       }
     });
     audioPlayer.positionStream.listen((event) {
       if (ref.read(statePlayProvider) &&
           ref.read(stateEventProvider) != ProcessingState.completed) {
-        ref.read(positionProvider.state).state = event.inSeconds;
+        final pp = ref.read(playProvider.state);
+        pp.state = pp.state!.copyWith(position:  event.inSeconds);
       }
     });
 
-    // Catching errors during playback (e.g. lost network connection)
     audioPlayer.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace st) {
       if (e is PlayerException) {
@@ -144,7 +131,6 @@ class IndexState extends ConsumerState {
       } else {}
     });
 
-    // SchedulerBinding.instance.addPostFrameCallback((_) => {eventBus.fire(PlayEvent(play: false))});
   }
 
   @override
@@ -156,6 +142,15 @@ class IndexState extends ConsumerState {
 
   @override
   Widget build(BuildContext context) {
-    return const Home();
+    return Scaffold(
+      body: Stack(children: const [
+        BgColor(),
+        Home(),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: PlayBar(),
+        )
+      ],),
+    );
   }
 }

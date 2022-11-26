@@ -33,16 +33,16 @@ class Request {
     dio = Dio(options);
     dio.interceptors.add(CookieManager(cookieJar));
 
-    dio.interceptors.add(RetryInterceptor(
-      dio: dio,
-      logPrint: print, // specify log function (optional)
-      retries: 3, // retry count (optional)
-      retryDelays: const [
-        Duration(seconds: 1), // wait 1 sec before first retry
-        Duration(seconds: 2), // wait 2 sec before second retry
-        Duration(seconds: 3), // wait 3 sec before third retry
-      ],
-    ));
+    // dio.interceptors.add(RetryInterceptor(
+    //   dio: dio,
+    //   logPrint: print, // specify log function (optional)
+    //   retries: 3, // retry count (optional)
+    //   retryDelays: const [
+    //     Duration(seconds: 1), // wait 1 sec before first retry
+    //     Duration(seconds: 2), // wait 2 sec before second retry
+    //     Duration(seconds: 3), // wait 3 sec before third retry
+    //   ],
+    // ));
     // 添加拦截器
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
       // 在请求被发送之前做一些预处理

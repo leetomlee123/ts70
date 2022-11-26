@@ -10,8 +10,6 @@ class DataBaseProvider {
 
   static const String _dbVoice = "voice";
 
-  static List<Search> history = [];
-
   static final DataBaseProvider dbProvider = DataBaseProvider._();
 
   Database? _databaseVoice;
@@ -44,7 +42,9 @@ class DataBaseProvider {
   }
 
   addVoiceOrUpdate(Search listenSearchModel) async {
-    history = [];
+    if (listenSearchModel.id == null) {
+      return;
+    }
     listenSearchModel.lastTime = DateUtil.getNowDateMs();
     var client = await databaseVoice;
 
@@ -60,13 +60,12 @@ class DataBaseProvider {
   }
 
   Future<List<Search>> voices() async {
-    if (history.isNotEmpty) return history;
     var client = await databaseVoice;
     List result = await client!.query(
       _dbVoice,
       orderBy: "last_time desc",
     );
-    history = result.map((e) => Search.fromJson(e)).toList();
+    final history = result.map((e) => Search.fromJson(e)).toList();
     return history;
   }
 
@@ -78,13 +77,11 @@ class DataBaseProvider {
   }
 
   delById(String? id) async {
-    history = [];
     var client = await databaseVoice;
     return await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
   }
 
   clear() async {
-    history = [];
     var client = await databaseVoice;
     client!.delete(_dbVoice);
   }

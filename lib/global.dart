@@ -6,7 +6,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';
@@ -19,6 +21,7 @@ class Global {
   /// 是否第一次打开
   static bool isFirstOpen = false;
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static List<Search> history = [];
 
   /// 是否离线登录
   static bool isOfflineLogin = false;
@@ -39,7 +42,9 @@ class Global {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await DataBaseProvider.dbProvider.voices();
+    history = await DataBaseProvider.dbProvider.voices();
+    await FlutterDisplayMode.setHighRefreshRate();
+    // await DataBaseProvider.dbProvider.voices();
     // PostGreSqlProvider.dbProvider.databaseVoice;
     //init audioservice
     await JustAudioBackground.init(
@@ -52,6 +57,9 @@ class Global {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light);
       SystemChrome.setSystemUIOverlayStyle(style);
+    }
+    if (kDebugMode) {
+      print("init env done");
     }
   }
 }

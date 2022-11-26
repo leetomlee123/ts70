@@ -8,9 +8,9 @@ class VoiceSlider extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(positionProvider);
-    final p1 = ref.read(playProvider.state);
-    final p = ref.read(positionProvider.state);
+    final duration = ref.watch(playProvider.select((value) => value!.duration));
+    final position = ref.watch(playProvider.select((value) => value!.position));
+    final p = ref.read(playProvider.state);
     return Column(
       children: [
         SizedBox(
@@ -21,17 +21,18 @@ class VoiceSlider extends ConsumerWidget {
               await audioPlayer.pause();
             },
             onChanged: (double value) async {
-              p.state =  value.toInt();
+              p.state = p.state!.copyWith(position: value.toInt());
             },
             onChangeEnd: (double value) async {
               await audioPlayer.seek(Duration(seconds: value.toInt()));
               await audioPlayer.play();
             },
-            value: p.state.toDouble(),
-            label: DateUtil.formatDateMs(Duration(seconds: p.state).inMilliseconds,
+            value: position!.toDouble(),
+            label: DateUtil.formatDateMs(
+                Duration(seconds: position).inMilliseconds,
                 format: 'mm:ss'),
-            divisions: p1.state!.duration!.inSeconds,
-            max: p1.state!.duration!.inSeconds.toDouble(),
+            divisions: duration,
+            max: duration!.toDouble(),
             min: -1,
           ),
         ),
@@ -39,40 +40,24 @@ class VoiceSlider extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              PositionWidget(),
-              Spacer(),
-              DurationWidget(),
+            children: [
+              Text(
+                DateUtil.formatDateMs(
+                    Duration(seconds: position).inMilliseconds,
+                    format: 'mm:ss'),
+                style: const TextStyle(fontSize: 12, color: Colors.white),
+              ),
+              const Spacer(),
+              Text(
+                DateUtil.formatDateMs(
+                    Duration(seconds: duration).inMilliseconds,
+                    format: 'mm:ss'),
+                style: const TextStyle(fontSize: 12, color: Colors.white),
+              )
             ],
           ),
         )
       ],
-    );
-  }
-}
-
-class PositionWidget extends ConsumerWidget {
-  const PositionWidget({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(positionProvider);
-    return Text(
-      DateUtil.formatDateMs(Duration(seconds: data).inMilliseconds, format: 'mm:ss'),
-      style: const TextStyle(fontSize: 12, color: Colors.white),
-    );
-  }
-}
-
-class DurationWidget extends ConsumerWidget {
-  const DurationWidget({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(playProvider);
-    return Text(
-      DateUtil.formatDateMs(data!.duration!.inMilliseconds, format: 'mm:ss'),
-      style: const TextStyle(fontSize: 12, color: Colors.white),
     );
   }
 }

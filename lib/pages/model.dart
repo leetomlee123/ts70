@@ -26,8 +26,8 @@ class Search extends Equatable {
   int? lastTime;
   int? idx;
   int? count;
-  Duration? position;
-  Duration? duration;
+  int? position;
+  int? duration;
 
   Search copyWith({
     String? id,
@@ -39,8 +39,8 @@ class Search extends Equatable {
     int? lastTime,
     int? idx,
     int? count,
-    Duration? position,
-    Duration? duration,
+    int? position,
+    int? duration,
   }) =>
       Search(
         id: id ?? this.id,
@@ -66,8 +66,8 @@ class Search extends Equatable {
     this.title,
     this.idx = 0,
     this.count = 0,
-    this.position = Duration.zero,
-    this.duration = const Duration(seconds: 1),
+    this.position = 0,
+    this.duration = 1,
   });
 
   Search.fromJson(Map<dynamic, dynamic> json) {
@@ -77,8 +77,8 @@ class Search extends Equatable {
     bookMeta = json['book_meta'];
     lastTime = json['last_time'];
     idx = json['idx'];
-    position = Duration(milliseconds: json['position'] ?? 0);
-    duration = Duration(seconds: json['duration'] ?? 1);
+    position =  json['position'] ?? 0;
+    duration = json['duration'] ?? 1;
     cover = json['cover'];
     count = json['count'];
   }
@@ -91,8 +91,8 @@ class Search extends Equatable {
     data['idx'] = idx ?? 0;
     data['last_time'] = lastTime ?? 0;
     data['cover'] = cover;
-    data['position'] = position!.inMilliseconds;
-    data['duration'] = duration?.inSeconds ?? 1;
+    data['position'] = position;
+    data['duration'] = duration ?? 1;
     data['count'] = count;
     data['title'] = title;
     return data;

@@ -321,6 +321,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
+  flutter_displaymode:
+    dependency: "direct main"
+    description:
+      name: flutter_displaymode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -414,14 +421,14 @@ packages:
       name: just_audio
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.29"
+    version: "0.9.30"
   just_audio_background:
     dependency: "direct main"
     description:
       name: just_audio_background
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1-beta.7"
+    version: "0.0.1-beta.8"
   just_audio_cache:
     dependency: "direct main"
     description:
@@ -443,13 +450,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.7"
-  keframe:
-    dependency: "direct main"
-    description:
-      name: keframe
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   lints:
     dependency: transitive
     description:
@@ -548,6 +548,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  palette_generator:
+    dependency: "direct main"
+    description:
+      name: palette_generator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3+2"
   path:
     dependency: transitive
     description:

@@ -82,30 +82,6 @@ class ChapterList extends ConsumerWidget {
   }
 }
 
-class MyCustomClass {
-  WidgetRef ref;
-  int index;
-
-  MyCustomClass(this.ref, this.index);
-
-  Future<void> myAsyncMethod(
-      BuildContext context, VoidCallback onSuccess) async {
-    final play = ref.read(playProvider);
-    if (index == play!.idx) return;
-    play.position = Duration.zero;
-    play.duration = Duration.zero;
-    final vs = ref.read(v.state).state;
-    play.idx = index + (int.parse(vs) - 1) * 30;
-    int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
-    ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
-    if (kDebugMode) {
-      print('dddd $result');
-    }
-    //资源释放
-    await audioPlayer.pause();
-    onSuccess.call();
-  }
-}
 
 final scroll = StateProvider(((ref) => ""));
 
@@ -139,16 +115,13 @@ class ListPage extends ConsumerWidget {
                 onTap: () async {
                   Navigator.pop(context);
                   await audioPlayer.stop();
-                  final play = ref.read(playProvider);
+                  final play = ref.read(playProvider.state);
                   final vs = ref.read(v.state).state;
-                  play!.idx = index + (int.parse(vs) - 1) * 30;
-                  play.position = Duration.zero;
-                  play.url = "";
-                  play.duration = const Duration(seconds: 1);
-
-                  await DataBaseProvider.dbProvider.addVoiceOrUpdate(play);
-                  ref.read(refreshProvider.state).state =
-                      DateUtil.getNowDateMs();
+                  play.state=play.state!.copyWith(idx:index + (int.parse(vs) - 1) * 30,
+                    position: 0,
+                    url: "",
+                    duration: 1
+                  );
                   eventBus.fire(PlayEvent());
                 },
                 child: Padding(

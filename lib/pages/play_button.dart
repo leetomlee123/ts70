@@ -15,7 +15,6 @@ class PlayButton extends ConsumerWidget {
     final p = ref.read(playProvider.state);
     return IconButton(
         key: ValueKey(f),
-        iconSize: 45,
         onPressed: () async {
           if (f) {
             await audioPlayer.pause();

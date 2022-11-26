@@ -55,7 +55,7 @@ dependencies:
 
   # http
   dio: ^4.0.6
-  keframe: ^3.0.0
+#  keframe: ^3.0.0
 
 
   shared_preferences: ^2.0.15
@@ -85,13 +85,15 @@ dependencies:
 
 
 
-  just_audio: ^0.9.29
-  just_audio_background: ^0.0.1-beta.7
+  just_audio: ^0.9.30
+  just_audio_background: ^0.0.1-beta.8
   just_audio_cache: ^0.1.1
 
   uuid: ^3.0.6
   firebase_core: ^1.24.0
   firebase_analytics: ^9.3.7
+  flutter_displaymode: ^0.4.1
+  palette_generator: ^0.3.3+2
 
 
 dev_dependencies:

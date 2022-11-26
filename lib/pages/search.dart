@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keframe/keframe.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
@@ -61,14 +60,11 @@ class SearchViewState extends State<SearchPage> {
         title: Input(),
         backgroundColor: Colors.black87,
       ),
-      body: Container(
-        color: Colors.black,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SizeCacheWidget(child: Result()),
-          ),
+      body: SingleChildScrollView(
+        controller: scrollController,
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child:  Result(),
         ),
       ),
     );
@@ -85,21 +81,17 @@ class Input extends ConsumerWidget {
     return TextField(
       autofocus: false,
       focusNode: focusNode,
-      cursorColor: Colors.white,
       cursorHeight: 25,
       controller: _textEditingController,
-      style: const TextStyle(color: Colors.white),
       onChanged: (v) {
         ref.read(keyProvider.state).state = v;
       },
       decoration: InputDecoration(
           hintText: 'Search',
-          hintStyle: const TextStyle(color: Colors.white),
           alignLabelWithHint: true,
           suffixIcon: IconButton(
             icon: const Icon(
               Icons.close_outlined,
-              color: Colors.white,
             ),
             onPressed: () {
               _textEditingController.text = "";
@@ -111,22 +103,7 @@ class Input extends ConsumerWidget {
   }
 }
 
-class MyCustomClass {
-  WidgetRef ref;
-  Search model;
 
-  MyCustomClass(this.model, this.ref);
-
-  Future<void> myAsyncMethod(
-      BuildContext context, VoidCallback onSuccess) async {
-    int result = await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-    if (kDebugMode) {
-      print('dddd $result');
-    }
-    ref.read(refreshProvider.state).state = DateUtil.getNowDateMs();
-    onSuccess.call();
-  }
-}
 
 class ViewBody extends ConsumerWidget {
   const ViewBody({super.key});
@@ -216,16 +193,13 @@ class Result extends ConsumerWidget {
             addAutomaticKeepAlives: false,
             itemBuilder: (context, index) {
               final model = data[index];
-              
-              return FrameSeparateWidget(
-                child: GestureDetector(
+
+              return  GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     Navigator.of(context).pop();
                     await audioPlayer.stop();
                     await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-                    ref.read(refreshProvider.state).state =
-                        DateUtil.getNowDateMs();
                     ref.read(playProvider.state).state = model;
                     eventBus.fire(PlayEvent(play: false));
                   },
@@ -288,7 +262,7 @@ class Result extends ConsumerWidget {
                     ),
                     // child: ListTile(
                   ),
-                ),
+
               );
             },
             itemCount: data!.length,
