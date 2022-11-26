@@ -10,7 +10,7 @@ class VoiceSlider extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final duration = ref.watch(playProvider.select((value) => value!.duration));
     final position = ref.watch(playProvider.select((value) => value!.position));
-    final p = ref.read(playProvider.state);
+    final p = ref.read(playProvider.notifier);
     return Column(
       children: [
         SizedBox(

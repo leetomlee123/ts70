@@ -17,7 +17,7 @@ class Vpn extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(vpns);
-    final cc = ref.watch(check.state);
+    final cc = ref.watch(check.notifier);
     return f.when(
         data: (data) {
           return Container(

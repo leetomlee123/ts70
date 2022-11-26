@@ -8,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/main.dart';
+import 'package:ts70/model/HistoryNotifier.dart';
 import 'package:ts70/pages/bg_color.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
@@ -15,7 +16,6 @@ import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
-import 'play_bar.dart';
 
 late AudioPlayer audioPlayer;
 late LockCachingAudioSource audioSource;
@@ -34,7 +34,9 @@ final cronProvider = StateProvider<int>((ref) => 0);
 final statePlayProvider = StateProvider<bool>((ref) => false);
 final stateEventProvider =
     StateProvider<ProcessingState>((ref) => ProcessingState.idle);
-
+final todosProvider = ChangeNotifierProvider<HistoryNotifier>((ref) {
+  return HistoryNotifier();
+});
 final loadProvider = StateProvider.autoDispose((ref) => false);
 Timer? timerInstance;
 
@@ -54,11 +56,11 @@ class IndexState extends ConsumerState {
     super.initState();
     audioPlayer = AudioPlayer();
     eventBus.on<TimerEvent>().listen((event) {
-      ref.read(cronProvider.state).state = 0;
+      ref.read(cronProvider.notifier).state = 0;
     });
     eventBus.on<PlayEvent>().listen((event) async {
-      final play = ref.read(playProvider.state);
-      final load = ref.read(loadProvider.state);
+      final play = ref.read(playProvider.notifier);
+      final load = ref.read(loadProvider.notifier);
       load.state = true;
       String url = play.state!.url ?? "";
       try {
@@ -103,12 +105,12 @@ class IndexState extends ConsumerState {
       }
     });
     audioPlayer.playerStateStream.listen((event) async {
-      ref.read(statePlayProvider.state).state = event.playing;
-      ref.read(stateEventProvider.state).state = event.processingState;
+      ref.read(statePlayProvider.notifier).state = event.playing;
+      ref.read(stateEventProvider.notifier).state = event.processingState;
       final item = ref.read(playProvider);
       DataBaseProvider.dbProvider.addVoiceOrUpdate(item!);
       if (event.processingState == ProcessingState.completed) {
-        final search = ref.read(playProvider.state);
+        final search = ref.read(playProvider.notifier);
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
             position: 0, duration: 1, url: "", idx: search.state!.idx! + 1);
@@ -119,7 +121,7 @@ class IndexState extends ConsumerState {
     audioPlayer.positionStream.listen((event) {
       if (ref.read(statePlayProvider) &&
           ref.read(stateEventProvider) != ProcessingState.completed) {
-        final pp = ref.read(playProvider.state);
+        final pp = ref.read(playProvider.notifier);
         pp.state = pp.state!.copyWith(position: event.inSeconds);
       }
     });
@@ -143,14 +145,12 @@ class IndexState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: Stack(
+        alignment: Alignment.bottomCenter,
         children: const [
           BgColor(),
-          Home(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: PlayBar(),
-          )
+          Home()
         ],
       ),
     );

@@ -58,6 +58,7 @@ class ListenApi {
 
   Future<List<Search>?> search(String keyword, CancelToken cancelToken) async {
     if (keyword.isEmpty) return const [];
+    // keyword='凡人';
     var res = await Request().postForm1("$host/novelsearch/search/result.html",
         params:
             "searchword=${Uri.encodeQueryComponent(keyword)}&searchtype=novelname",

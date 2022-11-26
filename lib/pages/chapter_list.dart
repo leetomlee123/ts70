@@ -1,15 +1,11 @@
 import 'dart:math';
 
-import 'package:common_utils/common_utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
-import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
-import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
@@ -27,7 +23,7 @@ final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final play = ref.read(playProvider);
   final result = await ListenApi().getOptions(play);
   final s = result![play!.idx! ~/ 30].index!;
-  ref.read(v.state).state = s;
+  ref.read(v.notifier).state = s;
   return result;
 });
 ScrollController controller = ScrollController();
@@ -38,7 +34,7 @@ class ChapterList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(option);
-    final vp = ref.watch(v.state);
+    final vp = ref.watch(v.notifier);
     return f.when(
         data: (data) {
           return SingleChildScrollView(
@@ -95,7 +91,7 @@ class ListPage extends ConsumerWidget {
     final play = ref.read(playProvider);
     return f.when(
         data: (data) {
-          final vp = ref.read(v.state).state;
+          final vp = ref.read(v.notifier).state;
           var i = play!.idx! % 30;
           var j = play.idx! ~/ 30 + 1;
           var bool = int.parse(vp) == (j);
@@ -115,8 +111,8 @@ class ListPage extends ConsumerWidget {
                 onTap: () async {
                   Navigator.pop(context);
                   await audioPlayer.stop();
-                  final play = ref.read(playProvider.state);
-                  final vs = ref.read(v.state).state;
+                  final play = ref.read(playProvider.notifier);
+                  final vs = ref.read(v.notifier).state;
                   play.state=play.state!.copyWith(idx:index + (int.parse(vs) - 1) * 30,
                     position: 0,
                     url: "",

@@ -4,6 +4,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/online_check.dart';
+import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
 
 class Home extends ConsumerWidget {
@@ -16,7 +17,7 @@ class Home extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.only(top: 46, left: 10, right: 10),
         color: Colors.transparent,
-        child: Column(
+        child:  Column(
           children: [
             Row(
               children: [
@@ -62,7 +63,9 @@ class Home extends ConsumerWidget {
                   ),
                 ),
               ],
-            )
+            ),
+            const Spacer(),
+            const PlayBar(),
           ],
         ),
       ),
@@ -77,17 +80,14 @@ class LoadingWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(loadProvider);
     return Offstage(
-      offstage: p,
+      offstage: !p,
       child: SizedBox(
-        height: 14,
-        width: 14,
-        child: p
-            ? LoadingAnimationWidget.fallingDot(
-                color: Colors.white,
-                size: 20,
-              )
-            : null,
-      ),
+          height: 14,
+          width: 14,
+          child: LoadingAnimationWidget.fallingDot(
+            color: Colors.white,
+            size: 20,
+          )),
     );
   }
 }

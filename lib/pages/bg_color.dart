@@ -15,7 +15,7 @@ final bgProvide = FutureProvider.autoDispose<Color>((ref) async {
     CachedNetworkImageProvider(cover!),
     maximumColorCount: 20,
   );
-  return paletteGenerator.dominantColor!.color;
+  return paletteGenerator.darkMutedColor!.color;
 });
 
 class BgColor extends ConsumerWidget {

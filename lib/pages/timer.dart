@@ -21,7 +21,7 @@ class CountTimer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(cronProvider.state);
+    final p = ref.watch(cronProvider.notifier);
     return SingleChildScrollView(
       child: Container(
         color: Colors.black,

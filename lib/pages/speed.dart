@@ -7,7 +7,7 @@ class Speed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(speedProvider.state);
+    final p = ref.watch(speedProvider.notifier);
     return SingleChildScrollView(
       child: Container(
         color: Colors.black,

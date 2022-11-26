@@ -5,20 +5,26 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
+import 'package:ts70/model/HistoryNotifier.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
+
+final refresh =
+    StateProvider.autoDispose<int>(((ref) => DateUtil.getNowDateMs()));
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
+  ref.watch(refresh);
   List<Search> history = await DataBaseProvider.dbProvider.voices();
   return history;
 });
+
 class HistoryList extends ConsumerWidget {
   const HistoryList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final f =ref.watch(historyProvider);
+    final f = ref.watch(historyProvider);
     final view = f.when(
         data: (data) {
           return ListView.builder(
@@ -31,11 +37,10 @@ class HistoryList extends ConsumerWidget {
                   Navigator.pop(context);
                   await audioPlayer.stop();
                   await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
-                  ref.read(playProvider.state).state = item;
+                  ref.read(playProvider.notifier).state = item;
                   eventBus.fire(PlayEvent());
                 },
                 onLongPress: () {
-
                   BotToast.showWidget(
                       toastBuilder: (void Function() cancelFunc) {
                     return AlertDialog(
@@ -57,7 +62,8 @@ class HistoryList extends ConsumerWidget {
                             if (kDebugMode) {
                               print('dddd $result');
                             }
-
+                            ref.read(refresh.notifier).state =
+                                DateUtil.getNowDateMs();
                             cancelFunc();
                           },
                           // onPressed: () => controller.delete(i),

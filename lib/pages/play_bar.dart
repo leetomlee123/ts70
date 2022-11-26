@@ -18,7 +18,6 @@ import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
-
 class PlayBar extends ConsumerWidget {
   const PlayBar({super.key});
 
@@ -26,21 +25,14 @@ class PlayBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Theme(
       data: Theme.of(context),
-      child: Container(
-          height: 245,
-          padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.all(5),
-          decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-             ),
-          child: Column(
-            children: const [
-              VoiceInfo(),
-              VoiceSlider(),
-              VoiceActionBar(),
-              ToolBar()
-            ],
-          )),
+      child: Column(
+        children: const [
+          VoiceInfo(),
+          VoiceSlider(),
+          VoiceActionBar(),
+          ToolBar()
+        ],
+      ),
     );
   }
 }
@@ -50,9 +42,10 @@ class VoiceActionBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ps = ref.read(playProvider.state);
+    final ps = ref.read(playProvider.notifier);
     return Theme(
-     data: ThemeData(iconTheme: const IconThemeData(size: 40,color: Colors.white)),
+      data: ThemeData(
+          iconTheme: const IconThemeData(size: 40, color: Colors.white)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -69,7 +62,7 @@ class VoiceActionBar extends ConsumerWidget {
           IconButton(
               onPressed: () async {
                 if (ps.state!.idx == 0) return;
-                final search = ref.read(playProvider.state);
+                final search = ref.read(playProvider.notifier);
                 await audioPlayer.stop();
                 search.state = search.state!.copyWith(
                     position: 0,
@@ -82,7 +75,7 @@ class VoiceActionBar extends ConsumerWidget {
           const PlayButton(),
           IconButton(
               onPressed: () async {
-                final search = ref.read(playProvider.state);
+                final search = ref.read(playProvider.notifier);
                 await audioPlayer.stop();
                 search.state = search.state!.copyWith(
                     position: 0,
@@ -115,7 +108,8 @@ class ToolBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Theme(
-      data: ThemeData(iconTheme: const IconThemeData(size: 30,color: Colors.white)),
+      data: ThemeData(
+          iconTheme: const IconThemeData(size: 30, color: Colors.white)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -195,10 +189,16 @@ class VoiceInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(playProvider);
-    return  Visibility(
-     visible: p!.id!=null,
-      replacement: const SizedBox(height: 40,),
+    final id = ref.watch(playProvider.select((value) => value!.id));
+    final title = ref.watch(playProvider.select((value) => value!.title));
+    final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
+    final idx = ref.watch(playProvider.select((value) => value!.idx));
+    final cover = ref.watch(playProvider.select((value) => value!.cover));
+    return Visibility(
+      visible: id != null,
+      replacement: const SizedBox(
+        height: 40,
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
@@ -209,21 +209,21 @@ class VoiceInfo extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  p.title ?? "",
+                  title ?? "",
                   style: const TextStyle(
                       fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "${p.bookMeta ?? ""}   第${p.idx! + 1}回",
+                  "${bookMeta ?? ""}   第${idx! + 1}回",
                   style: const TextStyle(fontSize: 12, color: Colors.white70),
                 ),
               ],
             ),
             const Spacer(),
             CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(p.cover ?? "",
+              backgroundImage: CachedNetworkImageProvider(cover ?? "",
                   maxWidth: 131, maxHeight: 131),
               radius: 25,
             ),

@@ -84,7 +84,7 @@ class Input extends ConsumerWidget {
       cursorHeight: 25,
       controller: _textEditingController,
       onChanged: (v) {
-        ref.read(keyProvider.state).state = v;
+        ref.read(keyProvider.notifier).state = v;
       },
       decoration: InputDecoration(
           hintText: 'Search',
@@ -95,7 +95,7 @@ class Input extends ConsumerWidget {
             ),
             onPressed: () {
               _textEditingController.text = "";
-              ref.read(keyProvider.state).state = '';
+              ref.read(keyProvider.notifier).state = '';
             },
           ),
           border: InputBorder.none),
@@ -200,7 +200,7 @@ class Result extends ConsumerWidget {
                     Navigator.of(context).pop();
                     await audioPlayer.stop();
                     await DataBaseProvider.dbProvider.addVoiceOrUpdate(model);
-                    ref.read(playProvider.state).state = model;
+                    ref.read(playProvider.notifier).state = model;
                     // eventBus.fire(PlayEvent(play: false));
                   },
                   child: Container(

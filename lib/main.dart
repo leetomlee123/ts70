@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/pages/index.dart';
 

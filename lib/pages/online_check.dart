@@ -9,7 +9,7 @@ class WebState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final f = ref.watch(webStateProvider.state);
+    final f = ref.watch(webStateProvider.notifier);
     streamController.stream.listen((event) {
       if (event is int) {
         f.state = event;
