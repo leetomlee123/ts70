@@ -194,6 +194,8 @@ class VoiceInfo extends ConsumerWidget {
     final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
     final idx = ref.watch(playProvider.select((value) => value!.idx));
     final cover = ref.watch(playProvider.select((value) => value!.cover));
+    
+
     return Visibility(
       visible: id != null,
       replacement: const SizedBox(

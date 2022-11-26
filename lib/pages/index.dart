@@ -145,7 +145,6 @@ class IndexState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: const [
