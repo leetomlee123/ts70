@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:ts70/pages/index.dart';
 
-final bgProvide = FutureProvider.autoDispose<Color>((ref) async {
+final bgProvide = FutureProvider.autoDispose<PaletteGenerator>((ref) async {
   final cover = ref.watch(playProvider.select((value) => value!.cover));
   if (kDebugMode) {
     print("bgImage source url $cover");
@@ -15,7 +15,7 @@ final bgProvide = FutureProvider.autoDispose<Color>((ref) async {
     CachedNetworkImageProvider(cover!),
     maximumColorCount: 20,
   );
-  return paletteGenerator.darkMutedColor!.color;
+  return paletteGenerator;
 });
 
 class BgColor extends ConsumerWidget {
@@ -30,7 +30,19 @@ class BgColor extends ConsumerWidget {
     return bg.when(
         data: (data) {
           return Container(
-            color: data,
+            decoration:  BoxDecoration(
+              color: data.darkMutedColor?.color??Colors.black
+              // gradient: LinearGradient(
+              //   begin: Alignment.topCenter,
+              //   end: Alignment.bottomCenter,
+              //   colors: [
+              //     data.darkVibrantColor!.color,
+              //     data.dominantColor!.color,
+              //     data.darkMutedColor!.color,
+              //   ],
+              //   // ),
+              // ),
+            ),
           );
         },
         loading: () => defaultBgWidget,

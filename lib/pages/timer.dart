@@ -21,7 +21,7 @@ class CountTimer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(cronProvider.notifier);
+    final p = ref.watch(cronProvider);
     return SingleChildScrollView(
       child: Container(
         color: Colors.black,
@@ -49,7 +49,7 @@ class CountTimer extends ConsumerWidget {
                 TextButton(
                     onPressed: () {
                       timerInstance!.cancel();
-                      p.state = 0;
+                      ref.read(cronProvider.notifier).state = 0;
                     },
                     child: const Text('取消定时'))
               ],
@@ -62,7 +62,7 @@ class CountTimer extends ConsumerWidget {
                   int v = 5 * (i + 1);
                   return ListTile(
                     onTap: () async {
-                      p.state = v;
+                      ref.read(cronProvider.notifier).state = v;
                       timer(v);
                     },
                     title: Text(
@@ -74,9 +74,9 @@ class CountTimer extends ConsumerWidget {
                           (Set<MaterialState> states) {
                         return Colors.blue;
                       }),
-                      value: p.state == v,
+                      value: p == v,
                       onChanged: (bool? value) async {
-                        p.state = v;
+                        ref.read(cronProvider.notifier).state = v;
                         timer(v);
                       },
                     ),

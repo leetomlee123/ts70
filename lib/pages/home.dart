@@ -17,7 +17,7 @@ class Home extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.only(top: 46, left: 10, right: 10),
         color: Colors.transparent,
-        child:  Column(
+        child: Column(
           children: [
             Row(
               children: [
@@ -64,6 +64,7 @@ class Home extends ConsumerWidget {
                 ),
               ],
             ),
+            const VoiceInfo(),
             const Spacer(),
             const PlayBar(),
           ],

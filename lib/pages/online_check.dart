@@ -9,16 +9,16 @@ class WebState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final f = ref.watch(webStateProvider.notifier);
+    final f = ref.watch(webStateProvider);
     streamController.stream.listen((event) {
       if (event is int) {
-        f.state = event;
+        ref.read(webStateProvider.notifier).state = event;
         streamController.close();
       }
     });
     return CircleAvatar(
       backgroundColor:
-          f.state == 200 ? const Color.fromARGB(255, 66, 196, 70) : Colors.red,
+          f == 200 ? const Color.fromARGB(255, 66, 196, 70) : Colors.red,
       radius: 3,
     );
   }

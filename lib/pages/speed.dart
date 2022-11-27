@@ -7,7 +7,7 @@ class Speed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(speedProvider.notifier);
+    final p = ref.watch(speedProvider);
     return SingleChildScrollView(
       child: Container(
         color: Colors.black,
@@ -43,8 +43,8 @@ class Speed extends ConsumerWidget {
                     onTap: () async {
                       // controller.fast.value = v;
                       // Get.back();
-                      p.state = v;
-                      await audioPlayer.setSpeed(p.state);
+                      ref.read(speedProvider.notifier).state = v;
+                      await audioPlayer.setSpeed(p);
                     },
                     title: Text(
                       "${v}x",
@@ -55,10 +55,10 @@ class Speed extends ConsumerWidget {
                           (Set<MaterialState> states) {
                         return Colors.blue;
                       }),
-                      value: p.state == v,
+                      value: p == v,
                       onChanged: (bool? value) async {
-                        p.state = v;
-                        await audioPlayer.setSpeed(p.state);
+                          ref.read(speedProvider.notifier).state = v;
+                        await audioPlayer.setSpeed(p);
                       },
                     ),
                   );

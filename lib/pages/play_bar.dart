@@ -26,12 +26,7 @@ class PlayBar extends ConsumerWidget {
     return Theme(
       data: Theme.of(context),
       child: Column(
-        children: const [
-          VoiceInfo(),
-          VoiceSlider(),
-          VoiceActionBar(),
-          ToolBar()
-        ],
+        children: const [VoiceSlider(), VoiceActionBar(), ToolBar(),SizedBox(height: 30,)],
       ),
     );
   }
@@ -136,20 +131,20 @@ class ToolBar extends ConsumerWidget {
               icon: const Icon(
                 Icons.support_agent,
               )),
-          IconButton(
-              onPressed: () async {
-                showMaterialModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.black,
-                  builder: (context) => SizedBox(
-                    height: Screen.height * .7,
-                    child: const Vpn(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                Icons.vpn_lock,
-              )),
+          // IconButton(
+          //     onPressed: () async {
+          //       showMaterialModalBottomSheet(
+          //         context: context,
+          //         backgroundColor: Colors.black,
+          //         builder: (context) => SizedBox(
+          //           height: Screen.height * .7,
+          //           child: const Vpn(),
+          //         ),
+          //       );
+          //     },
+          //     icon: const Icon(
+          //       Icons.vpn_lock,
+          //     )),
           IconButton(
               onPressed: () {
                 showMaterialModalBottomSheet(
@@ -194,43 +189,33 @@ class VoiceInfo extends ConsumerWidget {
     final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
     final idx = ref.watch(playProvider.select((value) => value!.idx));
     final cover = ref.watch(playProvider.select((value) => value!.cover));
-    
 
     return Visibility(
       visible: id != null,
       replacement: const SizedBox(
         height: 40,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title ?? "",
-                  style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "${bookMeta ?? ""}   第${idx! + 1}回",
-                  style: const TextStyle(fontSize: 12, color: Colors.white70),
-                ),
-              ],
-            ),
-            const Spacer(),
-            CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(cover ?? "",
-                  maxWidth: 131, maxHeight: 131),
-              radius: 25,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+             const SizedBox(height: 20,),
+          Image(
+            image: CachedNetworkImageProvider(cover ?? ""),
+            height: 200,
+            fit: BoxFit.fitHeight,
+          ),
+          const SizedBox(height: 20,),
+          Text(
+            title ?? "",
+            style: const TextStyle(
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            "${bookMeta ?? ""}   第${idx! + 1}回",
+            style: const TextStyle(fontSize: 12, color: Colors.white70),
+          ),
+        ],
       ),
     );
   }
