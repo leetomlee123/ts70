@@ -16,7 +16,6 @@ class VoiceSlider extends ConsumerWidget {
         SizedBox(
           height: 40,
           child: Slider(
-            activeColor: Colors.white,
             onChangeStart: (value) async {
               await audioPlayer.pause();
             },
