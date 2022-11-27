@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
-import 'package:ts70/model/HistoryNotifier.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/utils/database_provider.dart';
@@ -38,7 +37,7 @@ class HistoryList extends ConsumerWidget {
                   await audioPlayer.stop();
                   await DataBaseProvider.dbProvider.addVoiceOrUpdate(item);
                   ref.read(playProvider.notifier).state = item;
-                  eventBus.fire(PlayEvent());
+                  eventBus.fire(PlayEvent(play: false));
                 },
                 onLongPress: () {
                   BotToast.showWidget(

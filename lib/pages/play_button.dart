@@ -12,7 +12,6 @@ class PlayButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(statePlayProvider);
-    final p = ref.read(playProvider.notifier);
     return IconButton(
         key: ValueKey(f),
         onPressed: () async {
