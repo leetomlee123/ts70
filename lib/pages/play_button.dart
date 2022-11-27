@@ -28,7 +28,6 @@ class PlayButton extends ConsumerWidget {
         },
         icon: Icon(
           f ? Icons.pause : Icons.play_arrow_rounded,
-          color: Colors.white,
         ));
   }
 }
