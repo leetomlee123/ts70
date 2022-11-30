@@ -41,20 +41,6 @@ class ListenApi {
     // streamController.add(list);
   }
 
-  Future<List<TopRank>?> getTop(String rank) async {
-    var res = await Request().getBase(host);
-    Document document = parse(res);
-    List<Element> es = document.querySelector(".top-ul")!.children;
-    return es.map((element) {
-      final v1 = element.querySelector("h4>a");
-      final v2 = element.querySelector("p")!.children;
-      return TopRank(
-          id: v1!.attributes['href'],
-          name: v1.text,
-          a: v2[0].querySelector("a")!.text,
-          b: v2[1].querySelector("a")!.text);
-    }).toList();
-  }
 
   Future<List<Search>?> search(String keyword, CancelToken cancelToken) async {
     if (keyword.isEmpty) return const [];
@@ -204,6 +190,21 @@ class ListenApi {
     }
     Request().clear();
     return result;
+  }
+
+  Future<List<TopRank>?> getTop(String rank) async {
+    var res = await Request().getBase(host);
+    Document document = parse(res);
+    List<Element> es = document.querySelector(".top-ul")!.children;
+    return es.map((element) {
+      final v1 = element.querySelector("h4>a");
+      final v2 = element.querySelector("p")!.children;
+      return TopRank(
+          id: v1!.attributes['href'],
+          name: v1.text,
+          a: v2[0].querySelector("a")!.text,
+          b: v2[1].querySelector("a")!.text);
+    }).toList();
   }
 
 }

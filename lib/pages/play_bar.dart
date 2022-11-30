@@ -26,7 +26,7 @@ class PlayBar extends ConsumerWidget {
     return Theme(
       data: Theme.of(context),
       child: Column(
-        children: const [VoiceSlider(), VoiceActionBar(), ToolBar(),SizedBox(height: 30,)],
+        children: const [VoiceSlider(), VoiceActionBar(), ToolBar(),SizedBox(height: 20,)],
       ),
     );
   }
@@ -40,7 +40,7 @@ class VoiceActionBar extends ConsumerWidget {
     final ps = ref.read(playProvider.notifier);
     return Theme(
       data: ThemeData(
-          iconTheme: const IconThemeData(size: 40, color: Colors.white)),
+          iconTheme: const IconThemeData(size: 35, color: Colors.white)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -104,7 +104,7 @@ class ToolBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Theme(
       data: ThemeData(
-          iconTheme: const IconThemeData(size: 30, color: Colors.white)),
+          iconTheme: const IconThemeData(size: 25, color: Colors.white)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -205,6 +205,7 @@ class VoiceInfo extends ConsumerWidget {
             height: 200,
             fit: BoxFit.fitHeight,
           ),
+    
           const SizedBox(height: 20,),
           Text(
             title ?? "",

@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/model/HistoryNotifier.dart';
@@ -15,7 +17,6 @@ import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
-
 
 late AudioPlayer audioPlayer;
 late LockCachingAudioSource audioSource;
@@ -30,7 +31,18 @@ final playProvider = StateProvider.autoDispose<Search?>((ref) {
 });
 final speedProvider = StateProvider.autoDispose<double>((ref) => 1.0);
 final cronProvider = StateProvider<int>((ref) => 0);
-
+final bgProvide = FutureProvider.autoDispose<PaletteGenerator>((ref) async {
+  final cover = ref.watch(playProvider.select((value) => value!.cover));
+  if (kDebugMode) {
+    print("bgImage source url $cover");
+  }
+  final PaletteGenerator paletteGenerator =
+  await PaletteGenerator.fromImageProvider(
+    CachedNetworkImageProvider(cover!),
+    maximumColorCount: 20,
+  );
+  return paletteGenerator;
+});
 final statePlayProvider = StateProvider<bool>((ref) => false);
 final stateEventProvider =
     StateProvider<ProcessingState>((ref) => ProcessingState.idle);
@@ -126,6 +138,11 @@ class IndexState extends ConsumerState {
       }
     });
 
+    audioPlayer.bufferedPositionStream.listen((event) {
+      final pp = ref.read(playProvider.notifier);
+      pp.state = pp.state!.copyWith(buffer: event.inSeconds);
+    });
+
     audioPlayer.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace st) {
       if (e is PlayerException) {
@@ -147,10 +164,7 @@ class IndexState extends ConsumerState {
     return Scaffold(
       body: Stack(
         alignment: Alignment.bottomCenter,
-        children: const [
-          BgColor(),
-          Home()
-        ],
+        children: const [BgColor(), Home()],
       ),
     );
   }

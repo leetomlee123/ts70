@@ -13,6 +13,7 @@ class PlayButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final f = ref.watch(statePlayProvider);
     return IconButton(
+      iconSize: 60,
         key: ValueKey(f),
         onPressed: () async {
           if (f) {
