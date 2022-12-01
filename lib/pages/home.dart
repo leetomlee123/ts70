@@ -12,63 +12,60 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Theme(
-      data: Theme.of(context),
-      child: Container(
-        padding: const EdgeInsets.only(top: 46, left: 10, right: 10),
-        color: Colors.transparent,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const SizedBox(
-                  width: 4,
+    return Container(
+      padding: const EdgeInsets.only(top: 46, left: 10, right: 10),
+      // color: Colors.transparent,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const SizedBox(
+                width: 4,
+              ),
+              Text(
+                '听书楼',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              const Padding(
+                  padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0),
+                  child: WebState()),
+              const SizedBox(
+                width: 14,
+              ),
+              const LoadingWidget(),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SearchPage()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.search_outlined,
+                  size: 25,
                 ),
-                Text(
-                  '听书楼',
-                  style: Theme.of(context).textTheme.bodyText1,
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HistoryList()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.history,
+                  size: 25,
                 ),
-                const Padding(
-                    padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0),
-                    child: WebState()),
-                const SizedBox(
-                  width: 14,
-                ),
-                const LoadingWidget(),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SearchPage()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.search_outlined,
-                    size: 25,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HistoryList()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.history,
-                    size: 25,
-                  ),
-                ),
-              ],
-            ),
-            const VoiceInfo(),
-            const Spacer(),
-            const PlayBar(),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const VoiceInfo(),
+          const Spacer(),
+          const PlayBar(),
+        ],
       ),
     );
   }

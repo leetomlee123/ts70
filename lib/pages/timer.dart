@@ -24,7 +24,6 @@ class CountTimer extends ConsumerWidget {
     final p = ref.watch(cronProvider);
     return SingleChildScrollView(
       child: Container(
-        color: Colors.black,
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -36,14 +35,13 @@ class CountTimer extends ConsumerWidget {
                     },
                     icon: const Icon(
                       Icons.close_outlined,
-                      color: Colors.white,
                     )),
                 const Text(
                   '定时关闭',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: Colors.white),
+                     ),
                 ),
                 const Spacer(),
                 TextButton(
@@ -67,7 +65,6 @@ class CountTimer extends ConsumerWidget {
                     },
                     title: Text(
                       "$v分钟",
-                      style: const TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       fillColor: MaterialStateProperty.resolveWith(

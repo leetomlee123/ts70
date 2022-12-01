@@ -10,7 +10,6 @@ class Speed extends ConsumerWidget {
     final p = ref.watch(speedProvider);
     return SingleChildScrollView(
       child: Container(
-        color: Colors.black,
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
@@ -22,14 +21,13 @@ class Speed extends ConsumerWidget {
                     },
                     icon: const Icon(
                       Icons.close_outlined,
-                      color: Colors.white,
                     )),
                 const Text(
                   '播放速度调节',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: Colors.white),
+                     ),
                 ),
               ],
             ),
@@ -48,7 +46,6 @@ class Speed extends ConsumerWidget {
                     },
                     title: Text(
                       "${v}x",
-                      style: const TextStyle(color: Colors.white),
                     ),
                     trailing: Checkbox(
                       fillColor: MaterialStateProperty.resolveWith(

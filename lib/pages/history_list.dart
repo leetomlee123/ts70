@@ -77,7 +77,7 @@ class HistoryList extends ConsumerWidget {
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Colors.black,
+                      // color: Colors.black,
                       // boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
                     ),
                     height: 90,
@@ -103,7 +103,9 @@ class HistoryList extends ConsumerWidget {
                               child: Text(
                                 item.title ?? "",
                                 style: const TextStyle(
-                                    fontSize: 18, color: Colors.white),
+                                    fontSize: 18,
+                                    // color: Colors.white
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -112,7 +114,9 @@ class HistoryList extends ConsumerWidget {
                             Text(
                               item.bookMeta ?? "",
                               style: const TextStyle(
-                                  fontSize: 12, color: Colors.white70),
+                                  fontSize: 12,
+                                  // color: Colors.white70
+                              ),
                             ),
                           ],
                         ),
@@ -120,7 +124,9 @@ class HistoryList extends ConsumerWidget {
                         Text(
                           '第${item.idx! + 1}回',
                           style: const TextStyle(
-                              fontSize: 12, color: Colors.white70),
+                              fontSize: 12,
+                              // color: Colors.white70
+                          ),
                         ),
                         const SizedBox(
                           width: 20,

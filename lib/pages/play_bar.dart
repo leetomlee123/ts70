@@ -14,7 +14,6 @@ import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
-import 'package:ts70/pages/vpn.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
@@ -23,11 +22,15 @@ class PlayBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Theme(
-      data: Theme.of(context),
-      child: Column(
-        children: const [VoiceSlider(), VoiceActionBar(), ToolBar(),SizedBox(height: 20,)],
-      ),
+    return Column(
+      children: const [
+        VoiceSlider(),
+        VoiceActionBar(),
+        ToolBar(),
+        SizedBox(
+          height: 20,
+        )
+      ],
     );
   }
 }
@@ -38,61 +41,57 @@ class VoiceActionBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ps = ref.read(playProvider.notifier);
-    return Theme(
-      data: ThemeData(
-          iconTheme: const IconThemeData(size: 35, color: Colors.white)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-              onPressed: () async {
-                if (ref.read(stateEventProvider) == ProcessingState.idle) {
-                  return;
-                }
-                int p1 = max(ps.state!.position! - 10, 0);
-                ps.state = ps.state!.copyWith(position: p1);
-                await audioPlayer.seek(Duration(seconds: p1));
-              },
-              icon: const Icon(Icons.replay_10_outlined)),
-          IconButton(
-              onPressed: () async {
-                if (ps.state!.idx == 0) return;
-                final search = ref.read(playProvider.notifier);
-                await audioPlayer.stop();
-                search.state = search.state!.copyWith(
-                    position: 0,
-                    duration: 1,
-                    url: "",
-                    idx: search.state!.idx! - 1);
-                eventBus.fire(PlayEvent());
-              },
-              icon: const Icon(Icons.skip_previous_outlined)),
-          const PlayButton(),
-          IconButton(
-              onPressed: () async {
-                final search = ref.read(playProvider.notifier);
-                await audioPlayer.stop();
-                search.state = search.state!.copyWith(
-                    position: 0,
-                    duration: 1,
-                    url: "",
-                    idx: search.state!.idx! + 1);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+            onPressed: () async {
+              if (ref.read(stateEventProvider) == ProcessingState.idle) {
+                return;
+              }
+              int p1 = max(ps.state!.position! - 10, 0);
+              ps.state = ps.state!.copyWith(position: p1);
+              await audioPlayer.seek(Duration(seconds: p1));
+            },
+            icon: const Icon(Icons.replay_10_outlined)),
+        IconButton(
+            onPressed: () async {
+              if (ps.state!.idx == 0) return;
+              final search = ref.read(playProvider.notifier);
+              await audioPlayer.stop();
+              search.state = search.state!.copyWith(
+                  position: 0,
+                  duration: 1,
+                  url: "",
+                  idx: search.state!.idx! - 1);
+              eventBus.fire(PlayEvent());
+            },
+            icon: const Icon(Icons.skip_previous_outlined)),
+        const PlayButton(),
+        IconButton(
+            onPressed: () async {
+              final search = ref.read(playProvider.notifier);
+              await audioPlayer.stop();
+              search.state = search.state!.copyWith(
+                  position: 0,
+                  duration: 1,
+                  url: "",
+                  idx: search.state!.idx! + 1);
 
-                eventBus.fire(PlayEvent());
-              },
-              icon: const Icon(Icons.skip_next_outlined)),
-          IconButton(
-              onPressed: () async {
-                if (ref.read(stateEventProvider) == ProcessingState.idle) {
-                  return;
-                }
-                int p1 = min(ps.state!.position! + 10, ps.state!.duration!);
-                ps.state = ps.state!.copyWith(position: p1);
-                await audioPlayer.seek(Duration(seconds: p1));
-              },
-              icon: const Icon(Icons.forward_10_outlined)),
-        ],
-      ),
+              eventBus.fire(PlayEvent());
+            },
+            icon: const Icon(Icons.skip_next_outlined)),
+        IconButton(
+            onPressed: () async {
+              if (ref.read(stateEventProvider) == ProcessingState.idle) {
+                return;
+              }
+              int p1 = min(ps.state!.position! + 10, ps.state!.duration!);
+              ps.state = ps.state!.copyWith(position: p1);
+              await audioPlayer.seek(Duration(seconds: p1));
+            },
+            icon: const Icon(Icons.forward_10_outlined)),
+      ],
     );
   }
 }
@@ -102,79 +101,75 @@ class ToolBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Theme(
-      data: ThemeData(
-          iconTheme: const IconThemeData(size: 25, color: Colors.white)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-              onPressed: () {
-                showMaterialModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.black,
-                  builder: (context) => SizedBox(
-                    height: Screen.height * .7,
-                    child: const ChapterList(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                Icons.menu,
-              )),
-          const Spacer(),
-          IconButton(
-              onPressed: () {
-                Clipboard.setData(const ClipboardData(text: "187905651"));
-                BotToast.showText(text: "QQ群号已复制到粘贴板");
-              },
-              icon: const Icon(
-                Icons.support_agent,
-              )),
-          // IconButton(
-          //     onPressed: () async {
-          //       showMaterialModalBottomSheet(
-          //         context: context,
-          //         backgroundColor: Colors.black,
-          //         builder: (context) => SizedBox(
-          //           height: Screen.height * .7,
-          //           child: const Vpn(),
-          //         ),
-          //       );
-          //     },
-          //     icon: const Icon(
-          //       Icons.vpn_lock,
-          //     )),
-          IconButton(
-              onPressed: () {
-                showMaterialModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.black,
-                  builder: (context) => SizedBox(
-                    height: Screen.height * .7,
-                    child: const Speed(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                Icons.speed,
-              )),
-          IconButton(
-              onPressed: () {
-                showMaterialModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.black,
-                  builder: (context) => SizedBox(
-                    height: Screen.height * .7,
-                    child: const CountTimer(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                Icons.timer,
-              ))
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                context: context,
+                // backgroundColor: Colors.black,
+                builder: (context) => SizedBox(
+                  height: Screen.height * .7,
+                  child: const Chapters(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.menu,
+            )),
+        const Spacer(),
+        IconButton(
+            onPressed: () {
+              Clipboard.setData(const ClipboardData(text: "187905651"));
+              BotToast.showText(text: "QQ群号已复制到粘贴板");
+            },
+            icon: const Icon(
+              Icons.support_agent,
+            )),
+        // IconButton(
+        //     onPressed: () async {
+        //       showMaterialModalBottomSheet(
+        //         context: context,
+        //         backgroundColor: Colors.black,
+        //         builder: (context) => SizedBox(
+        //           height: Screen.height * .7,
+        //           child: const Vpn(),
+        //         ),
+        //       );
+        //     },
+        //     icon: const Icon(
+        //       Icons.vpn_lock,
+        //     )),
+        IconButton(
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                context: context,
+                // backgroundColor: Colors.black,
+                builder: (context) => SizedBox(
+                  height: Screen.height * .7,
+                  child: const Speed(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.speed,
+            )),
+        IconButton(
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                context: context,
+                // backgroundColor: Colors.black,
+                builder: (context) => SizedBox(
+                  height: Screen.height * .7,
+                  child: const CountTimer(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.timer,
+            ))
+      ],
     );
   }
 }
@@ -199,22 +194,27 @@ class VoiceInfo extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-             const SizedBox(height: 20,),
-          Image(
-            image: CachedNetworkImageProvider(cover ?? ""),
-            height: 200,
-            fit: BoxFit.fitHeight,
+          const SizedBox(
+            height: 20,
           ),
-    
-          const SizedBox(height: 20,),
+          ClipOval(
+            child: Image(
+              image: CachedNetworkImageProvider(cover ?? ""),
+              height: 230,
+              fit: BoxFit.fill,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           Text(
             title ?? "",
             style: const TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                fontSize: 20,  fontWeight: FontWeight.bold),
           ),
           Text(
             "${bookMeta ?? ""}   第${idx! + 1}回",
-            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            style: const TextStyle(fontSize: 12),
           ),
         ],
       ),

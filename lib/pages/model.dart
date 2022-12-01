@@ -6,7 +6,11 @@ class Chapter {
 
   Chapter({this.name, this.index});
 }
-
+class DataSearch{
+  String? label;
+  List<Search>? data;
+  DataSearch({this.data,this.label});
+}
 class TopRank {
   String? name;
   String? a;

@@ -78,7 +78,7 @@ class IndexState extends ConsumerState {
       try {
         if (url.isEmpty) {
           url = "";
-          url = await compute(ListenApi().chapterUrl, play.state);
+          url = await ListenApi().chapterUrl( play.state);
           if (url.isEmpty) {
             load.state = false;
             return;
@@ -162,10 +162,11 @@ class IndexState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: const [BgColor(), Home()],
-      ),
+      body: const  Home()
+      // Stack(
+      //   alignment: Alignment.bottomCenter,
+      //   children: const [BgColor(), Home()],
+      // ),
     );
   }
 }

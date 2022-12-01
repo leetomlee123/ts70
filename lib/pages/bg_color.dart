@@ -18,7 +18,7 @@ class BgColor extends ConsumerWidget {
     );
     return bg.when(
         data: (data) {
-          Theme.of(context).copyWith(primaryColor: data.darkMutedColor?.color??Colors.black);
+          Theme.of(context).copyWith(primaryColor: data.lightMutedColor?.color??Colors.black);
           return Container(
             decoration:  BoxDecoration(
               color: data.darkMutedColor?.color??Colors.black

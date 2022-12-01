@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
@@ -52,6 +53,13 @@ class Global {
       androidNotificationChannelName: 'Audio playback',
       androidNotificationOngoing: true,
     );
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.green[400]!);
+    if (useWhiteForeground(Colors.green[400]!)) {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    } else {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    }
+
     if (Platform.isAndroid) {
       SystemUiOverlayStyle style = const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,

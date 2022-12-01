@@ -26,7 +26,103 @@ final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   ref.read(v.notifier).state = s;
   return result;
 });
-ScrollController controller = ScrollController();
+final chapterTsbProvider = FutureProvider.autoDispose<int?>((ref) async {
+  final play = ref.read(playProvider);
+  final result = await ListenApi().getChaptersTsb(play!.id ?? "");
+  return result;
+});
+var controller = ScrollController();
+
+class Chapters extends ConsumerWidget {
+  const Chapters({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    var read = ref.read(playProvider);
+    return Visibility(
+      replacement: const ChapterList(),
+      visible: read!.cover!.contains("tingshubao"),
+      child: SingleChildScrollView(controller: controller,child:  const ChapterList70Ts(),),
+    );
+  }
+}
+
+class ChapterList70Ts extends ConsumerWidget {
+  const ChapterList70Ts({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final f = ref.watch(chapterTsbProvider);
+    final ff = ref.read(playProvider);
+    return f.when(
+        data: (data) {
+          controller.animateTo(max(0, ff!.idx! - 3) * itemHeight,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.linear);
+          return ListView.builder(
+            shrinkWrap: true,
+            controller: controller,
+            itemBuilder: ((context, index) {
+              final b = ff.idx == index;
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  Navigator.pop(context);
+                  await audioPlayer.stop();
+                  final play = ref.read(playProvider.notifier);
+                  play.state = play.state!
+                      .copyWith(idx: index, position: 0, url: "", duration: 1);
+                  eventBus.fire(PlayEvent());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      SizedBox(
+                        width: Screen.width * .7,
+                        child: Text(
+                          "第${index+1}回",
+                          style: TextStyle(
+                              color: b ? Colors.lightBlue : Colors.black,
+                              fontSize: 15),
+                          maxLines: 2,
+                        ),
+                      ),
+                      const Spacer(),
+                      Offstage(
+                        offstage: !b,
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.lightBlue,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            itemCount: data,
+            itemExtent: itemHeight,
+          );
+        },
+        error: (error, stackTrace) => const Center(
+              child: Text(
+                'oops...',
+              ),
+            ),
+        loading: () => const Center(
+              child: Text(
+                'loading...',
+              ),
+            ));
+  }
+}
 
 class ChapterList extends ConsumerWidget {
   const ChapterList({super.key});
@@ -78,7 +174,6 @@ class ChapterList extends ConsumerWidget {
   }
 }
 
-
 final scroll = StateProvider(((ref) => ""));
 
 // ignore: must_be_immutable
@@ -104,7 +199,7 @@ class ListPage extends ConsumerWidget {
             shrinkWrap: true,
             controller: controller,
             itemBuilder: ((context, index) {
-              final model = data[index];
+              final model = data![index];
               final b = index == i && bool;
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -113,11 +208,11 @@ class ListPage extends ConsumerWidget {
                   await audioPlayer.stop();
                   final play = ref.read(playProvider.notifier);
                   final vs = ref.read(v.notifier).state;
-                  play.state=play.state!.copyWith(idx:index + (int.parse(vs) - 1) * 30,
-                    position: 0,
-                    url: "",
-                    duration: 1
-                  );
+                  play.state = play.state!.copyWith(
+                      idx: index + (int.parse(vs) - 1) * 30,
+                      position: 0,
+                      url: "",
+                      duration: 1);
                   eventBus.fire(PlayEvent());
                 },
                 child: Padding(
@@ -153,7 +248,7 @@ class ListPage extends ConsumerWidget {
                 ),
               );
             }),
-            itemCount: data!.length,
+            itemCount: data?.length??0,
             itemExtent: itemHeight,
           );
         },

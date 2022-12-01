@@ -13,10 +13,6 @@ class Request {
   factory Request() => _instance;
 
   late Dio dio;
-  CancelToken cancelToken = CancelToken();
-  var cookieJar = CookieJar();
-
-
   Request._internal() {
     BaseOptions options = BaseOptions(
       baseUrl: "",
@@ -31,7 +27,6 @@ class Request {
     );
 
     dio = Dio(options);
-    dio.interceptors.add(CookieManager(cookieJar));
 
     // dio.interceptors.add(RetryInterceptor(
     //   dio: dio,
@@ -77,37 +72,30 @@ class Request {
   Future getBase(
     String path,
   ) async {
-    var response = await dio.get(path, cancelToken: cancelToken);
+    var response = await dio.get(path);
     return response;
   }
-void clear(){
-  cookieJar.deleteAll();
-}
+
   /// restful get 操作
   Future get(String path,
       {dynamic params, Options? options, String? proxy = ""}) async {
-    Options requestOptions = options ?? Options();
 
-    Map<String, dynamic> _authorization = getAuthorizationHeader();
-    if (_authorization.isNotEmpty) {
-      requestOptions = requestOptions.copyWith(headers: _authorization);
-    }
-    if (proxy!.isNotEmpty) {
-      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-          (client) {
-        // config the http client
-        client.findProxy = (uri) {
-          //proxy all request to localhost:8888
-          return 'PROXY $proxy';
-        };
-        // you can also create a HttpClient to dio
-        // return HttpClient();
-      };
-    }
+    // if (proxy!.isNotEmpty) {
+    //   (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //       (client) {
+    //     // config the http client
+    //     client.findProxy = (uri) {
+    //       //proxy all request to localhost:8888
+    //       return 'PROXY $proxy';
+    //     };
+    //     // you can also create a HttpClient to dio
+    //     // return HttpClient();
+    //   };
+    // }
     var response = await dio.get(path,
         queryParameters: params,
         // options: Options(responseDecoder: gbkDecoder),
-        cancelToken: cancelToken);
+        );
     return response.data;
   }
 
@@ -117,7 +105,7 @@ void clear(){
     var response = await dio.get(path,
         queryParameters: params,
         options: requestOptions,
-        cancelToken: cancelToken);
+      );
     return response.data;
   }
 
@@ -136,7 +124,7 @@ void clear(){
     }
 
     var response = await dio.post(path,
-        data: params, options: requestOptions, cancelToken: cancelToken);
+        data: params, options: requestOptions,);
     return response.data;
   }
 
@@ -148,7 +136,7 @@ void clear(){
       requestOptions = requestOptions.copyWith(headers: _authorization);
     }
     var response = await dio.put(path,
-        data: params, options: requestOptions, cancelToken: cancelToken);
+        data: params, options: requestOptions, );
     return response.data;
   }
 
@@ -162,7 +150,7 @@ void clear(){
     }
 
     var response = await dio.patch(path,
-        data: params, options: requestOptions, cancelToken: cancelToken);
+        data: params, options: requestOptions,);
 
     return response.data;
   }
@@ -178,7 +166,7 @@ void clear(){
     var response = await dio.patch(path,
         data: FormData.fromMap(params),
         options: requestOptions,
-        cancelToken: cancelToken);
+        );
 
     return response.data;
   }
@@ -192,7 +180,7 @@ void clear(){
       requestOptions = requestOptions.copyWith(headers: _authorization);
     }
     var response = await dio.delete(path,
-        data: params, options: requestOptions, cancelToken: cancelToken);
+        data: params, options: requestOptions, );
     return response.data;
   }
 
@@ -229,24 +217,28 @@ void clear(){
   }
 
   Future postForm1(String path,
-      {String? params,
-      Options? options,
-      CancelToken? cancelToken,
-      bool? useToken = true}) async {
+      {String? params, Options? options, bool? useToken = true}) async {
     dio.options.contentType = 'application/x-www-form-urlencoded';
     var response = await dio.post(path,
         data: params,
-        // options: Options(responseDecoder: gbkDecoder),
-        cancelToken: cancelToken);
+        options: Options(responseDecoder: gbkDecoder),
+    );
     return response.data;
   }
-
+  Future postForm2(String path,
+      {String? params, Options? options, bool? useToken = true}) async {
+    dio.options.contentType = 'application/x-www-form-urlencoded';
+    var response = await dio.post(path,
+        data: params,
+        );
+    return response.data;
+  }
   Future<List<int>> getAsByte(
     String path,
   ) async {
     var response = await dio.get(path,
         options: Options(responseType: ResponseType.bytes),
-        cancelToken: cancelToken);
+        );
     return response.data;
   }
 
@@ -255,7 +247,7 @@ void clear(){
   ) async {
     var response = await dio.download(path, "",
         options: Options(responseType: ResponseType.bytes),
-        cancelToken: cancelToken);
+    );
     return response.data;
   }
 

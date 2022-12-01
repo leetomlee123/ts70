@@ -38,21 +38,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '听风',
       builder: BotToastInit(),
+      themeMode: ThemeMode.dark,
       theme: ThemeData(
-        brightness: Brightness.dark,
         textTheme: const TextTheme(
           headline1: TextStyle(
-              fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 36.0, fontWeight: FontWeight.bold),
           headline2: TextStyle(
-              fontSize: 32.0, fontWeight: FontWeight.w400, color: Colors.white),
+              fontSize: 32.0, fontWeight: FontWeight.w400),
           headline3: TextStyle(
-              fontSize: 28.0, fontWeight: FontWeight.w400, color: Colors.white),
+              fontSize: 28.0, fontWeight: FontWeight.w400),
           headline4: TextStyle(
-              fontSize: 24.0, fontWeight: FontWeight.w400, color: Colors.white),
+              fontSize: 24.0, fontWeight: FontWeight.w400),
           headline6: TextStyle(
-              fontSize: 14.0, fontWeight: FontWeight.w200, color: Colors.white),
+              fontSize: 14.0, fontWeight: FontWeight.w200),
           bodyText1: TextStyle(
-              fontSize: 20.0, fontWeight: FontWeight.w200, color: Colors.white),
+              fontSize: 20.0, fontWeight: FontWeight.w200),
         ),
         fontFamily: 'Georgia',
       ),
