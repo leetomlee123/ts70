@@ -15,24 +15,19 @@ class VoiceSlider extends ConsumerWidget {
     final bg = ref.watch(bgProvide);
     final p = ref.read(playProvider.notifier);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: ProgressBar(
-        // barHeight: 4,
-        // timeLabelTextStyle: const TextStyle(fontSize: 13),
-        // barCapShape: BarCapShape.square,
-        // thumbRadius: 8,
-        // thumbColor :Colors.white,
-        // baseBarColor: Colors.white30,
-        // bufferedBarColor: Colors.white60,
-        // progressBarColor: Colors.white,
-        progress: Duration(seconds: position ?? 0),
-        buffered: Duration(seconds: buffer ?? 0),
-        total: Duration(seconds: duration ?? 0),
-        onSeek: (duration) async {
-          await audioPlayer.seek(duration);
-          await audioPlayer.play();
-        },
+    return Theme(
+      data: ThemeData(primaryColor: Colors.yellow),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ProgressBar(
+          progress: Duration(seconds: position ?? 0),
+          buffered: Duration(seconds: buffer ?? 0),
+          total: Duration(seconds: duration ?? 0),
+          onSeek: (duration) async {
+            await audioPlayer.seek(duration);
+            await audioPlayer.play();
+          },
+        ),
       ),
     );
     return Column(

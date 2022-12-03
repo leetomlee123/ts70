@@ -78,6 +78,7 @@ dependencies:
   firebase_analytics: ^9.3.7
   flutter_displaymode: ^0.4.1
   palette_generator: ^0.3.3+2
+  indexed_list_view: ^2.0.2
 
 
 dev_dependencies:
@@ -123,6 +124,8 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # china:
+  assets:
+    - assets/disk.png
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
@@ -11,12 +12,12 @@ import 'package:ts70/utils/screen.dart';
 
 const itemHeight = 45.0;
 
-final v = StateProvider(((ref) => ""));
+final v = StateProvider.autoDispose(((ref) => ""));
 final index = StateProvider(((ref) => 0));
 final chapterProvider = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
   final vs = ref.watch(v);
   final play = ref.read(playProvider);
-  final result = await ListenApi().getChapters(vs, play!.id.toString());
+  final result = await ListenApi().getChapters70ts(vs, play!.id.toString());
   return result;
 });
 final option = FutureProvider.autoDispose<List<Chapter>?>((ref) async {
@@ -31,7 +32,6 @@ final chapterTsbProvider = FutureProvider.autoDispose<int?>((ref) async {
   final result = await ListenApi().getChaptersTsb(play!.id ?? "");
   return result;
 });
-var controller = ScrollController();
 
 class Chapters extends ConsumerWidget {
   const Chapters({super.key});
@@ -42,7 +42,7 @@ class Chapters extends ConsumerWidget {
     return Visibility(
       replacement: const ChapterList(),
       visible: read!.cover!.contains("tingshubao"),
-      child: SingleChildScrollView(controller: controller,child:  const ChapterList70Ts(),),
+      child: const ChapterList70Ts(),
     );
   }
 }
@@ -56,12 +56,12 @@ class ChapterList70Ts extends ConsumerWidget {
     final ff = ref.read(playProvider);
     return f.when(
         data: (data) {
-          controller.animateTo(max(0, ff!.idx! - 3) * itemHeight,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.linear);
-          return ListView.builder(
-            shrinkWrap: true,
+          var controller = IndexedScrollController(
+              initialIndex: ff!.idx! - 5, initialScrollOffset: itemHeight);
+
+          return IndexedListView.builder(
             controller: controller,
+            maxItemCount: data,
             itemBuilder: ((context, index) {
               final b = ff.idx == index;
               return GestureDetector(
@@ -84,7 +84,7 @@ class ChapterList70Ts extends ConsumerWidget {
                       SizedBox(
                         width: Screen.width * .7,
                         child: Text(
-                          "第${index+1}回",
+                          "第${index + 1}回",
                           style: TextStyle(
                               color: b ? Colors.lightBlue : Colors.black,
                               fontSize: 15),
@@ -107,7 +107,6 @@ class ChapterList70Ts extends ConsumerWidget {
                 ),
               );
             }),
-            itemCount: data,
             itemExtent: itemHeight,
           );
         },
@@ -133,30 +132,23 @@ class ChapterList extends ConsumerWidget {
     final vp = ref.watch(v.notifier);
     return f.when(
         data: (data) {
-          return SingleChildScrollView(
-            controller: controller,
-            child: Container(
-              color: Colors.black,
-              child: Column(
-                children: [
-                  DropdownButton(
-                      dropdownColor: Colors.black87,
-                      iconSize: 40,
-                      style: const TextStyle(color: Colors.blue),
-                      value: vp.state,
-                      items: data!
-                          .map((e) => DropdownMenuItem(
-                                value: e.index,
-                                child: Text(e.name ?? ""),
-                              ))
-                          .toList(),
-                      onChanged: ((value) {
-                        vp.state = value!;
-                      })),
-                  const ListPage()
-                ],
-              ),
-            ),
+          return Column(
+            children: [
+              DropdownButton(
+                  iconSize: 40,
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                  value: vp.state,
+                  items: data!
+                      .map((e) => DropdownMenuItem(
+                            value: e.index,
+                            child: Text(e.name ?? ""),
+                          ))
+                      .toList(),
+                  onChanged: ((value) {
+                    ref.read(v.notifier).state = value!;
+                  })),
+              const Expanded(child: ListPage())
+            ],
           );
         },
         error: (error, stackTrace) => const Center(
@@ -175,6 +167,7 @@ class ChapterList extends ConsumerWidget {
 }
 
 final scroll = StateProvider(((ref) => ""));
+late var controller;
 
 // ignore: must_be_immutable
 class ListPage extends ConsumerWidget {
@@ -187,20 +180,22 @@ class ListPage extends ConsumerWidget {
     return f.when(
         data: (data) {
           final vp = ref.read(v.notifier).state;
-          var i = play!.idx! % 30;
-          var j = play.idx! ~/ 30 + 1;
-          var bool = int.parse(vp) == (j);
-          if (bool) {
-            controller.animateTo(max(0, i - 3) * itemHeight,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.linear);
-          }
-          return ListView.builder(
-            shrinkWrap: true,
+          int i = play!.idx! % 30;
+          int j = play.idx! ~/ 30 + 1;
+          bool currentPage = int.parse(vp) == (j);
+          int idx = currentPage ? i - 5 : -3;
+          controller = IndexedScrollController(
+              initialIndex: idx, initialScrollOffset: itemHeight);
+          int len = data?.length ?? 0;
+          return IndexedListView.builder(
             controller: controller,
+            maxItemCount: data?.length ?? 0,
             itemBuilder: ((context, index) {
+              if (index < 0 || index >= len) {
+                return null;
+              }
               final model = data![index];
-              final b = index == i && bool;
+              final b = index == i && currentPage;
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
@@ -227,8 +222,7 @@ class ListPage extends ConsumerWidget {
                         child: Text(
                           "${model.name}",
                           style: TextStyle(
-                              color: b ? Colors.lightBlue : Colors.white,
-                              fontSize: 15),
+                              color: b ? Colors.lightBlue : null, fontSize: 15),
                           maxLines: 2,
                         ),
                       ),
@@ -248,7 +242,6 @@ class ListPage extends ConsumerWidget {
                 ),
               );
             }),
-            itemCount: data?.length??0,
             itemExtent: itemHeight,
           );
         },

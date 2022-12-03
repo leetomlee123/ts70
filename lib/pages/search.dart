@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/model/SearchNotifier.dart';
 import 'package:ts70/pages/index.dart';
@@ -44,6 +45,10 @@ class SearchViewState extends State<SearchPage> {
   @override
   void dispose() {
     super.dispose();
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        // statusBarColor: Color(0xFFF2F3F7),        //状态栏背景颜色
+        statusBarIconBrightness: Brightness.dark // dark:一般显示黑色   light：一般显示白色
+        ));
     scrollController!.dispose();
   }
 
@@ -53,7 +58,6 @@ class SearchViewState extends State<SearchPage> {
       appBar: AppBar(
         elevation: 0,
         title: Input(),
-
       ),
       body: SingleChildScrollView(
         controller: scrollController,
@@ -76,6 +80,7 @@ class Input extends ConsumerWidget {
     return TextField(
       autofocus: false,
       focusNode: focusNode,
+      cursorColor: Colors.black,
       cursorHeight: 25,
       controller: _textEditingController,
       onChanged: (v) {
@@ -170,18 +175,17 @@ class Input extends ConsumerWidget {
 //             )));
 //   }
 // }
-
-class Result extends ConsumerWidget {
-  const Result({super.key});
-
   format(String url) {
-    print(url);
     if (url.contains("70")) {
       return "麒麟听书";
     } else {
       return "听书宝";
     }
   }
+class Result extends ConsumerWidget {
+  const Result({super.key});
+
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -248,10 +252,19 @@ class Result extends ConsumerWidget {
                           ),
                           const Spacer(),
                           Container(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(format(
-                              model.cover ?? "",
-                            )),
+                            padding: const EdgeInsets.symmetric(horizontal: 1),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(.5)),
+                            child: Center(
+                              child: Text(
+                                format(
+                                  model.cover ?? "",
+                                ),
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ),
                           )
                         ],
                       ),

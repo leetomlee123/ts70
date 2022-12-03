@@ -53,12 +53,7 @@ class Global {
       androidNotificationChannelName: 'Audio playback',
       androidNotificationOngoing: true,
     );
-    await FlutterStatusbarcolor.setStatusBarColor(Colors.green[400]!);
-    if (useWhiteForeground(Colors.green[400]!)) {
-      FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    } else {
-      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    }
+
 
     if (Platform.isAndroid) {
       SystemUiOverlayStyle style = const SystemUiOverlayStyle(

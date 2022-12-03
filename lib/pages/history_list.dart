@@ -3,16 +3,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/model.dart';
+import 'package:ts70/pages/search.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
 final refresh =
     StateProvider.autoDispose<int>(((ref) => DateUtil.getNowDateMs()));
 final historyProvider = FutureProvider.autoDispose<List<Search>?>((ref) async {
+  ref.onDispose(() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        // statusBarColor: Color(0xFFF2F3F7),        //状态栏背景颜色
+        statusBarIconBrightness: Brightness.dark // dark:一般显示黑色   light：一般显示白色
+        ));
+  });
   ref.watch(refresh);
   List<Search> history = await DataBaseProvider.dbProvider.voices();
   return history;
@@ -77,8 +85,6 @@ class HistoryList extends ConsumerWidget {
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      // color: Colors.black,
-                      // boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
                     ),
                     height: 90,
                     child: Row(
@@ -103,8 +109,7 @@ class HistoryList extends ConsumerWidget {
                               child: Text(
                                 item.title ?? "",
                                 style: const TextStyle(
-                                    fontSize: 18,
-                                    // color: Colors.white
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -114,23 +119,39 @@ class HistoryList extends ConsumerWidget {
                             Text(
                               item.bookMeta ?? "",
                               style: const TextStyle(
-                                  fontSize: 12,
-                                  // color: Colors.white70
+                                fontSize: 12,
+                                // color: Colors.white70
                               ),
                             ),
                           ],
                         ),
                         const Spacer(),
-                        Text(
-                          '第${item.idx! + 1}回',
-                          style: const TextStyle(
-                              fontSize: 12,
-                              // color: Colors.white70
-                          ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 1),
+                              decoration: const BoxDecoration(
+                                  color: Colors.white30
+                                     ),
+                              child: Text(
+                                format(
+                                  item.cover ?? "",
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '第${item.idx! + 1}回',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                // color: Colors.white70
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(
                           width: 20,
-                        )
+                        ),
                       ],
                     ),
                   ),

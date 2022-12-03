@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -11,7 +13,6 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:ts70/global.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/model/HistoryNotifier.dart';
-import 'package:ts70/pages/bg_color.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/pages/model.dart';
 import 'package:ts70/services/listen.dart';
@@ -37,7 +38,7 @@ final bgProvide = FutureProvider.autoDispose<PaletteGenerator>((ref) async {
     print("bgImage source url $cover");
   }
   final PaletteGenerator paletteGenerator =
-  await PaletteGenerator.fromImageProvider(
+      await PaletteGenerator.fromImageProvider(
     CachedNetworkImageProvider(cover!),
     maximumColorCount: 20,
   );
@@ -78,7 +79,7 @@ class IndexState extends ConsumerState {
       try {
         if (url.isEmpty) {
           url = "";
-          url = await ListenApi().chapterUrl( play.state);
+          url = await ListenApi().chapterUrl(play.state);
           if (url.isEmpty) {
             load.state = false;
             return;
@@ -160,13 +161,16 @@ class IndexState extends ConsumerState {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        // statusBarColor: Color(0xFFF2F3F7),        //状态栏背景颜色
+        statusBarIconBrightness: Brightness.dark // dark:一般显示黑色   light：一般显示白色
+        ));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const  Home()
-      // Stack(
-      //   alignment: Alignment.bottomCenter,
-      //   children: const [BgColor(), Home()],
-      // ),
-    );
+    return const Scaffold(body: SafeArea(child: Home()));
   }
 }

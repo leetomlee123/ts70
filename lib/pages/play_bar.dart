@@ -9,6 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/chapter_list.dart';
+import 'package:ts70/pages/cover.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
@@ -183,7 +184,6 @@ class VoiceInfo extends ConsumerWidget {
     final title = ref.watch(playProvider.select((value) => value!.title));
     final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
     final idx = ref.watch(playProvider.select((value) => value!.idx));
-    final cover = ref.watch(playProvider.select((value) => value!.cover));
 
     return Visibility(
       visible: id != null,
@@ -197,20 +197,13 @@ class VoiceInfo extends ConsumerWidget {
           const SizedBox(
             height: 20,
           ),
-          ClipOval(
-            child: Image(
-              image: CachedNetworkImageProvider(cover ?? ""),
-              height: 230,
-              fit: BoxFit.fill,
-            ),
-          ),
+const Cover(),
           const SizedBox(
             height: 20,
           ),
           Text(
             title ?? "",
-            style: const TextStyle(
-                fontSize: 20,  fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
             "${bookMeta ?? ""}   第${idx! + 1}回",
