@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:common_utils/common_utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 
 class DataBaseProvider {
   DataBaseProvider._();
@@ -25,12 +25,13 @@ class DataBaseProvider {
   getDatabaseInstanceVoice() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = "${directory.path}$_dbVoice.db";
-    return await openDatabase(path, version: 2,
+    return await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE IF NOT EXISTS $_dbVoice("
           "id INTEGER PRIMARY KEY ,"
           "title TEXT,"
           "url TEXT,"
+          "label TEXT,"
           "book_meta TEXT,"
           "last_time INTEGER,"
           "idx INTEGER,"

@@ -6,7 +6,7 @@ import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/utils/request.dart';
 import 'package:uuid/uuid.dart';
 
@@ -20,6 +20,7 @@ class ListenApi {
   String host = "https://www.70tsw.com";
   String host2 = "https://www.70ts.cc";
   String host3 = "http://m.tingshubao.com";
+  String host4 = "https://www.ting13.com";
 
   void checkSite() async {
     Response res = await Request().getBase(host);
@@ -49,6 +50,7 @@ class ListenApi {
     if (keyword.isEmpty) return;
 
     search70tingshu(keyword);
+    // searchAitingshu(keyword);
     searchTingshuBao(keyword);
   }
 
@@ -63,24 +65,24 @@ class ListenApi {
     var result = es
         .map(
           (e) => Search(
-            id: e
-                .querySelector("a")!
-                .attributes['href']
-                .toString()
-                .split("/")[2]
-                .split(".")[0],
-            cover: host3 +
-                e
-                    .getElementsByClassName("book-cover")[0]
-                    .attributes['data-original']
-                    .toString(),
-            title: e
-                .getElementsByClassName("book-cover")[0]
-                .attributes['alt']
-                .toString(),
-            desc: e.getElementsByClassName('book-desc')[0].text,
-            bookMeta: e.getElementsByClassName('book-meta')[0].text,
-          ),
+              id: e
+                  .querySelector("a")!
+                  .attributes['href']
+                  .toString()
+                  .split("/")[2]
+                  .split(".")[0],
+              cover: host3 +
+                  e
+                      .getElementsByClassName("book-cover")[0]
+                      .attributes['data-original']
+                      .toString(),
+              title: e
+                  .getElementsByClassName("book-cover")[0]
+                  .attributes['alt']
+                  .toString(),
+              desc: e.getElementsByClassName('book-desc')[0].text,
+              bookMeta: e.getElementsByClassName('book-meta')[0].text,
+              label: "听书宝"),
         )
         .toList();
     searchController.add(result);
@@ -88,8 +90,6 @@ class ListenApi {
   }
 
   search70tingshu(String keyword) async {
-    print("search70tingshu $keyword");
-
     // keyword='凡人';
     var res = await Request().postForm2(
       "$host/novelsearch/search/result.html",
@@ -120,6 +120,7 @@ class ListenApi {
         cover: cover.startsWith("http") ? cover : host + cover,
         title: title,
         desc: desc,
+        label: '麒麟听书',
         bookMeta: bookMeta,
       );
     }).toList();
@@ -127,8 +128,42 @@ class ListenApi {
     // searchController.add(DataSearch(data: result,label: "麒麟听书"));
   }
 
-  Future<List<Chapter>?> getChapters(String page, String id) async {
-    print(id);
+  searchAitingshu(String keyword) async {
+    var res = await Request().postForm2(
+      "$host4/novelsearch/search/result.html",
+      params:
+          "searchword=${Uri.encodeQueryComponent(keyword)}&searchtype=novelname",
+    );
+    // final params = {"searchtype": "novelname", "searchword": keyword};
+    // var res = await Request().postForm("$host/novelsearch/search/result.html",
+    //     params: params, cancelToken: cancelToken);
+    Document document = parse(res);
+
+    List<Element> es = document.querySelector(".list-works")!.children;
+    List<Search> result = [];
+    for (var e in es) {
+      final cover =
+          e.querySelector("div>a>img")!.attributes['data-original'].toString();
+      final id = e
+          .querySelector("div>a")!
+          .attributes['href']
+          .toString()
+          .split("/")[2]
+          .split(".")[0];
+      final title = e.querySelector("dl>dt>a")!.text.toString();
+      final desc = e.querySelector('dl>dd.list-book-des')!.text.trim();
+      final bookMeta =
+          "${e.querySelector("dl>dd.list-book-cs>span.book-author>a")!.text}|";
+      result.add(Search(
+        id: id,
+        cover: cover.startsWith("http") ? cover : host + cover,
+        title: title,
+        desc: desc,
+        label: '爱听书',
+        bookMeta: bookMeta,
+      ));
+    }
+    searchController.add(result);
   }
 
   Future<List<Chapter>?> getChapters70ts(String page, String id) async {
@@ -190,13 +225,10 @@ class ListenApi {
       }
     } else {
       var s = "http://43.129.176.64/player/key.php?url=" + keys[0];
-      var re = await Request()
-          .getBase(s);
+      var re = await Request().getBase(s);
       var jsonDecode2 = jsonDecode(re.toString())['url'];
       return jsonDecode2;
-      print(jsonDecode(re.toString())['url']);
-      print(re);
-      return "";
+
       // var url = jsonDecode(re)['url'];
       // return Uri.encodeFull(url);
     }
@@ -277,7 +309,6 @@ class ListenApi {
   }
 
   // ********************************************************************
-
 
   Future<List<TopRank>?> getTop(String rank) async {
     var res = await Request().getBase(host);

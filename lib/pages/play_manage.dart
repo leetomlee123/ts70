@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 
 class PlayManage extends ChangeNotifier {
   bool play = false;

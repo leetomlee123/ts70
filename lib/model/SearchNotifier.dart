@@ -1,15 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/services/services.dart';
 
 class SearchNotifier extends ChangeNotifier {
   var result = <Search>[];
   var temp = <List<Search>>[];
+  late StreamSubscription streamSubscription;
 
   SearchNotifier() {
-    searchController.stream.listen((event) {
+   streamSubscription= searchController.stream.listen((event) {
       add(event);
     });
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print("ddddddddddddddddddddddd");
+    streamSubscription.pause();
   }
 
   void search(String keyword) {
@@ -26,7 +36,7 @@ class SearchNotifier extends ChangeNotifier {
   }
 
   formatData() {
-    result=[];
+    result = [];
     int length = temp.length;
     bool loop = true;
     int j = 0;

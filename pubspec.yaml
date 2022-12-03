@@ -53,7 +53,7 @@ dependencies:
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
   lottie: ^1.4.2
-  sqflite: ^2.0.3+1
+  sqflite: ^2.2.1
   path_provider: ^2.0.10
   audio_video_progress_bar: ^0.11.0
   get_it: ^6.0.0

@@ -26,6 +26,7 @@ class Search extends Equatable {
   String? bookMeta;
   String? title;
   String? desc;
+  String? label;
   String? url;
   int? lastTime;
   int? idx;
@@ -37,6 +38,7 @@ class Search extends Equatable {
   Search copyWith({
     String? id,
     String? cover,
+    String? label,
     String? bookMeta,
     String? title,
     String? desc,
@@ -57,6 +59,7 @@ class Search extends Equatable {
         url: url ?? this.url,
         lastTime: lastTime ?? this.lastTime,
         idx: idx ?? this.idx,
+        label: label ??this.label,
         count: count ?? this.count,
         position: position ?? this.position,
         duration: duration ?? this.duration,
@@ -67,6 +70,7 @@ class Search extends Equatable {
     this.id,
     this.desc,
     this.url = '',
+    this.label = '',
     this.bookMeta,
     this.cover,
     this.lastTime = 0,
@@ -82,6 +86,7 @@ class Search extends Equatable {
     id = json['id'].toString();
     title = json['title'];
     url = json['url'];
+    label = json['label'];
     bookMeta = json['book_meta'];
     lastTime = json['last_time'];
     idx = json['idx'];
@@ -95,6 +100,7 @@ class Search extends Equatable {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['book_meta'] = bookMeta;
+    data['label'] = label;
     data['url'] = url;
     data['idx'] = idx ?? 0;
     data['last_time'] = lastTime ?? 0;
@@ -113,6 +119,7 @@ class Search extends Equatable {
         bookMeta,
         title,
         desc,
+        label,
         url,
         lastTime,
         idx,

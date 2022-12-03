@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/request.dart';

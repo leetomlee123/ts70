@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/utils/database_provider.dart';
 
 class HistoryNotifier extends ChangeNotifier {

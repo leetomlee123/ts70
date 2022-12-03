@@ -7,8 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/model.dart';
-import 'package:ts70/pages/search.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
@@ -130,14 +129,12 @@ class HistoryList extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 1),
-                              decoration: const BoxDecoration(
-                                  color: Colors.white30
-                                     ),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 1),
+                              decoration:
+                                  const BoxDecoration(color: Colors.white30),
                               child: Text(
-                                format(
-                                  item.cover ?? "",
-                                ),
+                                item.label ?? "",
                               ),
                             ),
                             Text(
@@ -173,6 +170,14 @@ class HistoryList extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("历史记录"),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await DataBaseProvider.dbProvider.clear();
+                ref.read(refresh.notifier).state = DateUtil.getNowDateMs();
+              },
+              icon: const Icon(Icons.clear_all_outlined))
+        ],
       ),
       body: view,
     );

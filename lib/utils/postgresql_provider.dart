@@ -1,5 +1,5 @@
 import 'package:postgres/postgres.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 
 class PostGreSqlProvider {
   PostGreSqlProvider._();

@@ -17,7 +17,7 @@ import 'package:ts70/utils/database_provider.dart';
 //
 //   return await ListenApi().search(keyword);
 // });
-final searchProvider = ChangeNotifierProvider<SearchNotifier>((ref) {
+final searchProvider = ChangeNotifierProvider.autoDispose<SearchNotifier>((ref) {
   return SearchNotifier();
 });
 final FocusNode focusNode = FocusNode();
@@ -175,13 +175,7 @@ class Input extends ConsumerWidget {
 //             )));
 //   }
 // }
-  format(String url) {
-    if (url.contains("70")) {
-      return "麒麟听书";
-    } else {
-      return "听书宝";
-    }
-  }
+
 class Result extends ConsumerWidget {
   const Result({super.key});
 
@@ -259,9 +253,7 @@ class Result extends ConsumerWidget {
                                     .withOpacity(.5)),
                             child: Center(
                               child: Text(
-                                format(
-                                  model.cover ?? "",
-                                ),
+                                  model.label ?? "",
                                 style: const TextStyle(color: Colors.white70),
                               ),
                             ),

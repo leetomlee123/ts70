@@ -14,7 +14,7 @@ import 'package:ts70/global.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/model/HistoryNotifier.dart';
 import 'package:ts70/pages/home.dart';
-import 'package:ts70/pages/model.dart';
+import 'package:ts70/model/model.dart';
 import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
