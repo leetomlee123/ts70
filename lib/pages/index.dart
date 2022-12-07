@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -16,6 +17,8 @@ import 'package:ts70/model/HistoryNotifier.dart';
 import 'package:ts70/pages/home.dart';
 import 'package:ts70/model/model.dart';
 import 'package:ts70/services/listen.dart';
+import 'package:ts70/utils/audio_source_stream.dart';
+import 'package:ts70/utils/custom_cache_manager.dart';
 import 'package:ts70/utils/database_provider.dart';
 import 'package:ts70/utils/event_bus.dart';
 
@@ -31,6 +34,8 @@ final playProvider = StateProvider.autoDispose<Search?>((ref) {
   return Search();
 });
 final speedProvider = StateProvider.autoDispose<double>((ref) => 1.0);
+final downFlagProvider = StateProvider.autoDispose<bool>((ref) => false);
+final downPercetProvider = StateProvider.autoDispose<double>((ref) => 0.0);
 final cronProvider = StateProvider<int>((ref) => 0);
 final bgProvide = FutureProvider.autoDispose<PaletteGenerator>((ref) async {
   final cover = ref.watch(playProvider.select((value) => value!.cover));
@@ -77,16 +82,21 @@ class IndexState extends ConsumerState {
       load.state = true;
       String url = play.state!.url ?? "";
       try {
-        if (url.isEmpty) {
-          url = "";
-          url = await ListenApi().chapterUrl(play.state);
+        FileInfo? fileInfo = await CustomCacheManager.instance
+            .getFileFromCache(play.state!.getCacheKey());
+        if (fileInfo == null) {
           if (url.isEmpty) {
-            load.state = false;
-            return;
+            url = "";
+            url = await ListenApi().chapterUrl(play.state);
+            if (url.isEmpty) {
+              load.state = false;
+              return;
+            }
           }
         }
         audioSource = LockCachingAudioSource(
           Uri.parse(url),
+          cacheFile: fileInfo?.file,
           tag: MediaItem(
             id: '1',
             album: play.state!.title,
@@ -97,6 +107,7 @@ class IndexState extends ConsumerState {
         if (kDebugMode) {
           print("loading network resource");
         }
+
         await audioPlayer.setAudioSource(audioSource);
         final duration = await audioPlayer.load();
         play.state =
@@ -112,6 +123,9 @@ class IndexState extends ConsumerState {
           await audioPlayer.play();
         }
       } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
         load.state = false;
       } finally {
         load.state = false;
@@ -127,7 +141,7 @@ class IndexState extends ConsumerState {
         await audioSource.clearCache();
         search.state = search.state!.copyWith(
             position: 0, duration: 1, url: "", idx: search.state!.idx! + 1);
-        await DataBaseProvider.dbProvider.addVoiceOrUpdate(search.state!);
+
         eventBus.fire(PlayEvent());
       }
     });
@@ -171,6 +185,22 @@ class IndexState extends ConsumerState {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: SafeArea(child: Home()));
+    return Scaffold(body: const SafeArea(child: Home())
+        //     Container(
+        //   decoration: const BoxDecoration(
+        //       image: DecorationImage(
+        //           image: AssetImage("assets/background.png"), fit: BoxFit.cover)),
+        //   child: const SafeArea(child: Home()),
+        // )
+        //     Stack(
+        //   children: [
+        //     Image.asset(
+        //       "assets/background.png",
+        //       fit: BoxFit.fitWidth,
+        //     ),
+        //     const SafeArea(child: Home())
+        //   ],
+        // )
+        );
   }
 }

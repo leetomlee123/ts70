@@ -56,12 +56,14 @@ dependencies:
   sqflite: ^2.2.1
   path_provider: ^2.0.10
   audio_video_progress_bar: ^0.11.0
+  flutter_cache_manager: ^3.3.0
   get_it: ^6.0.0
   html: ^0.15.0
-  cached_network_image: ^3.2.2
+  cached_network_image: ^3.2.3
   # sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
   dio_smart_retry: ^1.2.0
+  flutter_native_splash: ^2.2.16
 
   # flutter_xupdate: ^2.0.3
   event_bus: ^2.0.0
@@ -79,6 +81,7 @@ dependencies:
   flutter_displaymode: ^0.4.1
   palette_generator: ^0.3.3+2
   indexed_list_view: ^2.0.2
+  percent_indicator: ^4.2.2
 
 
 dev_dependencies:
@@ -111,6 +114,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+
   # To add assets to your application, add an assets section, like this:
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -126,6 +130,7 @@ flutter:
   # china:
   assets:
     - assets/disk.png
+    - assets/background.png
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,11 +9,13 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/pages/chapter_list.dart';
 import 'package:ts70/pages/cover.dart';
+import 'package:ts70/pages/download_circle.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/pages/play_button.dart';
 import 'package:ts70/pages/speed.dart';
 import 'package:ts70/pages/timer.dart';
 import 'package:ts70/pages/voice_slider.dart';
+import 'package:ts70/services/listen.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
@@ -102,6 +103,7 @@ class ToolBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final p = ref.watch(downFlagProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -119,6 +121,19 @@ class ToolBar extends ConsumerWidget {
             icon: const Icon(
               Icons.menu,
             )),
+        p
+            ? const DownloadCircle()
+            : IconButton(
+                onPressed: () async {
+                  var p = ref.read(playProvider);
+                  ref.read(downFlagProvider.notifier).state = true;
+
+                  await ListenApi().download(p);
+                  ref.read(downFlagProvider.notifier).state = false;
+                },
+                icon: const Icon(
+                  Icons.download,
+                )),
         const Spacer(),
         IconButton(
             onPressed: () {
@@ -197,7 +212,7 @@ class VoiceInfo extends ConsumerWidget {
           const SizedBox(
             height: 20,
           ),
-const Cover(),
+          const Cover(),
           const SizedBox(
             height: 20,
           ),

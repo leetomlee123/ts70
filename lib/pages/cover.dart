@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/utils/screen.dart';
 
-final width = Screen.width * .4;
-final width1 = Screen.width * .6;
+final width = Screen.width * .23;
+final width1 = Screen.width * .7;
 class Cover extends ConsumerWidget {
   const Cover({super.key});
 
@@ -16,16 +16,14 @@ class Cover extends ConsumerWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        ClipOval(
-          child: Image(
-            image: CachedNetworkImageProvider(cover ?? ""),
-            height: width,
-            fit: BoxFit.cover,
-          ),
+        CircleAvatar(
+          backgroundImage:
+          CachedNetworkImageProvider(cover ?? ""),
+          radius: width,
         ),
         Image.asset(
           'assets/disk.png',
-          height: width1,
+          width: width1,
         ),
       ],
     );

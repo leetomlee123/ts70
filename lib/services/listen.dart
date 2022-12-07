@@ -7,11 +7,13 @@ import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:ts70/model/model.dart';
+import 'package:ts70/utils/custom_cache_manager.dart';
 import 'package:ts70/utils/request.dart';
 import 'package:uuid/uuid.dart';
 
 var streamController = StreamController.broadcast();
 var searchController = StreamController.broadcast();
+var downloadController = StreamController.broadcast();
 
 var uuid = const Uuid();
 
@@ -21,6 +23,39 @@ class ListenApi {
   String host2 = "https://www.70ts.cc";
   String host3 = "http://m.tingshubao.com";
   String host4 = "https://www.ting13.com";
+
+  Future<String> download(Search? p) async {
+    int len = 0;
+    if (p!.label == "听书宝") {
+      len = await getChaptersTsb(p.id ?? "");
+    } else {
+      final result = await ListenApi().getOptions(p);
+      len = result!.length * 30;
+    }
+    var pp = p.copyWith();
+
+    for (int ii = pp.idx ?? 0; ii < len; ii++) {
+      try {
+        pp.idx = ii;
+        var cacheKey = pp.getCacheKey();
+        var fileInfo =
+            await CustomCacheManager.instance.getFileFromCache(cacheKey);
+        if (fileInfo == null) {
+          if (kDebugMode) {
+            print(cacheKey);
+          }
+          final url = await chapterUrl(pp);
+          await CustomCacheManager.instance.downloadFile(url, key: cacheKey);
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+      downloadController.add(ii / len);
+    }
+    return "";
+  }
 
   void checkSite() async {
     Response res = await Request().getBase(host);

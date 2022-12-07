@@ -1,12 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:ts70/main.dart';
-import 'package:ts70/pages/index.dart';
 import 'package:ts70/model/model.dart';
+import 'package:ts70/pages/index.dart';
 import 'package:ts70/services/listen.dart';
+import 'package:ts70/utils/custom_cache_manager.dart';
 import 'package:ts70/utils/event_bus.dart';
 import 'package:ts70/utils/screen.dart';
 
@@ -64,6 +63,9 @@ class ChapterList70Ts extends ConsumerWidget {
             maxItemCount: data,
             itemBuilder: ((context, index) {
               final b = ff.idx == index;
+              if (index < 0 || index >= data!) {
+                return null;
+              }
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
@@ -196,6 +198,7 @@ class ListPage extends ConsumerWidget {
               }
               final model = data![index];
               final b = index == i && currentPage;
+
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () async {
@@ -227,6 +230,9 @@ class ListPage extends ConsumerWidget {
                         ),
                       ),
                       const Spacer(),
+                      // DownLoadItem(
+                      //   index: index,
+                      // ),
                       Offstage(
                         offstage: !b,
                         child: const Icon(
@@ -251,5 +257,29 @@ class ListPage extends ConsumerWidget {
         loading: () => const Center(
               child: Text('loading...'),
             ));
+  }
+}
+
+class DownLoadItem extends ConsumerWidget {
+  final int? index;
+  DownLoadItem({super.key, this.index});
+  late var cache = StateProvider.autoDispose<bool>(((ref) {
+    final play = ref.read(playProvider.notifier).state;
+    return CustomCacheManager.instance
+            .getFileFromCache(play!.getCacheKeyByIndex(index.toString())) ==
+        null;
+  }));
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cacheProvider = ref.watch(cache);
+
+    return IconButton(
+        onPressed: () async {
+          final p = ref.read(playProvider.notifier).state;
+          final url = await ListenApi().chapterUrl(p);
+          await CustomCacheManager.instance.downloadFile(url);
+        },
+        icon: Icon(
+            cacheProvider ? Icons.download_done_outlined : Icons.download));
   }
 }

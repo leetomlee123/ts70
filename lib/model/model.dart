@@ -6,11 +6,13 @@ class Chapter {
 
   Chapter({this.name, this.index});
 }
-class DataSearch{
+
+class DataSearch {
   String? label;
   List<Search>? data;
-  DataSearch({this.data,this.label});
+  DataSearch({this.data, this.label});
 }
+
 class TopRank {
   String? name;
   String? a;
@@ -35,53 +37,55 @@ class Search extends Equatable {
   int? duration;
   int? buffer;
 
-  Search copyWith({
-    String? id,
-    String? cover,
-    String? label,
-    String? bookMeta,
-    String? title,
-    String? desc,
-    String? url,
-    int? lastTime,
-    int? idx,
-    int? count,
-    int? position,
-    int? duration,
-    int? buffer
-  }) =>
+  Search copyWith(
+          {String? id,
+          String? cover,
+          String? label,
+          String? bookMeta,
+          String? title,
+          String? desc,
+          String? url,
+          int? lastTime,
+          int? idx,
+          int? count,
+          int? position,
+          int? duration,
+          int? buffer}) =>
       Search(
-        id: id ?? this.id,
-        cover: cover ?? this.cover,
-        bookMeta: bookMeta ?? this.bookMeta,
-        title: title ?? this.title,
-        desc: desc ?? this.desc,
-        url: url ?? this.url,
-        lastTime: lastTime ?? this.lastTime,
-        idx: idx ?? this.idx,
-        label: label ??this.label,
-        count: count ?? this.count,
-        position: position ?? this.position,
-        duration: duration ?? this.duration,
-        buffer: buffer??this.buffer
-      );
+          id: id ?? this.id,
+          cover: cover ?? this.cover,
+          bookMeta: bookMeta ?? this.bookMeta,
+          title: title ?? this.title,
+          desc: desc ?? this.desc,
+          url: url ?? this.url,
+          lastTime: lastTime ?? this.lastTime,
+          idx: idx ?? this.idx,
+          label: label ?? this.label,
+          count: count ?? this.count,
+          position: position ?? this.position,
+          duration: duration ?? this.duration,
+          buffer: buffer ?? this.buffer);
 
-  Search({
-    this.id,
-    this.desc,
-    this.url = '',
-    this.label = '',
-    this.bookMeta,
-    this.cover,
-    this.lastTime = 0,
-    this.title,
-    this.idx = 0,
-    this.count = 0,
-    this.position = 0,
-    this.duration = 1,
-    this.buffer=0
-  });
-
+  Search(
+      {this.id,
+      this.desc,
+      this.url = '',
+      this.label = '',
+      this.bookMeta,
+      this.cover,
+      this.lastTime = 0,
+      this.title,
+      this.idx = 0,
+      this.count = 0,
+      this.position = 0,
+      this.duration = 1,
+      this.buffer = 0});
+  String getCacheKey() {
+    return id! + idx!.toString();
+  }
+  String getCacheKeyByIndex(String index) {
+    return id! + index;
+  }
   Search.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'].toString();
     title = json['title'];
