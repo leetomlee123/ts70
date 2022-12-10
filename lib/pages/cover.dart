@@ -5,20 +5,26 @@ import 'package:ts70/pages/index.dart';
 import 'package:ts70/utils/screen.dart';
 
 final width = Screen.width * .23;
-final width1 = Screen.width * .7;
+final width1 = Screen.width * .9;
+final height1 = width1*.8;
+
 class Cover extends ConsumerWidget {
   const Cover({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cover = ref.watch(playProvider.select((value) => value!.cover));
-
+    return CachedNetworkImage(
+      imageUrl: cover!,
+      width: width1,
+      height: height1,
+      fit: BoxFit.fitWidth,
+    );
     return Stack(
       alignment: Alignment.center,
       children: [
         CircleAvatar(
-          backgroundImage:
-          CachedNetworkImageProvider(cover ?? ""),
+          backgroundImage: CachedNetworkImageProvider(cover ?? ""),
           radius: width,
         ),
         Image.asset(

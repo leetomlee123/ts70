@@ -68,9 +68,6 @@ dependencies:
   # flutter_xupdate: ^2.0.3
   event_bus: ^2.0.0
 
-
-
-
   just_audio: ^0.9.30
   just_audio_background: ^0.0.1-beta.8
   just_audio_cache: ^0.1.1

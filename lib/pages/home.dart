@@ -35,8 +35,7 @@ class Home extends ConsumerWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const SearchPage()),
+                  MaterialPageRoute(builder: (context) => const SearchPage()),
                 );
               },
               icon: const Icon(
@@ -48,8 +47,7 @@ class Home extends ConsumerWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const HistoryList()),
+                  MaterialPageRoute(builder: (context) => const HistoryList()),
                 );
               },
               icon: const Icon(
@@ -58,6 +56,9 @@ class Home extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(
+          height: 20,
         ),
         const VoiceInfo(),
         const Spacer(),

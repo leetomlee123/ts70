@@ -26,6 +26,10 @@ class PlayBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: const [
+        InfoText(),
+        SizedBox(
+          height: 20,
+        ),
         VoiceSlider(),
         VoiceActionBar(),
         ToolBar(),
@@ -196,36 +200,40 @@ class VoiceInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = ref.watch(playProvider.select((value) => value!.id));
-    final title = ref.watch(playProvider.select((value) => value!.title));
-    final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
-    final idx = ref.watch(playProvider.select((value) => value!.idx));
 
     return Visibility(
       visible: id != null,
       replacement: const SizedBox(
         height: 40,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          const Cover(),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title ?? "",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            "${bookMeta ?? ""}   第${idx! + 1}回",
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
-      ),
+      child: const Cover(),
+    );
+  }
+}
+
+class InfoText extends ConsumerWidget {
+  const InfoText({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
+    final idx = ref.watch(playProvider.select((value) => value!.idx));
+    final title = ref.watch(playProvider.select((value) => value!.title));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: width1,
+        ),
+        Text(
+          title ?? "",
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "${bookMeta ?? ""}   第${idx! + 1}回",
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
     );
   }
 }
