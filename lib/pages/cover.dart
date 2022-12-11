@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ts70/pages/index.dart';
 import 'package:ts70/utils/screen.dart';
 
-final width = Screen.width * .23;
-final width1 = Screen.width * .9;
-final height1 = width1*.8;
+final width = Screen.width * .25;
+final width1 = Screen.width * .75;
+final height1 = width1 * .8;
 
 class Cover extends ConsumerWidget {
   const Cover({super.key});
@@ -14,25 +14,23 @@ class Cover extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cover = ref.watch(playProvider.select((value) => value!.cover));
-    return CachedNetworkImage(
-      imageUrl: cover!,
-      width: width1,
-      height: height1,
-      fit: BoxFit.fitWidth,
+    return CircleAvatar(
+      backgroundImage: CachedNetworkImageProvider(cover ?? ""),
+      radius: 23,
     );
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        CircleAvatar(
-          backgroundImage: CachedNetworkImageProvider(cover ?? ""),
-          radius: width,
-        ),
-        Image.asset(
-          'assets/disk.png',
-          width: width1,
-        ),
-      ],
-    );
+    // return Stack(
+    //   alignment: Alignment.center,
+    //   children: [
+    // CircleAvatar(
+    //   backgroundImage: CachedNetworkImageProvider(cover ?? ""),
+    //   radius: width,
+    // ),
+    //     Image.asset(
+    //       'assets/disk.png',
+    //       width: width1,
+    //     ),
+    //   ],
+    // );
   }
 }
 

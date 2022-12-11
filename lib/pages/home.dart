@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ts70/pages/history_list.dart';
 import 'package:ts70/pages/index.dart';
-import 'package:ts70/pages/online_check.dart';
 import 'package:ts70/pages/play_bar.dart';
 import 'package:ts70/pages/search.dart';
 
@@ -57,10 +56,6 @@ class Home extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(
-          height: 20,
-        ),
-        const VoiceInfo(),
         const Spacer(),
         const PlayBar(),
       ],

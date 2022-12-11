@@ -26,9 +26,9 @@ class PlayBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: const [
-        InfoText(),
-        SizedBox(
-          height: 20,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: VoiceInfo(),
         ),
         VoiceSlider(),
         VoiceActionBar(),
@@ -206,7 +206,7 @@ class VoiceInfo extends ConsumerWidget {
       replacement: const SizedBox(
         height: 40,
       ),
-      child: const Cover(),
+      child: const InfoText(),
     );
   }
 }
@@ -219,20 +219,27 @@ class InfoText extends ConsumerWidget {
     final bookMeta = ref.watch(playProvider.select((value) => value!.bookMeta));
     final idx = ref.watch(playProvider.select((value) => value!.idx));
     final title = ref.watch(playProvider.select((value) => value!.title));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        SizedBox(
-          width: width1,
+ 
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: width1,
+            ),
+            Text(
+              title ?? "",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "${bookMeta ?? ""}   第${idx! + 1}回",
+              style: const TextStyle(fontSize: 12),
+            ),
+          ],
         ),
-        Text(
-          title ?? "",
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "${bookMeta ?? ""}   第${idx! + 1}回",
-          style: const TextStyle(fontSize: 12),
-        ),
+        const Cover(),
+    
       ],
     );
   }
