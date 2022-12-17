@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
@@ -33,6 +34,8 @@ class ListenApi {
       len = result!.length * 30;
     }
     var pp = p.copyWith();
+    int success = 0;
+    int failed = 0;
 
     for (int ii = pp.idx ?? 0; ii < len; ii++) {
       try {
@@ -46,14 +49,17 @@ class ListenApi {
           }
           final url = await chapterUrl(pp);
           await CustomCacheManager.instance.downloadFile(url, key: cacheKey);
+          success++;
         }
       } catch (e) {
         if (kDebugMode) {
           print(e);
         }
+        failed++;
       }
       downloadController.add(ii / len);
     }
+    BotToast.showText(text: '成功 $success ；失败 $failed');
     return "";
   }
 

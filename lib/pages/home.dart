@@ -11,54 +11,65 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              '听书楼',
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            // const Padding(
-            //     padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0),
-            //     child: WebState()),
-            const SizedBox(
-              width: 14,
-            ),
-            // const LoadingWidget(),
-            const Spacer(),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SearchPage()),
-                );
-              },
-              icon: const Icon(
-                Icons.search_outlined,
-                size: 25,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const SizedBox(
+                width: 10,
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HistoryList()),
-                );
-              },
-              icon: const Icon(
-                Icons.history,
-                size: 25,
+              Text(
+                '听书楼',
+                style: Theme.of(context).textTheme.bodyText1,
               ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        const PlayBar(),
-      ],
+              // const Padding(
+              //     padding: EdgeInsets.fromLTRB(7.0, 9, 0, 0),
+              //     child: WebState()),
+              const SizedBox(
+                width: 14,
+              ),
+              // const LoadingWidget(),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchPage()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.search_outlined,
+                  size: 25,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HistoryList()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.history,
+                  size: 25,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          const Card(
+             color: Colors.white70, // 背景色
+        shadowColor: Colors.grey, // 阴影颜色
+        elevation: 20, // 阴影高度
+        borderOnForeground: false, // 是否在 child 前绘制 border，默认为 true
+        margin: EdgeInsets.symmetric(vertical: 10), // 外边距
+
+            
+            child: PlayBar()),
+        ],
+      ),
     );
   }
 }
