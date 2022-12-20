@@ -5,7 +5,8 @@ class CustomCacheManager {
   static CacheManager instance = CacheManager(
     Config(
       key,
-      stalePeriod: const Duration(days: 365*2),
+      stalePeriod: const Duration(days: 365),
+      maxNrOfCacheObjects: 999999999
     ),
   );
 }

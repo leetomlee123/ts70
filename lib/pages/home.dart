@@ -59,15 +59,7 @@ class Home extends ConsumerWidget {
             ],
           ),
           const Spacer(),
-          const Card(
-             color: Colors.white70, // 背景色
-        shadowColor: Colors.grey, // 阴影颜色
-        elevation: 20, // 阴影高度
-        borderOnForeground: false, // 是否在 child 前绘制 border，默认为 true
-        margin: EdgeInsets.symmetric(vertical: 10), // 外边距
-
-            
-            child: PlayBar()),
+          const PlayBar(),
         ],
       ),
     );

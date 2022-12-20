@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:indexed_list_view/indexed_list_view.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/model/model.dart';
 import 'package:ts70/pages/index.dart';
@@ -55,56 +55,61 @@ class ChapterList70Ts extends ConsumerWidget {
     final ff = ref.read(playProvider);
     return f.when(
         data: (data) {
-          var controller = IndexedScrollController(
-              initialIndex: ff!.idx! - 5, initialScrollOffset: itemHeight);
-
-          return IndexedListView.builder(
+          var controller = AutoScrollController(
+              viewportBoundaryGetter: () =>
+                  Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+              suggestedRowHeight: 200);
+          controller.scrollToIndex(ff?.idx ?? 0,
+              preferPosition: AutoScrollPosition.begin);
+          return ListView.builder(
             controller: controller,
-            maxItemCount: data,
+            itemCount: data,
             itemBuilder: ((context, index) {
-              final b = ff.idx == index;
-              if (index < 0 || index >= data!) {
-                return null;
-              }
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  Navigator.pop(context);
-                  await audioPlayer.stop();
-                  final play = ref.read(playProvider.notifier);
-                  play.state = play.state!
-                      .copyWith(idx: index, position: 0, url: "", duration: 1);
-                  eventBus.fire(PlayEvent());
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      SizedBox(
-                        width: Screen.width * .7,
-                        child: Text(
-                          "第${index + 1}回",
-                          style: TextStyle(
-                              color: b ? Colors.lightBlue : Colors.black,
-                              fontSize: 15),
-                          maxLines: 2,
+              final b = ff!.idx == index;
+              return AutoScrollTag(
+                key: ValueKey(index),
+                controller: controller,
+                index: index,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await audioPlayer.stop();
+                    final play = ref.read(playProvider.notifier);
+                    play.state = play.state!.copyWith(
+                        idx: index, position: 0, url: "", duration: 1);
+                    eventBus.fire(PlayEvent());
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
                         ),
-                      ),
-                      const Spacer(),
-                      Offstage(
-                        offstage: !b,
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.lightBlue,
+                        SizedBox(
+                          width: Screen.width * .7,
+                          child: Text(
+                            "第${index + 1}回",
+                            style: TextStyle(
+                                color: b ? Colors.lightBlue : Colors.black,
+                                fontSize: 15),
+                            maxLines: 2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                    ],
+                        const Spacer(),
+                        Offstage(
+                          offstage: !b,
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.lightBlue,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -186,64 +191,71 @@ class ListPage extends ConsumerWidget {
           int j = play.idx! ~/ 30 + 1;
           bool currentPage = int.parse(vp) == (j);
           int idx = currentPage ? i - 5 : -3;
-          controller = IndexedScrollController(
-              initialIndex: idx, initialScrollOffset: itemHeight);
+          controller = AutoScrollController(
+              viewportBoundaryGetter: () =>
+                  Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+              suggestedRowHeight: 200);
           int len = data?.length ?? 0;
-          return IndexedListView.builder(
+               controller.scrollToIndex(idx,
+              preferPosition: AutoScrollPosition.begin);
+          return ListView.builder(
             controller: controller,
-            maxItemCount: data?.length ?? 0,
+            itemCount: data?.length ?? 0,
             itemBuilder: ((context, index) {
-              if (index < 0 || index >= len) {
-                return null;
-              }
               final model = data![index];
               final b = index == i && currentPage;
 
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () async {
-                  Navigator.pop(context);
-                  await audioPlayer.stop();
-                  final play = ref.read(playProvider.notifier);
-                  final vs = ref.read(v.notifier).state;
-                  play.state = play.state!.copyWith(
-                      idx: index + (int.parse(vs) - 1) * 30,
-                      position: 0,
-                      url: "",
-                      duration: 1);
-                  eventBus.fire(PlayEvent());
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      SizedBox(
-                        width: Screen.width * .7,
-                        child: Text(
-                          "${model.name}",
-                          style: TextStyle(
-                              color: b ? Colors.lightBlue : null, fontSize: 15),
-                          maxLines: 2,
+              return AutoScrollTag(
+                key: ValueKey(index),
+                controller: controller,
+                index: index,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await audioPlayer.stop();
+                    final play = ref.read(playProvider.notifier);
+                    final vs = ref.read(v.notifier).state;
+                    play.state = play.state!.copyWith(
+                        idx: index + (int.parse(vs) - 1) * 30,
+                        position: 0,
+                        url: "",
+                        duration: 1);
+                    eventBus.fire(PlayEvent());
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
                         ),
-                      ),
-                      const Spacer(),
-                      // DownLoadItem(
-                      //   index: index,
-                      // ),
-                      Offstage(
-                        offstage: !b,
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.lightBlue,
+                        SizedBox(
+                          width: Screen.width * .7,
+                          child: Text(
+                            "${model.name}",
+                            style: TextStyle(
+                                color: b ? Colors.lightBlue : null,
+                                fontSize: 15),
+                            maxLines: 2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                    ],
+                        const Spacer(),
+                        // DownLoadItem(
+                        //   index: index,
+                        // ),
+                        Offstage(
+                          offstage: !b,
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.lightBlue,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
