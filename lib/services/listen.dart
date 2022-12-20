@@ -24,6 +24,8 @@ class ListenApi {
   String host2 = "https://www.70ts.cc";
   String host3 = "http://m.tingshubao.com";
   String host4 = "https://www.ting13.com";
+  String host5 = "https://www.ting275.com";
+  
 
   Future<String> download(Search? p) async {
     int len = 0;

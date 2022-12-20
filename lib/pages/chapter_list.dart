@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:ts70/main.dart';
 import 'package:ts70/model/model.dart';
 import 'package:ts70/pages/index.dart';
@@ -41,10 +42,102 @@ class Chapters extends ConsumerWidget {
     return Visibility(
       replacement: const ChapterList(),
       visible: read!.cover!.contains("tingshubao"),
-      child: const ChapterList70Ts(),
+      child: const Cps70(),
     );
   }
 }
+
+final controller = ItemScrollController();
+
+class Cps70 extends ConsumerStatefulWidget{
+  const Cps70({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+   return Cps70State();
+  }
+  
+}
+class Cps70State extends ConsumerState{
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+
+    final f = ref.watch(chapterTsbProvider);
+    final ff = ref.read(playProvider);
+    return f.when(
+        data: (data) {
+          // controller.scrollTo(index: ff?.idx ?? 0 ,
+          //     duration: Duration(seconds: 2),
+          //     curve: Curves.easeInOutCubic);
+          return ScrollablePositionedList.builder(
+            itemScrollController: controller,
+            itemCount: data!,
+            itemBuilder: ((context, index) {
+              final b = ff!.idx == index;
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  Navigator.pop(context);
+                  await audioPlayer.stop();
+                  final play = ref.read(playProvider.notifier);
+                  play.state = play.state!.copyWith(
+                      idx: index, position: 0, url: "", duration: 1);
+                  eventBus.fire(PlayEvent());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      SizedBox(
+                        width: Screen.width * .7,
+                        child: Text(
+                          "第${index + 1}回",
+                          style: TextStyle(
+                              color: b ? Colors.lightBlue : Colors.black,
+                              fontSize: 15),
+                          maxLines: 2,
+                        ),
+                      ),
+                      const Spacer(),
+                      Offstage(
+                        offstage: !b,
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.lightBlue,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
+        },
+        error: (error, stackTrace) => const Center(
+          child: Text(
+            'oops...',
+          ),
+        ),
+        loading: () => const Center(
+          child: Text(
+            'loading...',
+          ),
+        ));
+  }
+  
+}
+
 
 class ChapterList70Ts extends ConsumerWidget {
   const ChapterList70Ts({super.key});
@@ -55,78 +148,69 @@ class ChapterList70Ts extends ConsumerWidget {
     final ff = ref.read(playProvider);
     return f.when(
         data: (data) {
-          var controller = AutoScrollController(
-              viewportBoundaryGetter: () =>
-                  Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
-              suggestedRowHeight: 200);
-          controller.scrollToIndex(ff?.idx ?? 0,
-              preferPosition: AutoScrollPosition.begin);
-          return ListView.builder(
-            controller: controller,
-            itemCount: data,
+          // controller.scrollTo(index: ff?.idx ?? 0 ,
+          //     duration: Duration(seconds: 2),
+          //     curve: Curves.easeInOutCubic);
+          return ScrollablePositionedList.builder(
+            itemScrollController: controller,
+            itemCount: data!,
             itemBuilder: ((context, index) {
               final b = ff!.idx == index;
-              return AutoScrollTag(
-                key: ValueKey(index),
-                controller: controller,
-                index: index,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await audioPlayer.stop();
-                    final play = ref.read(playProvider.notifier);
-                    play.state = play.state!.copyWith(
-                        idx: index, position: 0, url: "", duration: 1);
-                    eventBus.fire(PlayEvent());
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  Navigator.pop(context);
+                  await audioPlayer.stop();
+                  final play = ref.read(playProvider.notifier);
+                  play.state = play.state!.copyWith(
+                      idx: index, position: 0, url: "", duration: 1);
+                  eventBus.fire(PlayEvent());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      SizedBox(
+                        width: Screen.width * .7,
+                        child: Text(
+                          "第${index + 1}回",
+                          style: TextStyle(
+                              color: b ? Colors.lightBlue : Colors.black,
+                              fontSize: 15),
+                          maxLines: 2,
                         ),
-                        SizedBox(
-                          width: Screen.width * .7,
-                          child: Text(
-                            "第${index + 1}回",
-                            style: TextStyle(
-                                color: b ? Colors.lightBlue : Colors.black,
-                                fontSize: 15),
-                            maxLines: 2,
-                          ),
+                      ),
+                      const Spacer(),
+                      Offstage(
+                        offstage: !b,
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.lightBlue,
                         ),
-                        const Spacer(),
-                        Offstage(
-                          offstage: !b,
-                          child: const Icon(
-                            Icons.check,
-                            color: Colors.lightBlue,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                    ],
                   ),
                 ),
               );
             }),
-            itemExtent: itemHeight,
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text(
-                'oops...',
-              ),
-            ),
+          child: Text(
+            'oops...',
+          ),
+        ),
         loading: () => const Center(
-              child: Text(
-                'loading...',
-              ),
-            ));
+          child: Text(
+            'loading...',
+          ),
+        ));
   }
 }
 
@@ -147,9 +231,9 @@ class ChapterList extends ConsumerWidget {
                   value: vp.state,
                   items: data!
                       .map((e) => DropdownMenuItem(
-                            value: e.index,
-                            child: Text(e.name ?? ""),
-                          ))
+                    value: e.index,
+                    child: Text(e.name ?? ""),
+                  ))
                       .toList(),
                   onChanged: ((value) {
                     ref.read(v.notifier).state = value!;
@@ -159,22 +243,21 @@ class ChapterList extends ConsumerWidget {
           );
         },
         error: (error, stackTrace) => const Center(
-              child: Text(
-                'oops...',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+          child: Text(
+            'oops...',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
         loading: () => const Center(
-              child: Text(
-                'loading...',
-                style: TextStyle(color: Colors.white),
-              ),
-            ));
+          child: Text(
+            'loading...',
+            style: TextStyle(color: Colors.white),
+          ),
+        ));
   }
 }
 
 final scroll = StateProvider(((ref) => ""));
-late var controller;
 
 // ignore: must_be_immutable
 class ListPage extends ConsumerWidget {
@@ -191,25 +274,18 @@ class ListPage extends ConsumerWidget {
           int j = play.idx! ~/ 30 + 1;
           bool currentPage = int.parse(vp) == (j);
           int idx = currentPage ? i - 5 : -3;
-          controller = AutoScrollController(
-              viewportBoundaryGetter: () =>
-                  Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
-              suggestedRowHeight: 200);
-          int len = data?.length ?? 0;
-               controller.scrollToIndex(idx,
-              preferPosition: AutoScrollPosition.begin);
-          return ListView.builder(
-            controller: controller,
-            itemCount: data?.length ?? 0,
-            itemBuilder: ((context, index) {
-              final model = data![index];
-              final b = index == i && currentPage;
 
-              return AutoScrollTag(
-                key: ValueKey(index),
-                controller: controller,
-                index: index,
-                child: GestureDetector(
+          int len = data?.length ?? 0;
+          controller.jumpTo(index: idx);
+          return
+            ScrollablePositionedList.builder(
+              itemScrollController: controller,
+              itemCount: data?.length ?? 0,
+              itemBuilder: ((context, index) {
+                final model = data![index];
+                final b = index == i && currentPage;
+
+                return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     Navigator.pop(context);
@@ -257,18 +333,16 @@ class ListPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                ),
-              );
-            }),
-            itemExtent: itemHeight,
-          );
+                );
+              }),
+            );
         },
         error: (error, stackTrace) => const Center(
-              child: Text('oops...'),
-            ),
+          child: Text('oops...'),
+        ),
         loading: () => const Center(
-              child: Text('loading...'),
-            ));
+          child: Text('loading...'),
+        ));
   }
 }
 
@@ -278,7 +352,7 @@ class DownLoadItem extends ConsumerWidget {
   late var cache = StateProvider.autoDispose<bool>(((ref) {
     final play = ref.read(playProvider.notifier).state;
     return CustomCacheManager.instance
-            .getFileFromCache(play!.getCacheKeyByIndex(index.toString())) ==
+        .getFileFromCache(play!.getCacheKeyByIndex(index.toString())) ==
         null;
   }));
   @override
