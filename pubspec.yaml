@@ -61,7 +61,7 @@ dependencies:
   audio_video_progress_bar: ^0.11.0
   flutter_cache_manager: ^3.3.0
   get_it: ^6.0.0
-  html: ^0.15.0
+  html: ^0.15.1
   cached_network_image: ^3.2.3
   # sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
@@ -76,8 +76,8 @@ dependencies:
   just_audio_cache: ^0.1.1
 
   uuid: ^3.0.6
-  firebase_core: ^1.24.0
-  firebase_analytics: ^9.3.7
+  firebase_core: ^2.4.0
+  firebase_analytics: ^10.0.7
   flutter_displaymode: ^0.4.1
   palette_generator: ^0.3.3+2
   indexed_list_view: ^2.0.2

@@ -10,7 +10,7 @@ import audio_session
 import firebase_analytics
 import firebase_core
 import just_audio
-import package_info_plus_macos
+import package_info_plus
 import path_provider_macos
 import sentry_flutter
 import shared_preferences_macos

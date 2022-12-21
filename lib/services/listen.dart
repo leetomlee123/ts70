@@ -19,8 +19,8 @@ var downloadController = StreamController.broadcast();
 var uuid = const Uuid();
 
 class ListenApi {
-  //  String host = "https://m.70ts.cc";
-  String host = "https://www.70tsw.com";
+   String host = "https://m.70ts.cc";
+  // String host = "https://www.70tsw.com";
   String host2 = "https://www.70ts.cc";
   String host3 = "http://m.tingshubao.com";
   String host4 = "https://www.ting13.com";
